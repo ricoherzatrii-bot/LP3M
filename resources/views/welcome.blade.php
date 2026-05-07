@@ -87,229 +87,335 @@
     </div>
 
     <!-- TOP BAR -->
-    <div class="bg-blue-700 py-3 border-b border-blue-800">
-        <div class="container mx-auto px-8 flex justify-between items-center text-[10px] font-bold tracking-widest text-white uppercase">
-            <div class="flex gap-8">
-                <span class="flex items-center gap-2"><i class="fas fa-envelope text-white/80"></i> lpm@politeknikjambi.ac.id</span>
-                <span class="flex items-center gap-2"><i class="fas fa-phone text-white/80"></i> +62 741 123 456</span>
+<div class="bg-blue-700 py-3 border-b border-blue-800 w-full">
+    <div class="w-full px-6 lg:px-16 flex justify-between items-center text-[10px] font-bold tracking-widest text-white uppercase">
+        <div class="flex gap-8">
+            <span class="flex items-center gap-2">
+                <i class="fas fa-envelope text-white/80"></i> lpm@politeknikjambi.ac.id
+            </span>
+            <span class="flex items-center gap-2">
+                <i class="fas fa-phone text-white/80"></i> +62 741 123 456
+            </span>
+        </div>
+        <div class="flex gap-6 items-center">
+            <div class="flex gap-3 border-r pr-6 border-white/20">
+                <i class="fab fa-facebook-f hover:text-blue-200 transition cursor-pointer"></i>
+                <i class="fab fa-instagram hover:text-blue-200 transition cursor-pointer"></i>
+                <i class="fab fa-youtube hover:text-blue-200 transition cursor-pointer"></i>
             </div>
-            <div class="flex gap-6 items-center">
-                <div class="flex gap-3 border-r pr-6 border-white/20">
-                    <i class="fab fa-facebook-f hover:text-blue-200 transition cursor-pointer"></i>
-                    <i class="fab fa-instagram hover:text-blue-200 transition cursor-pointer"></i>
-                    <i class="fab fa-youtube hover:text-blue-200 transition cursor-pointer"></i>
+            <span class="text-white cursor-pointer hover:text-blue-200 transition">
+                English Version <i class="fas fa-globe ml-1"></i>
+            </span>
+        </div>
+    </div>
+</div>
+
+    <!-- NAVIGATION BAR -->
+<nav class="glass-nav sticky top-0 z-50 border-b border-slate-100">
+    <div class="container mx-auto px-8 py-5 flex justify-between items-center">
+        <!-- Logo Section -->
+        <a href="{{ url('/') }}" class="flex items-center gap-4 group cursor-pointer">
+            <div class="relative overflow-hidden rounded-lg">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto group-hover:scale-110 transition-transform duration-500">
+            </div>
+            <div>
+                <span class="block text-lg font-black tracking-tighter text-slate-900 leading-none uppercase">LPM POLJAM</span>
+                <span class="text-[9px] font-bold text-blue-700 uppercase tracking-widest leading-none">Internal Quality Assurance</span>
+            </div>
+        </a>
+
+        <!-- Desktop Menu -->
+        <div class="hidden xl:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-600">
+            <a href="{{ url('/') }}" class="text-blue-700 nav-link">Home <div class="nav-indicator w-full"></div></a>
+            
+            <!-- Menu Profil -->
+            <div class="relative group py-4 cursor-pointer">
+                <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase font-bold text-[11px] tracking-widest">
+                    Profil <i class="fas fa-chevron-down text-[8px] opacity-40"></i>
+                </span>
+                
+                <div class="absolute top-full left-0 w-72 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden z-50">
+                    <div class="p-2 flex flex-col">
+                        @php
+                            $profilMenus = [
+                                ['slug' => 'visi-dan-misi', 'label' => 'Visi Dan Misi'],
+                                ['slug' => 'moto-dan-janji-layanan', 'label' => 'Moto & Janji Layanan'],
+                                ['slug' => 'kebijakan-mutu-poljam', 'label' => 'Kebijakan Mutu Poljam'],
+                                ['slug' => 'sasaran-mutu-poljam', 'label' => 'Sasaran Mutu Poljam'],
+                                ['slug' => 'standar-mutu-poljam', 'label' => 'Standar Mutu Poljam'],
+                                ['slug' => 'sasaran-mutu-lpm', 'label' => 'Sasaran Mutu LPM'],
+                                ['slug' => 'struktur-organisasi', 'label' => 'Struktur Organisasi'],
+                                ['slug' => 'job-deskripsi', 'label' => 'Job Deskripsi'],
+                                ['slug' => 'standar-waktu-pelayanan', 'label' => 'Standar Waktu Pelayanan'],
+                                ['slug' => 'artikel', 'label' => 'Artikel & Berita'],
+                            ];
+                        @endphp
+
+                        @foreach($profilMenus as $m)
+                            <a href="{{ route('profil.show', $m['slug']) }}" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 font-semibold text-xs flex justify-between items-center transition normal-case">
+                                {{ $m['label'] }}
+                                <i class="fas fa-chevron-right text-[8px] opacity-20"></i>
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
-                <span class="text-white cursor-pointer">English Version <i class="fas fa-globe ml-1"></i></span>
+            </div>
+
+            <!-- Menu SPMI -->
+            <div class="relative group py-4 cursor-pointer">
+                <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase font-bold text-[11px] tracking-widest">SPMI <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
+                <div class="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden z-50">
+                    <div class="p-2 flex flex-col">
+                        <a href="{{ route('spmi.show', 'dokumen') }}" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 font-semibold text-xs transition normal-case">Dokumen SPMI</a>
+                        <a href="{{ route('spmi.show', 'rtm') }}" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 font-semibold text-xs transition normal-case">RTM</a>
+                        <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-blue-600 font-bold text-xs flex items-center justify-between transition normal-case">
+                            E-SPMI POLJAM <i class="fas fa-external-link-alt text-[9px]"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Akreditasi -->
+            <div class="relative group py-4 cursor-pointer">
+                <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase font-bold text-[11px] tracking-widest">Akreditasi <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
+                <div class="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden z-50">
+                    <div class="p-2 flex flex-col">
+                        <a href="{{ route('akreditasi.index') }}" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 font-semibold text-xs flex justify-between items-center transition normal-case">Data Akreditasi <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
+                        <a href="{{ route('akreditasi.dokumen') }}" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 font-semibold text-xs flex justify-between items-center transition normal-case">Dokumen Pendukung <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Kuesioner -->
+            <div class="relative group py-4 cursor-pointer">
+                <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase font-bold text-[11px] tracking-widest">Kuesioner <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
+                <div class="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden z-50">
+                    <div class="p-2 flex flex-col">
+                        <a href="{{ route('kuesioner.dosen') }}" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 font-semibold text-xs flex justify-between items-center transition normal-case">Dosen & Karyawan <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
+                        <a href="{{ route('kuesioner.mahasiswa') }}" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 font-semibold text-xs flex justify-between items-center transition normal-case">Mahasiswa <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galeri -->
+            <a href="{{ route('gallery.index') }}" class="hover:text-blue-700 transition uppercase font-bold text-[11px] tracking-widest px-4">Galeri</a>
+
+            <div class="h-8 w-[1px] bg-slate-100 mx-2"></div>
+
+            <!-- Button Login -->
+            <a href="{{ route('login') }}" class="group relative px-8 py-3 overflow-hidden rounded-full bg-blue-700 text-white shadow-xl shadow-blue-200 transition-all">
+                <span class="relative z-10 text-[10px] font-black uppercase tracking-widest">Login Portal</span>
+                <div class="absolute inset-0 bg-blue-800 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+            </a>
+        </div>
+    </div>
+</nav>
+
+    <!-- HERO SECTION -->
+<section class="relative pt-10 pb-20 overflow-hidden w-full">
+    <!-- Background Decor - Diperlebar agar menutupi area luar -->
+    <div class="absolute top-0 right-0 w-full lg:w-1/2 h-full bg-blue-50/50 -z-10 rounded-l-[100px] hidden lg:block"></div>
+    <div class="absolute top-40 left-10 w-96 h-96 bg-blue-100 rounded-full blur-[120px] opacity-30 animate-pulse"></div>
+
+    <!-- Gunakan 'container-fluid' atau hapus max-width pada container -->
+    <div class="w-full px-6 lg:px-16 grid lg:grid-cols-2 gap-10 items-center">
+        
+        <!-- SISI KIRI: TEXT CONTENT (Diberi padding left agar tidak terlalu mepet layar) -->
+        <div class="relative z-10 py-10 lg:pl-10">
+            <div class="inline-flex items-center gap-3 py-2 px-5 bg-white border border-slate-100 shadow-sm rounded-full mb-8">
+                <span class="w-2 h-2 bg-blue-600 rounded-full animate-ping"></span>
+                <span class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Penjaminan Mutu Internal v.2.6</span>
+            </div>
+            
+            <!-- Font size disesuaikan agar proporsional di layar lebar -->
+            <h1 class="font-serif-luxury text-6xl xl:text-8xl text-slate-900 leading-[0.95] mb-8">
+                Kualitas <br>
+                Tanpa <span class="gradient-text italic">Kompromi</span>.
+            </h1>
+            
+            <p class="text-slate-500 text-lg leading-relaxed mb-10 font-light max-w-xl">
+                Menjaga integritas akademik dan profesionalisme pendidikan vokasi melalui sistem monitoring mutu yang presisi, transparan, dan akuntabel.
+            </p>
+
+            <div class="flex items-center gap-8 mb-12">
+                <div class="flex -space-x-4">
+                    <div class="w-12 h-12 rounded-full border-4 border-white bg-slate-200 overflow-hidden flex items-center justify-center"><i class="fas fa-user text-slate-400"></i></div>
+                    <div class="w-12 h-12 rounded-full border-4 border-white bg-blue-700 flex items-center justify-center text-white text-[10px] font-bold">LPM</div>
+                    <div class="w-12 h-12 rounded-full border-4 border-white bg-slate-900 flex items-center justify-center text-white"><i class="fas fa-plus text-[10px]"></i></div>
+                </div>
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    Dipercaya oleh <span class="text-slate-900">12+ Program Studi</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 max-w-md">
+                <div class="p-6 bg-slate-50/80 backdrop-blur-sm rounded-2xl border border-slate-100">
+                    <div class="text-3xl font-black text-blue-700 mb-1 leading-none">2026</div>
+                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Target Unggul</div>
+                </div>
+                <div class="p-6 bg-slate-50/80 backdrop-blur-sm rounded-2xl border border-slate-100">
+                    <div class="text-3xl font-black text-blue-700 mb-1 leading-none">ISO</div>
+                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">9001:2015</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SISI KANAN: VISUAL SLIDER (Dibuat Full Width ke arah kanan) -->
+        <div class="relative w-full h-full lg:h-[110%] flex items-center">
+            <!-- Navigasi Slider -->
+            <div class="absolute -top-10 lg:top-10 right-4 lg:right-10 flex gap-3 z-30">
+                <button onclick="changeSlide(-1)" class="w-12 h-12 rounded-xl bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-slate-400 hover:text-blue-700 transition-all active:scale-90">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button onclick="changeSlide(1)" class="w-12 h-12 rounded-xl bg-blue-700 shadow-lg flex items-center justify-center text-white hover:bg-blue-800 transition-all active:scale-90">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="relative w-full animate-float pl-4">
+                
+                <!-- Decorative Layer -->
+                <div class="absolute -inset-4 bg-blue-600/10 rounded-[60px] rotate-2"></div>
+                
+                <!-- Main Slider Card -->
+                <div class="relative bg-white rounded-[50px] shadow-2xl p-4 border border-slate-50 overflow-hidden">
+                    <div class="bg-slate-950 rounded-[40px] aspect-video lg:aspect-[16/10] relative overflow-hidden flex items-center justify-center">
+                        
+                        <!-- SLIDE 1 -->
+                        <div class="hero-slide active absolute inset-0 flex flex-col items-center justify-center text-center p-8 lg:p-16">
+                            <div class="mb-6 w-20 h-20 bg-blue-700/20 rounded-3xl flex items-center justify-center border border-blue-600/30">
+                                <i class="fas fa-shield-halved text-blue-600 text-3xl"></i>
+                            </div>
+                            <h3 class="text-white text-xl lg:text-3xl font-bold mb-4">Sistem Mutu Terpadu</h3>
+                            <p class="text-slate-400 text-sm lg:text-base leading-relaxed max-w-sm">Integrasi data SPMI yang memudahkan monitoring dan evaluasi standar akademik secara otomatis.</p>
+                        </div>
+
+                        <!-- SLIDE 2 (Sama seperti Slide 1, sesuaikan konten) -->
+                        <div class="hero-slide absolute inset-0 flex flex-col items-center justify-center text-center p-8 lg:p-16">
+                            <div class="mb-6 w-20 h-20 bg-blue-800/20 rounded-3xl flex items-center justify-center border border-blue-700/30">
+                                <i class="fas fa-microchip text-blue-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-white text-xl lg:text-3xl font-bold mb-4">Inovasi Digital Vokasi</h3>
+                            <p class="text-slate-400 text-sm lg:text-base leading-relaxed max-w-sm">Penerapan teknologi terkini untuk efisiensi pengelolaan dokumen akreditasi.</p>
+                        </div>
+
+                        <!-- Dots -->
+                        <div class="absolute bottom-8 flex gap-2">
+                            <div class="dot w-8 h-1.5 rounded-full bg-blue-700 cursor-pointer" onclick="currentSlide(0)"></div>
+                            <div class="dot w-2 h-1.5 rounded-full bg-white/20 cursor-pointer" onclick="currentSlide(1)"></div>
+                            <div class="dot w-2 h-1.5 rounded-full bg-white/20 cursor-pointer" onclick="currentSlide(2)"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Badge -->
+                <div class="absolute -bottom-8 -left-4 bg-white p-6 rounded-[30px] shadow-2xl border border-slate-50 hidden md:block">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-700 text-xl font-black">
+                            100%
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Status Operasional</div>
+                            <div class="text-base font-bold text-slate-900">Terdigitalisasi</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</section>
+<!-- ... (Selesai Hero Section) ... -->
+</section>
 
-    <!-- NAVIGATION BAR -->
-    <nav class="glass-nav sticky top-0 z-50 border-b border-slate-100">
-        <div class="container mx-auto px-8 py-5 flex justify-between items-center">
-            <div class="flex items-center gap-4 group cursor-pointer">
-                <div class="relative overflow-hidden rounded-lg">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto group-hover:scale-110 transition-transform duration-500">
+<!-- VISI & MISI SECTION -->
+<section class="py-24 bg-white relative overflow-hidden">
+    <!-- Dekorasi Latar Belakang agar Senada dengan Hero -->
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-50 rounded-full blur-[120px] opacity-50 -z-10"></div>
+    
+    <div class="w-full px-6 lg:px-16">
+        <div class="flex flex-col lg:flex-row gap-16 items-start">
+            
+            <!-- SISI KIRI: Judul & Visi -->
+            <div class="lg:w-1/3 sticky top-32">
+                <div class="inline-flex items-center gap-3 py-2 px-5 bg-blue-50 rounded-full mb-6">
+                    <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Core Purpose</span>
                 </div>
-                <div>
-                    <span class="block text-lg font-black tracking-tighter text-slate-900 leading-none uppercase">LPM POLJAM</span>
-                    <span class="text-[9px] font-bold text-blue-700 uppercase tracking-widest leading-none">Internal Quality Assurance</span>
-                </div>
-            </div>
-
-            <div class="hidden xl:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-600">
-                <a href="#" class="text-blue-700 nav-link">Home <div class="nav-indicator w-full"></div></a>
+                <h2 class="font-serif-luxury text-5xl text-slate-900 leading-tight mb-8">
+                    Komitmen <br> <span class="gradient-text italic">Masa Depan</span>
+                </h2>
                 
-                <!-- Menu Profil (Updated from Images) -->
-                <div class="relative group py-4 cursor-pointer">
-                    <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase">Profil <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
-                    <div class="absolute top-full left-0 w-72 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden">
-                        <div class="p-2 flex flex-col">
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Visi Dan Misi <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Moto Dan Janji Layanan <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Kebijakan Mutu POLJAM <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Sasaran Mutu POLJAM <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Standar Mutu POLJAM <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Sasaran Mutu LPM <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Struktur Organisasi <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Job Deskripsi <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Standar Waktu Pelayanan <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-2 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Artikel <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                        </div>
+                <!-- Card Visi (Mewah dengan Dark Theme) -->
+                <div class="group p-8 bg-slate-950 rounded-[40px] shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                    <div class="text-blue-500 mb-6">
+                        <i class="fas fa-quote-left text-4xl opacity-50"></i>
+                    </div>
+                    <p class="text-white text-xl leading-relaxed font-light italic">
+                        "Menjadi lembaga penjaminan mutu yang kredibel dan inovatif dalam mewujudkan pendidikan vokasi yang unggul dan berdaya saing global."
+                    </p>
+                    <div class="mt-8 pt-6 border-t border-white/10 flex items-center gap-4">
+                        <div class="w-10 h-1 bg-blue-600"></div>
+                        <span class="text-white/40 uppercase tracking-widest text-[10px] font-bold">Visi Institusi</span>
                     </div>
                 </div>
-
-                <!-- Menu SPMI (Updated from Images) -->
-                <div class="relative group py-4 cursor-pointer">
-                    <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase">SPMI <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
-                    <div class="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden">
-                        <div class="p-2 flex flex-col">
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Dokumen SPMI <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Unit <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">RTM <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Dokumen Mutu SPMI <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">e-spmiPoljam <i class="fas fa-external-link-alt text-[8px] opacity-20"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Menu Akreditasi (Updated from Images) -->
-                <div class="relative group py-4 cursor-pointer">
-                    <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase">Akreditasi <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
-                    <div class="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden">
-                        <div class="p-2 flex flex-col">
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Akreditasi <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Dokumen Akreditasi <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Menu Capaian (Updated from Images) -->
-                <div class="relative group py-4 cursor-pointer">
-                    <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase">Capaian <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
-                    <div class="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden">
-                        <div class="p-2 flex flex-col">
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Renop <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Capaian Renstra <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Menu Kuesioner (Updated from Images) -->
-                <div class="relative group py-4 cursor-pointer">
-                    <span class="flex items-center gap-1 hover:text-blue-700 transition uppercase">Kuesioner <i class="fas fa-chevron-down text-[8px] opacity-40"></i></span>
-                    <div class="absolute top-full left-0 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 overflow-hidden">
-                        <div class="p-2 flex flex-col">
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Kuesioner Dosen & Karyawan <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                            <a href="#" class="px-4 py-3 hover:bg-blue-50 rounded-xl text-slate-700 normal-case font-semibold text-xs flex justify-between items-center transition">Kuisioner Mahasiswa <i class="fas fa-chevron-right text-[8px] opacity-20"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <a href="#" class="nav-link uppercase">Galeri <div class="nav-indicator"></div></a>
-                <div class="h-8 w-[1px] bg-slate-100 mx-2"></div>
-                <a href="{{ route('login') }}" class="group relative px-8 py-3 overflow-hidden rounded-full bg-blue-700 text-white shadow-xl shadow-blue-200 transition-all">
-                    <span class="relative z-10 text-[10px] font-black uppercase">Login Portal</span>
-                    <div class="absolute inset-0 bg-blue-800 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
-                </a>
             </div>
+
+            <!-- SISI KANAN: Misi (Grid Cards) -->
+            <div class="lg:w-2/3">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Misi 1 -->
+                    <div class="p-10 bg-slate-50 rounded-[40px] border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-blue-100 transition-all duration-500 group">
+                        <div class="w-16 h-16 bg-white shadow-lg rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-700 transition-colors duration-500">
+                            <i class="fas fa-check-double text-blue-700 group-hover:text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-4 tracking-tight">Standarisasi Mutu</h4>
+                        <p class="text-slate-500 leading-relaxed font-light text-sm">
+                            Mengembangkan dan mengimplementasikan sistem penjaminan mutu internal secara berkelanjutan sesuai standar nasional pendidikan tinggi.
+                        </p>
+                    </div>
+
+                    <!-- Misi 2 -->
+                    <div class="p-10 bg-slate-50 rounded-[40px] border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-blue-100 transition-all duration-500 group">
+                        <div class="w-16 h-16 bg-white shadow-lg rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-700 transition-colors duration-500">
+                            <i class="fas fa-chart-line text-blue-700 group-hover:text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-4 tracking-tight">Audit & Evaluasi</h4>
+                        <p class="text-slate-500 leading-relaxed font-light text-sm">
+                            Melaksanakan audit mutu internal secara periodik dan transparan untuk memastikan kepatuhan serta peningkatan standar akademik.
+                        </p>
+                    </div>
+
+                    <!-- Misi 3 -->
+                    <div class="p-10 bg-slate-50 rounded-[40px] border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-blue-100 transition-all duration-500 group">
+                        <div class="w-16 h-16 bg-white shadow-lg rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-700 transition-colors duration-500">
+                            <i class="fas fa-lightbulb text-blue-700 group-hover:text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-4 tracking-tight">Budaya Inovasi</h4>
+                        <p class="text-slate-500 leading-relaxed font-light text-sm">
+                            Mendorong terciptanya budaya mutu dan inovasi di seluruh civitas akademika Politeknik Jambi guna mencapai akreditasi unggul.
+                        </p>
+                    </div>
+
+                    <!-- Misi 4 -->
+                    <div class="p-10 bg-slate-50 rounded-[40px] border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-blue-100 transition-all duration-500 group">
+                        <div class="w-16 h-16 bg-white shadow-lg rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-700 transition-colors duration-500">
+                            <i class="fas fa-handshake text-blue-700 group-hover:text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-4 tracking-tight">Kemitraan Strategis</h4>
+                        <p class="text-slate-500 leading-relaxed font-light text-sm">
+                            Membangun kerjasama strategis dengan lembaga penjaminan mutu eksternal dan industri baik skala nasional maupun internasional.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </nav>
+    </div>
+</section>
 
-    <!-- HERO SECTION -->
-    <section class="relative pt-20 pb-32 overflow-hidden">
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-blue-50/50 -z-10 rounded-l-[100px]"></div>
-        <div class="absolute top-40 left-10 w-64 h-64 bg-blue-100 rounded-full blur-[100px] opacity-40 animate-pulse"></div>
-
-        <div class="container mx-auto px-8 grid lg:grid-cols-2 gap-20 items-center">
-            <div class="relative z-10">
-                <div class="inline-flex items-center gap-3 py-2 px-5 bg-white border border-slate-100 shadow-sm rounded-full mb-10">
-                    <span class="w-2 h-2 bg-blue-600 rounded-full animate-ping"></span>
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Penjaminan Mutu Internal v.2.6</span>
-                </div>
-                
-                <h1 class="font-serif-luxury text-7xl xl:text-8xl text-slate-900 leading-[0.9] mb-10">
-                    Kualitas <br>
-                    Tanpa <span class="gradient-text italic">Kompromi</span>.
-                </h1>
-                
-                <p class="text-slate-500 text-lg leading-relaxed mb-12 font-light max-w-lg">
-                    Menjaga integritas akademik dan profesionalisme pendidikan vokasi melalui sistem monitoring mutu yang presisi, transparan, dan akuntabel.
-                </p>
-
-                <div class="flex items-center gap-8 mb-16">
-                    <div class="flex -space-x-4">
-                        <div class="w-12 h-12 rounded-full border-4 border-white bg-slate-200 overflow-hidden"><i class="fas fa-user text-slate-400 p-3"></i></div>
-                        <div class="w-12 h-12 rounded-full border-4 border-white bg-blue-700 flex items-center justify-center text-white text-[10px] font-bold">LPM</div>
-                        <div class="w-12 h-12 rounded-full border-4 border-white bg-slate-900 flex items-center justify-center text-white"><i class="fas fa-plus text-[10px]"></i></div>
-                    </div>
-                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                        Dipercaya oleh <span class="text-slate-900">12+ Program Studi</span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-6 max-w-md">
-                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                        <div class="text-3xl font-black text-blue-700 mb-1 leading-none">2026</div>
-                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Target Unggul</div>
-                    </div>
-                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                        <div class="text-3xl font-black text-blue-700 mb-1 leading-none">ISO</div>
-                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">9001:2015</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative">
-                <div class="flex justify-end gap-3 mb-6 pr-4">
-                    <button onclick="changeSlide(-1)" class="w-14 h-14 rounded-2xl bg-white border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 hover:text-blue-700 hover:border-blue-200 transition-all group active:scale-95">
-                        <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-                    </button>
-                    <button onclick="changeSlide(1)" class="w-14 h-14 rounded-2xl bg-blue-700 shadow-xl shadow-blue-200 flex items-center justify-center text-white hover:bg-blue-800 transition-all group active:scale-95">
-                        <i class="fas fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
-                    </button>
-                </div>
-
-                <div class="relative animate-float">
-                    <div class="absolute -inset-6 bg-blue-700/5 rounded-[60px] -rotate-3"></div>
-                    <div class="absolute -inset-6 bg-blue-700/5 rounded-[60px] rotate-2"></div>
-                    
-                    <div class="relative bg-white rounded-[50px] shadow-[0_60px_100px_-20px_rgba(29,78,216,0.15)] p-5 border border-slate-100">
-                        <div class="bg-slate-950 rounded-[40px] aspect-[4/3] relative overflow-hidden flex items-center justify-center group">
-                            
-                            <!-- SLIDE 1 -->
-                            <div class="hero-slide active absolute inset-0 flex flex-col items-center justify-center text-center p-12">
-                                <div class="mb-8 w-24 h-24 bg-blue-700/20 rounded-3xl flex items-center justify-center border border-blue-600/30">
-                                    <i class="fas fa-shield-halved text-blue-600 text-4xl"></i>
-                                </div>
-                                <h3 class="text-white text-2xl font-bold mb-4">Sistem Mutu Terpadu</h3>
-                                <p class="text-slate-400 text-sm leading-relaxed max-w-xs">Integrasi data SPMI yang memudahkan monitoring dan evaluasi standar akademik secara otomatis.</p>
-                            </div>
-
-                            <!-- SLIDE 2 -->
-                            <div class="hero-slide absolute inset-0 flex flex-col items-center justify-center text-center p-12">
-                                <div class="mb-8 w-24 h-24 bg-blue-800/20 rounded-3xl flex items-center justify-center border border-blue-700/30">
-                                    <i class="fas fa-microchip text-blue-500 text-4xl"></i>
-                                </div>
-                                <h3 class="text-white text-2xl font-bold mb-4">Inovasi Digital Vokasi</h3>
-                                <p class="text-slate-400 text-sm leading-relaxed max-w-xs">Penerapan teknologi terkini untuk memastikan efisiensi dalam pengelolaan dokumen akreditasi.</p>
-                            </div>
-
-                            <!-- SLIDE 3 -->
-                            <div class="hero-slide absolute inset-0 flex flex-col items-center justify-center text-center p-12">
-                                <div class="mb-8 w-24 h-24 bg-blue-900/20 rounded-3xl flex items-center justify-center border border-blue-800/30">
-                                    <i class="fas fa-chart-pie text-blue-400 text-4xl"></i>
-                                </div>
-                                <h3 class="text-white text-2xl font-bold mb-4">Analisis Data Akurat</h3>
-                                <p class="text-slate-400 text-sm leading-relaxed max-w-xs">Visualisasi capaian indikator kinerja utama (IKU) dan kinerja tambahan secara real-time.</p>
-                            </div>
-
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent pointer-events-none"></div>
-
-                            <div class="absolute bottom-10 flex gap-2">
-                                <div class="dot w-8 h-1.5 rounded-full bg-blue-700 transition-all cursor-pointer" onclick="currentSlide(0)"></div>
-                                <div class="dot w-2 h-1.5 rounded-full bg-white/20 transition-all cursor-pointer" onclick="currentSlide(1)"></div>
-                                <div class="dot w-2 h-1.5 rounded-full bg-white/20 transition-all cursor-pointer" onclick="currentSlide(2)"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="absolute -bottom-12 -left-12 bg-white p-8 rounded-[32px] shadow-2xl border border-slate-50 group hover:-translate-y-2 transition-transform duration-500">
-                        <div class="flex items-center gap-5">
-                            <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-700 text-2xl font-black">
-                                100<span class="text-sm">%</span>
-                            </div>
-                            <div>
-                                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Operasional</div>
-                                <div class="text-lg font-bold text-slate-900 leading-none">Terdigitalisasi</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+<!-- FOOTER CTA (Bagian yang sudah ada di kodemu) -->
+<section class="py-24 bg-blue-700 relative overflow-hidden">
+    <!-- ... isi footer cta kamu ... -->
     <!-- FOOTER CTA -->
     <section class="py-24 bg-blue-700 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48 blur-[100px]"></div>
