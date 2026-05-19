@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
 use App\Models\Profil;
 use Illuminate\Http\Request;
 
@@ -234,5 +235,26 @@ class ProfilController extends Controller
     public function galleryVideo() {
         $allProfil = Profil::all();
         return view('pages.gallery.video', compact('allProfil'));
+=======
+use Illuminate\Http\Request;
+use App\Models\Profil;
+
+class ProfilController extends Controller
+{
+    public function index()
+    {
+        $data = Profil::all();
+        return view('profil', compact('data'));
+    }
+
+    public function store(Request $request)
+    {
+        Profil::create([
+            'judul' => $request->judul,
+            'isi' => $request->isi
+        ]);
+
+        return redirect('/profil');
+>>>>>>> f4da9032c9988bdd8d4d0196b006066481a9cda5
     }
 }
