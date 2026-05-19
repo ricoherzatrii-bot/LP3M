@@ -53,6 +53,11 @@ Route::get('/login', function() {
     return view('auth.login'); 
 })->name('login');
 
+// Jalur untuk memproses login (mengarahkan langsung ke back-end)
+Route::post('/login', function() {
+    return redirect()->route('dashboard');
+})->name('login.post');
+
 // Jalur halaman utama Dashboard setelah login
 Route::get('/dashboard', function () {
     return view('dashboard');
