@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
 use App\Models\Profil;
 use Illuminate\Http\Request;
 
@@ -126,7 +125,6 @@ class ProfilController extends Controller
 
     /**
      * Menangani Menu Akreditasi
-
      */
     public function akreditasiIndex() {
         $allProfil = Profil::all(); // Tambahkan ini jika navbar butuh data profil
@@ -235,12 +233,11 @@ class ProfilController extends Controller
     public function galleryVideo() {
         $allProfil = Profil::all();
         return view('pages.gallery.video', compact('allProfil'));
-=======
-use Illuminate\Http\Request;
-use App\Models\Profil;
+    }
 
-class ProfilController extends Controller
-{
+    /**
+     * Back-end admin methods
+     */
     public function index()
     {
         $data = Profil::all();
@@ -255,6 +252,5 @@ class ProfilController extends Controller
         ]);
 
         return redirect('/profil');
->>>>>>> f4da9032c9988bdd8d4d0196b006066481a9cda5
     }
 }
