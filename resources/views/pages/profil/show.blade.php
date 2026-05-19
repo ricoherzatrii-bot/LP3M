@@ -1,10 +1,10 @@
 @extends('layouts.app')
-
+@section('title', $profil->judul . ' - LPM Politeknik Jambi')
 @section('content')
-<!-- Section Utama -->
-<div class="relative min-h-screen py-20 overflow-hidden font-sans bg-slate-900">
+
+<div class="relative min-h-screen bg-slate-900 pt-8 pb-24 font-sans overflow-hidden">
     
-    <!-- BACKGROUND LAYER (DIOPTIMASI) -->
+    <!-- BACKGROUND LAYER -->
     <div class="absolute inset-0 z-0">
         <img src="{{ asset('images/gedung-poljam.png') }}" 
              class="w-full h-full object-cover opacity-40" 
@@ -14,64 +14,105 @@
         <div class="absolute inset-0 bg-gradient-to-b from-slate-900/95 via-slate-900/70 to-slate-900/95"></div>
     </div>
 
-    <div class="relative z-10 max-w-6xl mx-auto px-6">
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-16">
         
-        <!-- HEADER SECTION -->
-        <div class="text-center mb-16 animate-fade-in">
-            <span class="text-blue-400 font-black tracking-[0.4em] text-[10px] uppercase block mb-4">
-                Official Statement
-            </span>
-            <h1 class="text-5xl md:text-7xl font-serif-luxury text-white tracking-tight leading-none drop-shadow-2xl">
-                {{ $profil->judul }}
-            </h1>
-            <div class="mt-8 flex justify-center">
-                <div class="w-24 h-1 bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]"></div>
-            </div>
-        </div>
+        <div class="grid lg:grid-cols-3 gap-10">
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            
-            <!-- SIDEBAR INFO -->
-            <div class="lg:col-span-3 space-y-8 sticky top-24 bg-slate-800/60 p-8 rounded-3xl border border-white/10 backdrop-blur-md shadow-2xl">
-                <div>
-                    <h4 class="text-white font-bold text-xs uppercase tracking-widest mb-4">Lembaga</h4>
-                    <p class="text-blue-100 text-sm leading-relaxed opacity-90">
-                        Pusat Penjaminan Mutu Internal (LP3M) Politeknik Jambi.
-                    </p>
-                </div>
-                <div class="h-[1px] w-full bg-white/10"></div>
-                <div class="flex flex-col gap-2">
-                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-tighter">Verified Content</span>
-                    <span class="text-white/60 text-xs italic">Tahun Akademik 2025/2026</span>
-                </div>
-            </div>
-
-            <!-- MAIN CONTENT CARD (GLASS DARK MODE) -->
-            <div class="lg:col-span-9 relative">
-                <!-- bg-slate-900/80 untuk memastikan teks sangat jelas -->
-                <div class="bg-slate-900/80 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] p-12 md:p-24 relative overflow-hidden border border-white/20">
+            <!-- MAIN CONTENT (2/3) -->
+            <div class="lg:col-span-2">
+                <!-- HEADER -->
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 font-serif-luxury leading-tight">
+                    {{ $profil->judul }}
+                </h1>
+                
+                <!-- META TAGS -->
+                <div class="flex items-center gap-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-8 border-b border-white/10 pb-4">
+                    <span>Admin</span> <span class="text-white/20">•</span>
+                    <span>Profil</span> <span class="text-white/20">•</span>
+                    <span>{{ $profil->created_at ? $profil->created_at->format('d F Y') : '04 February 2023' }}</span> <span class="text-white/20">•</span>
+                    <span>Hits: {{ $profil->hits ?? 1469 }}</span>
                     
-                    <!-- Decorative Light Effect -->
-                    <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
-
-                    <article class="custom-prose relative z-10">
-                        @if(isset($profil->isi_konten) && !empty($profil->isi_konten))
-                            {!! $profil->isi_konten !!}
-                        @else
-                            <div class="text-center py-10">
-                                <p class="text-slate-500 italic">Konten belum tersedia.</p>
-                            </div>
-                        @endif
-                    </article>
-
+                    <!-- Social Icons (Align Right in Meta row) -->
+                    <div class="ml-auto flex gap-3">
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition"><i class="fab fa-facebook-f text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white transition"><i class="fab fa-twitter text-xs"></i></a>
+                    </div>
                 </div>
 
-                <div class="mt-8 text-center lg:text-right">
-                    <p class="text-white/30 text-[10px] uppercase tracking-[0.3em] font-medium">
-                        LPM Politeknik Jambi &copy; {{ date('Y') }}
-                    </p>
+                <!-- ARTICLE CONTENT -->
+                <article class="custom-prose text-slate-300 leading-relaxed mb-12">
+                    @if(isset($profil->isi_konten) && !empty($profil->isi_konten))
+                        {!! $profil->isi_konten !!}
+                    @else
+                        <p class="italic text-slate-500">Content sedang diproses, silahkan kunjungi beberapa saat lagi...</p>
+                    @endif
+                </article>
+
+                <!-- PREV / NEXT BUTTONS -->
+                <div class="flex gap-2 mb-12 border-b border-white/10 pb-12">
+                    <button class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                        <i class="fas fa-chevron-left text-[10px]"></i> Prev
+                    </button>
+                    <button class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                        Next <i class="fas fa-chevron-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <!-- ARTIKEL LAINNYA -->
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-6">Artikel Lainnya</h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Card 1 -->
+                        <div class="bg-slate-800/40 border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
+                            <h4 class="text-white font-bold mb-4 line-clamp-2 hover:text-blue-400 cursor-pointer transition">Sasaran Mutu Politeknik Jambi</h4>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+                                Admin <span class="text-white/20 mx-1">•</span> 03 February 2023
+                            </div>
+                        </div>
+                        <!-- Card 2 -->
+                        <div class="bg-slate-800/40 border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
+                            <h4 class="text-white font-bold mb-4 line-clamp-2 hover:text-blue-400 cursor-pointer transition">Kebijakan Mutu Politeknik Jambi</h4>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+                                Admin <span class="text-white/20 mx-1">•</span> 03 February 2023
+                            </div>
+                        </div>
+                        <!-- Card 3 -->
+                        <div class="bg-slate-800/40 border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
+                            <h4 class="text-white font-bold mb-4 line-clamp-2 hover:text-blue-400 cursor-pointer transition">Moto Dan Janji Layanan</h4>
+                            <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+                                Admin <span class="text-white/20 mx-1">•</span> 03 February 2023
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SIDEBAR (1/3) -->
+            <div class="space-y-8">
+                <!-- Search -->
+                <div class="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/10 p-6">
+                    <form action="{{ route('artikel.index') }}" method="GET" class="relative">
+                        <input type="text" name="search" placeholder="Search ..." class="w-full bg-slate-700/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition">
+                            <i class="fas fa-search text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Sering Dibaca -->
+                <div class="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/10 p-6">
+                    <h4 class="text-white font-bold text-lg mb-6 pb-4 border-b border-white/10">Sering Dibaca</h4>
+                    <div class="space-y-4">
+                        <a href="{{ route('kuesioner.mahasiswa') }}" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">Kuisioner Mahasiswa</a>
+                        <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">Visi Dan Misi</a>
+                        <a href="#" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">PPM STIKES Baiturrahim Jambi melakukan Kegiatan Studi Banding</a>
+                        <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">e-spmiPoljam</a>
+                        <a href="{{ route('spmi.show', 'rtm') }}" class="block text-slate-400 hover:text-blue-400 transition text-sm">RTM</a>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -79,52 +120,25 @@
 <style>
     /* CSS UNTUK MEMASTIKAN TULISAN JELAS */
     .custom-prose {
-        @apply leading-[2.2] text-lg font-normal;
-        color: #f1f5f9 !important; /* Warna Slate-100 */
-        text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Bayangan halus agar teks 'keluar' */
+        @apply font-normal text-base md:text-lg;
+    }
+    
+    .custom-prose p {
+        @apply mb-4;
     }
 
-    /* Paksa semua elemen teks di dalam konten agar berwarna terang */
-    .custom-prose p, 
-    .custom-prose span, 
-    .custom-prose div,
-    .custom-prose li {
-        color: #f1f5f9 !important;
-        @apply mb-6;
-    }
-
-    /* Styling Judul Sub-Konten (MISI, VISI, dll) */
     .custom-prose strong, 
     .custom-prose b {
-        @apply block text-blue-400 font-black tracking-widest text-sm uppercase mt-12 mb-4 first:mt-0;
-        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-    }
-
-    /* Judul Utama di dalam Konten */
-    .custom-prose h3 {
-        @apply text-3xl font-serif-luxury text-white mb-8 border-l-8 border-blue-500 pl-8 font-bold;
+        @apply font-bold text-white;
     }
 
     /* Styling List Bullets */
     .custom-prose ul {
-        @apply space-y-4 my-8 list-none;
+        @apply space-y-2 my-4 list-disc pl-5;
     }
     
-    .custom-prose li {
-        @apply pl-8 relative text-slate-200;
-    }
-
-    .custom-prose li::before {
-        content: "→";
-        @apply absolute left-0 text-blue-400 font-bold;
-    }
-
-    @keyframes fade-in {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-        animation: fade-in 1s ease-out forwards;
+    .custom-prose ol {
+        @apply space-y-2 my-4 list-decimal pl-5;
     }
 
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
