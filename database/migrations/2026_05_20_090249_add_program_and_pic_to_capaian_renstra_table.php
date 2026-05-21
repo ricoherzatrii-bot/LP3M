@@ -6,20 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('capaian_renstra', function (Blueprint $table) {
-            $table->string('program')->nullable();
-            $table->string('pic')->nullable();
+            if (!Schema::hasColumn('capaian_renstra', 'program')) {
+                $table->string('program')->nullable();
+            }
+            if (!Schema::hasColumn('capaian_renstra', 'pic')) {
+                $table->string('pic')->nullable();
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('capaian_renstra', function (Blueprint $table) {

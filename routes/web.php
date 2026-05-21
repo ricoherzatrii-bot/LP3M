@@ -13,9 +13,18 @@ use App\Http\Controllers\ProfilController;
 // Mengarah ke halaman depan dulu
 Route::get('/', function () {
     $allProfil = \App\Models\Profil::all();
-    $sliderItems = \App\Models\Profil::latest()->take(5)->get();
-    return view('welcome', compact('allProfil', 'sliderItems'));
+    $sliderItems = \App\Models\Artikel::latest()->take(5)->get();
+    $beritaList = \App\Models\Artikel::latest()->paginate(6);
+    return view('welcome', compact('allProfil', 'sliderItems', 'beritaList'));
 })->name('home');
+
+// --- HALAMAN DETAIL BERITA ---
+Route::get('/berita/{slug}', function ($slug) {
+    $allProfil = \App\Models\Profil::all();
+    $berita = \App\Models\Artikel::where('slug', $slug)->firstOrFail();
+    $recentBerita = \App\Models\Artikel::where('id', '!=', $berita->id)->latest()->take(5)->get();
+    return view('pages.berita.show', compact('allProfil', 'berita', 'recentBerita'));
+})->name('berita.show');
 
 // --- HALAMAN ARTIKEL ---
 Route::get('/artikel', [ProfilController::class, 'artikelIndex'])->name('artikel.index');
@@ -109,5 +118,22 @@ Route::delete('/admin/galeri-video/{id}', [\App\Http\Controllers\GaleriControlle
 // --- SISTEM MANAJEMEN CAPAIAN RENSTRA ---
 // ============================================
 Route::get('/admin/renstra', [\App\Http\Controllers\RenstraController::class, 'index'])->name('admin.renstra.index');
+Route::post('/admin/renstra/store', [\App\Http\Controllers\RenstraController::class, 'store'])->name('admin.renstra.store');
+Route::post('/admin/renstra/{id}/update', [\App\Http\Controllers\RenstraController::class, 'update'])->name('admin.renstra.update');
+Route::delete('/admin/renstra/delete/{id}', [\App\Http\Controllers\RenstraController::class, 'destroy'])->name('admin.renstra.destroy');
 Route::post('/admin/renstra/import', [\App\Http\Controllers\RenstraController::class, 'import'])->name('admin.renstra.import');
 Route::delete('/admin/renstra/truncate', [\App\Http\Controllers\RenstraController::class, 'truncate'])->name('admin.renstra.truncate');
+Route::get('/admin/renstra/template', [\App\Http\Controllers\RenstraController::class, 'downloadTemplate'])->name('admin.renstra.template');
+Route::get('/api/renstra/indicator-stats', [\App\Http\Controllers\RenstraController::class, 'getIndicatorStats'])->name('renstra.indicator_stats');
+Route::post('/api/renstra/bulk-update', [\App\Http\Controllers\RenstraController::class, 'bulkUpdate'])->name('renstra.bulk_update');
+
+// ============================================
+// --- SISTEM MANAJEMEN PERTANYAAN KUESIONER ---
+// ============================================
+Route::get('/admin/kuesioner/{id}/pertanyaan', [\App\Http\Controllers\KuesionerPertanyaanController::class, 'index'])->name('admin.kuesioner.pertanyaan.index');
+Route::post('/admin/kuesioner/pertanyaan', [\App\Http\Controllers\KuesionerPertanyaanController::class, 'store'])->name('admin.kuesioner.pertanyaan.store');
+Route::post('/admin/kuesioner/pertanyaan/{id}/update', [\App\Http\Controllers\KuesionerPertanyaanController::class, 'update'])->name('admin.kuesioner.pertanyaan.update');
+Route::delete('/admin/kuesioner/pertanyaan/{id}', [\App\Http\Controllers\KuesionerPertanyaanController::class, 'destroy'])->name('admin.kuesioner.pertanyaan.destroy');
+
+// Public: Submit Kuesioner Response
+Route::post('/kuesioner/submit', [\App\Http\Controllers\KuesionerPertanyaanController::class, 'submitResponse'])->name('kuesioner.submit');

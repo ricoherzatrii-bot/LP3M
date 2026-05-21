@@ -170,6 +170,7 @@
                         <a onclick="loadPage('Struktur Organisasi')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-sitemap opacity-40 text-[10px] w-3"></i> <span>Struktur Organisasi</span></a>
                         <a onclick="loadPage('Job Deskripsi')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-user-tag opacity-40 text-[10px] w-3"></i> <span>Job Deskripsi</span></a>
                         <a onclick="loadPage('Standar Waktu Pelayanan')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-clock opacity-40 text-[10px] w-3"></i> <span>Standar Waktu Pelayanan</span></a>
+                        <a onclick="loadPage('Artikel Ilmiah')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-newspaper opacity-40 text-[10px] w-3"></i> <span>Artikel / Berita</span></a>
                     </div>
                 </div>
 
@@ -243,24 +244,6 @@
                     </div>
                 </div>
 
-                <!-- Modul Portal Berita -->
-                <div class="mb-1">
-                    <button onclick="toggleMenu('menuBerita')" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-bullhorn text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Portal Berita</span>
-                        </div>
-                        <i id="icon-menuBerita" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
-                    </button>
-                    <div id="menuBerita" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <a onclick="loadPage('Daftar Berita')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-list opacity-40 text-[10px] w-3"></i> <span>Daftar Berita</span></a>
-                        <a onclick="loadPage('Tambah Berita')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-plus-circle opacity-40 text-[10px] w-3"></i> <span>Tulis Berita Baru</span></a>
-                        <a onclick="loadPage('Kategori Berita')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-tags opacity-40 text-[10px] w-3"></i> <span>Kategori Berita</span></a>
-                    </div>
-                </div>
-
                 <!-- Modul Galeri -->
                 <div class="mb-1">
                     <button onclick="toggleMenu('menuGaleri')" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
@@ -277,14 +260,6 @@
                         <a onclick="loadGaleriVideoPanel()" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-video opacity-40 text-[10px] w-3"></i> <span>Galeri Video</span></a>
                     </div>
                 </div>
-
-                <!-- Artikel Ilmiah -->
-                <a onclick="loadPage('Artikel Ilmiah')" class="sidebar-item flex items-center space-x-4 py-3.5 px-4 rounded-2xl text-white font-bold group mt-1 hover:bg-white/10 cursor-pointer">
-                    <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                        <i class="fas fa-newspaper text-sm"></i>
-                    </div>
-                    <span class="text-[13px] font-semibold tracking-wide">Artikel Ilmiah</span>
-                </a>
 
             </nav>
 
@@ -1008,10 +983,12 @@
                                         cellsHtml += `<td class="px-10 py-8 leading-relaxed font-semibold text-slate-700 text-sm">${displayVal}</td>`;
                                     });
 
-                                    cellsHtml += `
+                                     cellsHtml += `
                                     <td class="px-10 py-8">
                                         <div class="flex justify-end space-x-2">
                                             <button onclick="openModalEdit(${item.id})" class="text-slate-400 hover:text-blue-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Edit"><i class="fas fa-pen text-sm"></i></button>
+                                            ${(currentTitle.includes('Kuesioner') || currentTitle.includes('Kuisioner')) ? 
+                                                `<button onclick="openManageQuestions(${item.id}, '${item.judul}')" class="text-slate-400 hover:text-emerald-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Kelola Pertanyaan"><i class="fas fa-question text-sm"></i></button>` : ''}
                                             <button onclick="confirmDelete(${item.id}, this)" class="text-slate-400 hover:text-rose-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Hapus"><i class="fas fa-trash text-sm"></i></button>
                                         </div>
                                     </td>
@@ -1145,6 +1122,8 @@
             setTimeout(() => modal.classList.remove('scale-95'), 10);
         }
 
+
+
         function generateFormFields(containerId, fields, values = {}) {
             const container = document.getElementById(containerId);
             container.innerHTML = "";
@@ -1152,9 +1131,20 @@
                 const labelText = field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 const val = values[field] || "";
                 const isTextArea = ['isi_konten', 'deskripsi', 'konten'].includes(field);
+                const isImageField = field.toLowerCase().includes('gambar') || 
+                                   field.toLowerCase().includes('foto') || 
+                                   field.toLowerCase().includes('file');
                 
                 let inputHtml = "";
-                if (isTextArea) {
+                if (isImageField) {
+                    // Show current image preview if exists
+                    const previewHtml = val ? `<div class="mb-3"><img src="/storage/${val}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">Gambar saat ini</p></div>` : '';
+                    inputHtml = `
+                        ${previewHtml}
+                        <input type="file" id="field-${containerId}-${field}" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:tracking-widest file:shadow-lg transition-all cursor-pointer">
+                        <p class="text-[10px] text-slate-400 mt-2 font-medium">Format: JPG, PNG, WEBP. Max: 2MB</p>
+                    `;
+                } else if (isTextArea) {
                     inputHtml = `<textarea id="field-${containerId}-${field}" rows="5" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner leading-relaxed">${val}</textarea>`;
                 } else {
                     inputHtml = `<input type="text" id="field-${containerId}-${field}" value="${val}" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner">`;
@@ -1170,22 +1160,36 @@
         }
 
         function saveData() {
-            const payload = {
-                title: currentTitle,
-                id: currentEditId
-            };
+            // Check if we are in Renstra context (renstra_id element exists)
+            if (document.getElementById('renstra_id')) {
+                submitRenstra(true);
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('title', currentTitle);
+            fd.append('id', currentEditId);
+
+            const isImageField = (f) => f.toLowerCase().includes('gambar') || f.toLowerCase().includes('foto') || f.toLowerCase().includes('file');
 
             loadedFields.forEach(field => {
-                payload[field] = document.getElementById(`field-edit-fields-container-${field}`).value;
+                const el = document.getElementById(`field-edit-fields-container-${field}`);
+                if (isImageField(field)) {
+                    if (el.files && el.files[0]) {
+                        fd.append(field, el.files[0]);
+                    }
+                    // If no new file selected, don't send — server keeps existing
+                } else {
+                    fd.append(field, el.value);
+                }
             });
 
             fetch('/admin/save-page-data', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify(payload)
+                body: fd
             })
             .then(r => r.json())
             .then(res => {
@@ -1203,17 +1207,31 @@
         }
 
         function addNewData() {
-            const payload = {
-                title: currentTitle
-            };
+            // Check if we are in Renstra context
+            if (document.getElementById('renstra_id')) {
+                submitRenstra(false);
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('title', currentTitle);
 
             let hasEmpty = false;
+            const isImageField = (f) => f.toLowerCase().includes('gambar') || f.toLowerCase().includes('foto') || f.toLowerCase().includes('file');
+
             loadedFields.forEach(field => {
                 const el = document.getElementById(`field-add-fields-container-${field}`);
-                if (el.value.trim() === "") {
-                    hasEmpty = true;
+                if (isImageField(field)) {
+                    if (el.files && el.files[0]) {
+                        fd.append(field, el.files[0]);
+                    }
+                    // Image fields are optional — don't flag as empty
+                } else {
+                    if (el.value.trim() === "") {
+                        hasEmpty = true;
+                    }
+                    fd.append(field, el.value);
                 }
-                payload[field] = el.value;
             });
 
             if (hasEmpty) {
@@ -1224,10 +1242,9 @@
             fetch('/admin/add-row', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify(payload)
+                body: fd
             })
             .then(r => r.json())
             .then(res => {
@@ -1309,7 +1326,12 @@
                             <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Capaian Kinerja</p>
                         </div>
                         <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Capaian Renstra</h2>
-                        <p class="text-slate-500 text-sm mt-2">Impor data Renstra dari Excel untuk visualisasi grafik di halaman publik.</p>
+                        <div class="flex items-center gap-3 mt-2">
+                             <p class="text-slate-500 text-sm">Kelola data Renstra secara mendetail melalui tabel di bawah atau melalui Impor Excel.</p>
+                             <button onclick="openRenstraModal()" class="ml-4 bg-blue-600 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center gap-2">
+                                <i class="fas fa-plus"></i> Tambah Data
+                             </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1326,6 +1348,9 @@
                             <button type="submit" id="renstraImportBtn" class="w-full bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-3">
                                 <i class="fas fa-file-import"></i> Mulai Impor
                             </button>
+                            <a href="/admin/renstra/template" class="w-full bg-blue-50 text-blue-600 border border-blue-100 font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-blue-100 transition-all flex items-center justify-center gap-3">
+                                <i class="fas fa-download"></i> Download Template
+                            </a>
                             <button type="button" onclick="truncateRenstra()" class="w-full bg-rose-50 text-rose-600 border border-rose-100 font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-rose-100 transition-all flex items-center justify-center gap-3">
                                 <i class="fas fa-trash-alt"></i> Kosongkan Data
                             </button>
@@ -1360,6 +1385,7 @@
                                         <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Tahun</th>
                                         <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Target</th>
                                         <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Realisasi</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="renstra-tbody" class="divide-y divide-slate-50">
@@ -1391,6 +1417,12 @@
                                 <td class="px-8 py-4 text-xs font-black text-slate-800 text-center">${item.tahun}</td>
                                 <td class="px-8 py-4 text-xs font-bold text-slate-500 text-center">${item.target}%</td>
                                 <td class="px-8 py-4 text-xs font-bold text-emerald-600 text-center">${item.realisasi}%</td>
+                                <td class="px-8 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button onclick='openRenstraModal(${JSON.stringify(item)})' class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all border border-blue-100"><i class="fas fa-edit text-[10px]"></i></button>
+                                        <button onclick="deleteRenstra(${item.id})" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white flex items-center justify-center transition-all border border-rose-100"><i class="fas fa-trash text-[10px]"></i></button>
+                                    </div>
+                                </td>
                             </tr>
                         `).join('');
                     } else {
@@ -1425,13 +1457,118 @@
                     document.getElementById('renstra_file').value = '';
                     fetchRenstraList();
                 } else {
-                    showToast(res.message, 'warning');
+                    showToast(res.message || 'Gagal mengimpor data.', 'warning');
                 }
             })
             .catch(err => {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
-                showToast('Terjadi kesalahan saat mengimpor data.', 'warning');
+                console.error(err);
+                showToast('Terjadi kesalahan koneksi atau server saat mengimpor.', 'warning');
+            });
+        }
+
+        function openRenstraModal(item = null) {
+            const overlay = document.getElementById('modalOverlay');
+            const modal   = item ? document.getElementById('modalEdit') : document.getElementById('modalTambah');
+            const container = item ? document.getElementById('edit-fields-container') : document.getElementById('add-fields-container');
+            
+            // Sembunyikan modal yang tidak relevan
+            document.getElementById('modalEdit').classList.add('hidden');
+            document.getElementById('modalTambah').classList.add('hidden');
+            
+            modal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'auto';
+            setTimeout(() => modal.classList.remove('scale-95'), 10);
+
+            let fieldsHtml = `
+                <input type="hidden" id="renstra_id" value="${item ? item.id : ''}">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Program / Kelompok</label>
+                    <input type="text" id="renstra_program" value="${item ? item.program || '' : ''}" placeholder="Contoh: R 1: Kesiapan Kerja Lulusan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Indikator Kinerja</label>
+                    <textarea id="renstra_indikator" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">${item ? item.indikator : ''}</textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">PIC</label>
+                        <input type="text" id="renstra_pic" value="${item ? item.pic || '' : ''}" placeholder="WD 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tahun (YYYY)</label>
+                        <input type="number" id="renstra_tahun" value="${item ? item.tahun : new Date().getFullYear()}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Target (%)</label>
+                        <input type="number" step="0.01" id="renstra_target" value="${item ? item.target : 0}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Realisasi (%)</label>
+                        <input type="number" step="0.01" id="renstra_realisasi" value="${item ? item.realisasi : 0}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+            `;
+            container.innerHTML = fieldsHtml;
+        }
+
+        // Renstra-specific overrides removed — saveData/addNewData now detect
+        // Renstra context automatically via the renstra_id element check.
+
+        function submitRenstra(isEdit = false) {
+            const id = document.getElementById('renstra_id').value;
+            const data = {
+                program:   document.getElementById('renstra_program').value,
+                indikator: document.getElementById('renstra_indikator').value,
+                pic:       document.getElementById('renstra_pic').value,
+                tahun:     document.getElementById('renstra_tahun').value,
+                target:    document.getElementById('renstra_target').value,
+                realisasi: document.getElementById('renstra_realisasi').value,
+                _token:    '{{ csrf_token() }}'
+            };
+
+            const url = isEdit ? `/admin/renstra/${id}/update` : '/admin/renstra/store';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    closeModal();
+                    fetchRenstraList();
+                } else {
+                    showToast(res.message || 'Gagal menyimpan data.', 'warning');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Terjadi kesalahan sistem.', 'warning');
+            });
+        }
+
+        function deleteRenstra(id) {
+            if (!confirm('Hapus data Renstra ini?')) return;
+            fetch(`/admin/renstra/delete/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    fetchRenstraList();
+                } else {
+                    showToast(res.message || 'Gagal menghapus data.', 'warning');
+                }
             });
         }
 
@@ -2434,6 +2571,147 @@
                 showToast('Url video tidak valid atau video tidak ditemukan.', 'warning');
             }
         }
+
+        // ================================================================
+        // KUESIONER — Manajemen Pertanyaan
+        // ================================================================
+        let currentKuesionerId = null;
+
+        function openManageQuestions(id, name) {
+            currentKuesionerId = id;
+            document.getElementById('mq_kuesioner_name').innerText = name;
+            
+            fetchQuestions(id);
+            
+            const overlay = document.getElementById('modalOverlay');
+            const modal = document.getElementById('manageQuestionsModal');
+            
+            overlay.classList.remove('hidden');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.remove('scale-95', 'opacity-0');
+                modal.style.opacity = '1';
+            }, 10);
+        }
+
+        function closeManageQuestionsModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const modal = document.getElementById('manageQuestionsModal');
+            
+            modal.classList.add('scale-95', 'opacity-0');
+            modal.style.opacity = '0';
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function fetchQuestions(kuesionerId) {
+            const list = document.getElementById('mq_questions_list');
+            list.innerHTML = `<tr><td colspan="4" class="px-6 py-12 text-center text-slate-400 font-bold">Memuat pertanyaan...</td></tr>`;
+
+            fetch(`/admin/kuesioner/${kuesionerId}/pertanyaan`)
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success && res.data.length > 0) {
+                        list.innerHTML = "";
+                        res.data.forEach(q => {
+                            list.innerHTML += `
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-6 py-4 font-bold text-slate-400">${q.urutan}</td>
+                                    <td class="px-6 py-4 font-semibold text-slate-700">${q.pertanyaan}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${q.tipe_jawaban == 'skala_likert' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'}">
+                                            ${q.tipe_jawaban.replace('_', ' ')}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button onclick="deleteQuestion(${q.id})" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-rose-500 hover:bg-rose-50 flex items-center justify-center transition-all shadow-sm">
+                                            <i class="fas fa-trash-alt text-xs"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        list.innerHTML = `<tr><td colspan="4" class="px-6 py-12 text-center text-slate-400 font-bold italic text-xs">Belum ada pertanyaan. Silakan tambahkan di atas.</td></tr>`;
+                    }
+                })
+                .catch(err => {
+                    showToast('Gagal memuat daftar pertanyaan.', 'warning');
+                });
+        }
+
+        function submitAddQuestion() {
+            const pertanyaan = document.getElementById('mq_pertanyaan').value;
+            const tipe = document.getElementById('mq_tipe').value;
+            const urutan = document.getElementById('mq_urutan').value;
+            const opsi = document.getElementById('mq_opsi').value;
+
+            if (!pertanyaan) {
+                showToast('Teks pertanyaan wajib diisi.', 'warning');
+                return;
+            }
+
+            fetch('/admin/kuesioner/pertanyaan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    kuesioner_id: currentKuesionerId,
+                    pertanyaan: pertanyaan,
+                    tipe_jawaban: tipe,
+                    opsi_jawaban: opsi,
+                    urutan: urutan
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    document.getElementById('mq_pertanyaan').value = "";
+                    document.getElementById('mq_opsi').value = "";
+                    fetchQuestions(currentKuesionerId);
+                } else {
+                    showToast(res.message, 'warning');
+                }
+            })
+            .catch(err => {
+                showToast('Gagal menambahkan pertanyaan.', 'warning');
+            });
+        }
+
+        function deleteQuestion(id) {
+            if (confirm("Hapus pertanyaan ini?")) {
+                fetch(`/admin/kuesioner/pertanyaan/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        showToast(res.message, 'success');
+                        fetchQuestions(currentKuesionerId);
+                    }
+                });
+            }
+        }
+
+        document.getElementById('mq_tipe')?.addEventListener('change', function() {
+            const container = document.getElementById('mq_opsi_container');
+            if (this.value === 'pilihan_ganda') {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        });
     </script>
 
     <!-- EDIT ALBUM MODAL -->
@@ -2539,6 +2817,75 @@
                 </div>
             </div>
         </div>
+    <!-- MANAGE QUESTIONS MODAL -->
+    <div id="manageQuestionsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="manageQuestionsModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl overflow-hidden scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]">
+            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Kelola Pertanyaan Kuesioner</h3>
+                    <p id="mq_kuesioner_name" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">Nama Kuesioner</p>
+                </div>
+                <button onclick="closeManageQuestionsModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="p-10 overflow-y-auto custom-scrollbar flex-grow">
+                <!-- Add Question Form -->
+                <div class="mb-10 p-8 rounded-3xl border border-slate-200 bg-slate-50/50">
+                    <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6">Tambah Pertanyaan Baru</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Teks Pertanyaan</label>
+                            <input type="text" id="mq_pertanyaan" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tipe Jawaban</label>
+                            <select id="mq_tipe" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white cursor-pointer">
+                                <option value="skala_likert">Skala Likert (1-5)</option>
+                                <option value="teks">Jawaban Teks</option>
+                                <option value="pilihan_ganda">Pilihan Ganda</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Urutan (Angka)</label>
+                            <input type="number" id="mq_urutan" value="0" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white">
+                        </div>
+                        <div id="mq_opsi_container" class="md:col-span-2 hidden">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Opsi Jawaban (Pisahkan dengan koma)</label>
+                            <input type="text" id="mq_opsi" placeholder="Sangat Baik, Baik, Cukup, Kurang" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white">
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="submitAddQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[10px] px-8 py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95">
+                            <i class="fas fa-plus mr-2"></i> Tambahkan Pertanyaan
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daftar Pertanyaan Aktif</h4>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50">
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100">Urutan</th>
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100">Pertanyaan</th>
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100">Tipe</th>
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mq_questions_list" class="divide-y divide-slate-100">
+                            <!-- Questions will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 </body>
 </html>

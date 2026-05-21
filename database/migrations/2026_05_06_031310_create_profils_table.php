@@ -8,12 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('profils', function (Blueprint $table) {
-            $table->id();
-            $table->string('judul')->nullable();
-            $table->text('isi')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('profils')) {
+            Schema::create('profils', function (Blueprint $table) {
+                $table->id();
+                $table->string('judul')->nullable();
+                $table->text('isi')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

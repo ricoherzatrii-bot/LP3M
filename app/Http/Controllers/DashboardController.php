@@ -156,7 +156,7 @@ class DashboardController extends Controller
                 'type' => 'table',
                 'model' => Artikel::class,
                 'query' => [],
-                'fields' => ['judul', 'kategori', 'isi_konten', 'penulis'],
+                'fields' => ['judul', 'kategori', 'isi_konten', 'gambar_fitur', 'penulis'],
                 'defaults' => [],
             ];
         }
@@ -232,6 +232,15 @@ class DashboardController extends Controller
     }
 
     /**
+     * Check if a field is an image field based on its name
+     */
+    private function isImageField($field)
+    {
+        $f = strtolower($field);
+        return str_contains($f, 'gambar') || str_contains($f, 'foto') || str_contains($f, 'file');
+    }
+
+    /**
      * Menyimpan pembaruan data (Single content editor atau Edit record)
      */
     public function savePageData(Request $request)
@@ -265,7 +274,25 @@ class DashboardController extends Controller
                 return response()->json(['success' => false, 'message' => 'Record tidak ditemukan']);
             }
 
-            $updateData = $request->except(['title', 'id']);
+            $updateData = $request->except(['title', 'id', '_token']);
+
+            // Handle file uploads for image fields
+            foreach ($updateData as $key => $value) {
+                if ($this->isImageField($key)) {
+                    if ($request->hasFile($key)) {
+                        $request->validate([$key => 'image|mimes:jpg,jpeg,png,webp|max:2048']);
+                        // Delete old file if exists
+                        if ($record->$key && \Storage::disk('public')->exists($record->$key)) {
+                            \Storage::disk('public')->delete($record->$key);
+                        }
+                        $updateData[$key] = $request->file($key)->store('artikel', 'public');
+                    } else {
+                        // If it's an image field but no file uploaded, don't overwrite with empty
+                        // Unless the field is explicitly sent as empty (not handled by FormData if not selected)
+                        unset($updateData[$key]);
+                    }
+                }
+            }
             
             // Tambahkan auto-slug jika ada judul
             if (isset($updateData['judul'])) {
@@ -293,7 +320,19 @@ class DashboardController extends Controller
         }
 
         $modelClass = $mapping['model'];
-        $insertData = $request->except('title');
+        $insertData = $request->except(['title', '_token']);
+
+        // Handle file uploads for image fields
+        foreach ($insertData as $key => $value) {
+            if ($this->isImageField($key)) {
+                if ($request->hasFile($key)) {
+                    $request->validate([$key => 'image|mimes:jpg,jpeg,png,webp|max:2048']);
+                    $insertData[$key] = $request->file($key)->store('artikel', 'public');
+                } else {
+                    unset($insertData[$key]);
+                }
+            }
+        }
 
         // Gabungkan dengan query filter (agar kategori sesuai otomatis) dan default values
         $finalData = array_merge($mapping['query'], $mapping['defaults'], $insertData);
@@ -303,6 +342,9 @@ class DashboardController extends Controller
             $finalData['slug'] = Str::slug($finalData['judul']);
         } elseif (isset($finalData['nama_album'])) {
             $finalData['slug'] = Str::slug($finalData['nama_album']);
+        } else {
+            // Fallback for missing title when generating slug
+            $finalData['slug'] = 'post-' . time() . '-' . rand(100, 999);
         }
 
         $record = $modelClass::create($finalData);

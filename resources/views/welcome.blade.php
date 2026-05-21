@@ -146,21 +146,31 @@
 <!-- BERITA & ARTIKEL SECTION -->
 <section class="py-24 bg-[#f8f9fa] dark:bg-slate-950 relative overflow-hidden transition-colors duration-500">
     <div class="absolute bottom-0 left-0 w-96 h-96 bg-[#0056b3] rounded-full blur-[150px] opacity-10"></div>
+    <div class="absolute top-20 right-0 w-64 h-64 bg-yellow-400 rounded-full blur-[120px] opacity-5"></div>
     <div class="relative z-10 w-full px-6 lg:px-16">
         <div class="max-w-7xl mx-auto space-y-12">
-            <!-- NEWS SLIDER (TOP - FULL WIDTH) -->
+
+            <!-- FEATURED NEWS SLIDER (TOP - FULL WIDTH) -->
+            @if($sliderItems->count() > 0)
             <div id="news-slider" class="relative bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 w-full group">
                 <div id="slider-wrapper" class="relative h-72 md:h-[450px] w-full">
                     @foreach($sliderItems as $index => $item)
-                        <a href="{{ route('profil.show', $item->slug) }}" class="slider-item absolute inset-0 opacity-0 transition-all duration-1000 z-0 {{ $index == 0 ? 'opacity-100 z-10' : '' }}" data-index="{{ $index }}">
+                        <a href="{{ route('berita.show', $item->slug) }}" class="slider-item absolute inset-0 opacity-0 transition-all duration-1000 z-0 {{ $index == 0 ? 'opacity-100 z-10' : '' }}" data-index="{{ $index }}">
                             <div class="relative h-full w-full overflow-hidden">
-                                <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">
+                                @if($item->gambar_fitur)
+                                    <img src="{{ asset('storage/' . $item->gambar_fitur) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                @else
+                                    <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">
+                                @endif
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
                                 <div class="absolute bottom-0 left-0 right-0 p-8 pb-14 md:p-12 md:pb-20">
                                     <span class="inline-block px-3 py-1 bg-yellow-400 text-[#0056b3] text-[9px] font-black uppercase tracking-widest rounded-full mb-4 shadow-md">Berita Utama</span>
                                     <h3 class="text-white text-3xl md:text-5xl font-bold leading-tight group-hover:text-yellow-400 transition max-w-4xl">{{ $item->judul }}</h3>
-                                    <p class="text-slate-200 text-sm mt-4 line-clamp-2 max-w-3xl opacity-80">
-                                        {!! strip_tags($item->isi_konten) !!}
+                                    <div class="flex items-center gap-4 mt-4">
+                                        <span class="text-slate-300 text-xs flex items-center gap-2"><i class="far fa-calendar-alt"></i> {{ $item->created_at ? $item->created_at->translatedFormat('d F Y') : '-' }}</span>
+                                    </div>
+                                    <p class="text-slate-200 text-sm mt-3 line-clamp-2 max-w-3xl opacity-80">
+                                        {!! Str::limit(strip_tags($item->isi_konten), 200) !!}
                                     </p>
                                 </div>
                             </div>
@@ -183,92 +193,163 @@
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
+            @endif
 
             <div class="flex flex-col lg:flex-row gap-12">
-                <!-- MAIN CONTENT (LEFT) -->
-                <div class="lg:w-2/3 space-y-10">
-                    <!-- 2 Column Grid Articles -->
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <!-- Article 1 -->
-                        <a href="{{ route('artikel.kategori', 'berita') }}" class="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-[#0056b3] transition-all duration-500 shadow-sm hover:shadow-lg">
-                            <div class="h-52 overflow-hidden relative">
-                                <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Berita">
-                            </div>
-                            <div class="p-6">
-                                <h4 class="text-slate-800 dark:text-white font-bold mb-3 leading-tight group-hover:text-[#0056b3] transition">Lokakarya Audit Mutu Internal Politeknik Jambi</h4>
-                                <div class="flex items-center gap-3 text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mb-3">
-                                    <span>Admin</span> <span class="text-slate-300 dark:text-slate-700">•</span>
-                                    <span>Berita</span> <span class="text-slate-300 dark:text-slate-700">•</span>
-                                    <span>07 Feb 2023</span>
-                                </div>
-                                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Pada Jumat 13 Maret 2020 dan Sabtu 14 Maret 2020, Lembaga Penjaminan Mutu Politeknik Jambi mengadakan Lokakarya AMI...</p>
-                                <span class="inline-flex items-center gap-2 mt-4 text-[#0056b3] text-xs font-bold">Read more ... <i class="fas fa-arrow-right text-[9px]"></i></span>
-                            </div>
-                        </a>
+                <!-- MAIN CONTENT: ALL BERITA LIST (LEFT) -->
+                <div class="lg:w-2/3 space-y-8">
+                    <h3 class="text-slate-900 dark:text-white font-bold text-2xl relative inline-block">
+                        Berita Lainnya
+                        <span class="absolute -bottom-2 left-0 w-16 h-1 bg-yellow-400 rounded-full"></span>
+                    </h3>
 
-                        <!-- Article 2 -->
-                        <a href="{{ route('artikel.kategori', 'berita') }}" class="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-[#0056b3] transition-all duration-500 shadow-sm hover:shadow-lg">
-                            <div class="h-52 overflow-hidden relative">
-                                <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Berita">
-                            </div>
-                            <div class="p-6">
-                                <h4 class="text-slate-800 dark:text-white font-bold mb-3 leading-tight group-hover:text-[#0056b3] transition">Diskusi tentang SPMI Poljam dan STKIP Al Azhar Jambi</h4>
-                                <div class="flex items-center gap-3 text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mb-3">
-                                    <span>Admin</span> <span class="text-slate-300 dark:text-slate-700">•</span>
-                                    <span>Berita</span> <span class="text-slate-300 dark:text-slate-700">•</span>
-                                    <span>07 Feb 2023</span>
+                    @forelse($beritaList as $index => $berita)
+                        @if($index == 0 && $beritaList->currentPage() == 1)
+                        {{-- FEATURED FIRST ARTICLE (Large Card) --}}
+                        <a href="{{ route('berita.show', $berita->slug) }}" class="group block bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-[#0056b3] transition-all duration-500 shadow-sm hover:shadow-xl">
+                            <div class="md:flex">
+                                <div class="md:w-1/2 h-64 md:h-auto overflow-hidden relative">
+                                    @if($berita->gambar_fitur)
+                                        <img src="{{ asset('storage/' . $berita->gambar_fitur) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                    @else
+                                        <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}">
+                                    @endif
+                                    <div class="absolute top-4 left-4">
+                                        <span class="inline-block px-3 py-1 bg-[#0056b3] text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">Terbaru</span>
+                                    </div>
                                 </div>
-                                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">STKIP Al Azhar Jambi melakukan Kegiatan Studi Banding ke Lembaga Perencanaan Pengembangan dan Penjaminan Mutu...</p>
-                                <span class="inline-flex items-center gap-2 mt-4 text-[#0056b3] text-xs font-bold">Read more ... <i class="fas fa-arrow-right text-[9px]"></i></span>
+                                <div class="md:w-1/2 p-8 flex flex-col justify-center">
+                                    <div class="flex items-center gap-3 text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mb-4">
+                                        <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ $berita->created_at ? $berita->created_at->translatedFormat('d F Y, H:i') : '-' }}</span>
+                                    </div>
+                                    <h4 class="text-slate-800 dark:text-white font-bold text-xl mb-4 leading-tight group-hover:text-[#0056b3] transition">{{ $berita->judul }}</h4>
+                                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-4">{!! Str::limit(strip_tags($berita->isi_konten), 250) !!}</p>
+                                    <span class="inline-flex items-center gap-2 mt-6 text-[#0056b3] text-xs font-bold group-hover:gap-3 transition-all">
+                                        Selengkapnya <i class="fas fa-arrow-right text-[9px] group-hover:translate-x-1 transition-transform"></i>
+                                    </span>
+                                </div>
                             </div>
                         </a>
+                        @else
+                        {{-- REGULAR ARTICLE CARDS --}}
+                        <a href="{{ route('berita.show', $berita->slug) }}" class="group flex gap-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-[#0056b3] transition-all duration-500 shadow-sm hover:shadow-lg p-4">
+                            <div class="w-40 h-32 md:w-48 md:h-36 flex-shrink-0 rounded-xl overflow-hidden relative">
+                                @if($berita->gambar_fitur)
+                                    <img src="{{ asset('storage/' . $berita->gambar_fitur) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                @else
+                                    <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}">
+                                @endif
+                            </div>
+                            <div class="flex-1 flex flex-col justify-center py-1">
+                                <div class="flex items-center gap-3 text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mb-2">
+                                    <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ $berita->created_at ? $berita->created_at->translatedFormat('d F Y, H:i') : '-' }}</span>
+                                </div>
+                                <h4 class="text-slate-800 dark:text-white font-bold mb-2 leading-snug group-hover:text-[#0056b3] transition line-clamp-2">{{ $berita->judul }}</h4>
+                                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-2 hidden md:block">{!! Str::limit(strip_tags($berita->isi_konten), 150) !!}</p>
+                                <span class="inline-flex items-center gap-2 mt-3 text-[#0056b3] text-xs font-bold group-hover:gap-3 transition-all">
+                                    Selengkapnya <i class="fas fa-arrow-right text-[9px] group-hover:translate-x-1 transition-transform"></i>
+                                </span>
+                            </div>
+                        </a>
+                        @endif
+                    @empty
+                        <div class="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10">
+                            <div class="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-newspaper text-3xl text-slate-400"></i>
+                            </div>
+                            <h4 class="text-slate-600 dark:text-slate-300 font-bold text-lg mb-2">Belum Ada Berita</h4>
+                            <p class="text-slate-400 text-sm">Berita dan artikel akan ditampilkan di sini</p>
+                        </div>
+                    @endforelse
+
+                    <!-- PAGINATION -->
+                    @if($beritaList->hasPages())
+                    <div class="flex items-center justify-center gap-2 pt-8">
+                        {{-- Previous --}}
+                        @if($beritaList->onFirstPage())
+                            <span class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 cursor-not-allowed">
+                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                            </span>
+                        @else
+                            <a href="{{ $beritaList->previousPageUrl() }}" class="px-4 py-2.5 rounded-xl text-xs font-bold text-[#0056b3] bg-blue-50 dark:bg-blue-900/20 hover:bg-[#0056b3] hover:text-white transition-all duration-300 border border-blue-100 dark:border-blue-800/30">
+                                <i class="fas fa-chevron-left mr-1"></i> Sebelumnya
+                            </a>
+                        @endif
+
+                        {{-- Page Numbers --}}
+                        @foreach($beritaList->getUrlRange(1, $beritaList->lastPage()) as $page => $url)
+                            @if($page == $beritaList->currentPage())
+                                <span class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black bg-[#0056b3] text-white shadow-lg shadow-blue-500/30">{{ $page }}</span>
+                            @else
+                                <a href="{{ $url }}" class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 hover:border-[#0056b3] hover:text-[#0056b3] transition-all duration-300">{{ $page }}</a>
+                            @endif
+                        @endforeach
+
+                        {{-- Next --}}
+                        @if($beritaList->hasMorePages())
+                            <a href="{{ $beritaList->nextPageUrl() }}" class="px-4 py-2.5 rounded-xl text-xs font-bold text-[#0056b3] bg-blue-50 dark:bg-blue-900/20 hover:bg-[#0056b3] hover:text-white transition-all duration-300 border border-blue-100 dark:border-blue-800/30">
+                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                            </a>
+                        @else
+                            <span class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 cursor-not-allowed">
+                                Selanjutnya <i class="fas fa-chevron-right ml-1"></i>
+                            </span>
+                        @endif
+
+                        {{-- Page info --}}
+                        <span class="ml-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ $beritaList->currentPage() }} / {{ $beritaList->lastPage() }}</span>
                     </div>
+                    @endif
                 </div>
 
-            <!-- SIDEBAR (RIGHT) -->
-            <div class="lg:w-1/3 space-y-8">
-                <!-- Sering Dibaca Section -->
-                <div class="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 shadow-sm hover:shadow-xl transition-all duration-500 sticky top-24">
-                    <h4 class="text-slate-900 dark:text-white font-bold text-xl mb-8 relative inline-block">
-                        Sering Dibaca
-                        <span class="absolute -bottom-2 left-0 w-12 h-1 bg-yellow-400 rounded-full"></span>
-                    </h4>
-                    
-                    <div class="space-y-0 divide-y divide-slate-100 dark:divide-white/5">
-                        <a href="{{ route('kuesioner.mahasiswa') }}" class="group block py-4 first:pt-0 last:pb-0">
-                            <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
-                                Kuisioner Mahasiswa
-                                <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
-                            </span>
-                        </a>
-                        <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="group block py-4">
-                            <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
-                                Visi Dan Misi
-                                <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
-                            </span>
-                        </a>
-                        <a href="{{ route('artikel.kategori', 'berita') }}" class="group block py-4">
-                            <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between leading-relaxed">
-                                PPM STIKES Baiturrahim Jambi melakukan Kegiatan Studi Banding ke LP3M Politeknik Jambi
-                                <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
-                            </span>
-                        </a>
-                        <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="group block py-4">
-                            <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
-                                e-spmiPoljam
-                                <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
-                            </span>
-                        </a>
-                        <a href="{{ route('spmi.show', 'rtm') }}" class="group block py-4 last:pb-0">
-                            <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
-                                RTM
-                                <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
-                            </span>
-                        </a>
+                <!-- SIDEBAR (RIGHT) -->
+                <div class="lg:w-1/3 space-y-8">
+                    <!-- Sering Dibaca Section -->
+                    <div class="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 shadow-sm hover:shadow-xl transition-all duration-500 sticky top-24">
+                        <h4 class="text-slate-900 dark:text-white font-bold text-xl mb-8 relative inline-block">
+                            Sering Dibaca
+                            <span class="absolute -bottom-2 left-0 w-12 h-1 bg-yellow-400 rounded-full"></span>
+                        </h4>
+                        
+                        <div class="space-y-0 divide-y divide-slate-100 dark:divide-white/5">
+                            <a href="{{ route('kuesioner.mahasiswa') }}" class="group block py-4 first:pt-0 last:pb-0">
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
+                                    Kuisioner Mahasiswa
+                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                                </span>
+                            </a>
+                            <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="group block py-4">
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
+                                    Visi Dan Misi
+                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                                </span>
+                            </a>
+                            @foreach($beritaList->take(3) as $sideBerita)
+                            <a href="{{ route('berita.show', $sideBerita->slug) }}" class="group block py-4">
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between leading-relaxed">
+                                    {{ Str::limit($sideBerita->judul, 60) }}
+                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0 ml-2"></i>
+                                </span>
+                                <span class="text-[10px] text-slate-400 mt-1 block">{{ $sideBerita->created_at ? $sideBerita->created_at->translatedFormat('d M Y') : '' }}</span>
+                            </a>
+                            @endforeach
+                            <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="group block py-4">
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
+                                    e-spmiPoljam
+                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                                </span>
+                            </a>
+                            <a href="{{ route('spmi.show', 'rtm') }}" class="group block py-4 last:pb-0">
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
+                                    RTM
+                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                                </span>
+                            </a>
+                        </div>
                     </div>
+
                 </div>
             </div>
-
 
         </div>
     </div>

@@ -1,0 +1,19 @@
+﻿
+  Migration name  Batch / Status  
+  0001_01_01_000000_create_users_table  [1] Ran  
+  0001_01_01_000001_create_cache_table  [1] Ran  
+  0001_01_01_000002_create_jobs_table  [1] Ran  
+  2026_05_04_033549_create_galeris_table  [5] Ran  
+  2026_05_05_185154_create_kontens_table  [5] Ran  
+  2026_05_06_031310_create_profils_table  Pending  
+  2026_05_19_000001_create_dokumen_spmi_table  [2] Ran  
+  2026_05_20_024342_create_galeri_videos_table  Pending  
+  2026_05_20_032825_create_galeri_videos_table  [3] Ran  
+  2026_05_20_083402_create_capaian_renstras_table  [4] Ran  
+  2026_05_20_090249_add_program_and_pic_to_capaian_renstra_table  [6] Ran  
+  2026_05_20_092212_change_indikator_column_to_text_in_capaian_renstra_table  [99] Ran  
+  2026_05_21_020115_change_pic_to_text_in_capaian_renstra_table  [99] Ran  
+  2026_05_21_030000_alter_pic_column_type_in_capaian_renstra_table  Pending  
+  2026_05_21_035000_create_kuesioners_table  Pending  
+  2026_05_21_040000_create_kuesioner_pertanyaans_table  Pending  
+

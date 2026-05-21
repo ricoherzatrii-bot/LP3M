@@ -8,12 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('kontens', function (Blueprint $table) {
-            $table->id();
-            $table->string('judul');
-            $table->text('isi');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('kontens')) {
+            Schema::create('kontens', function (Blueprint $table) {
+                $table->id();
+                $table->string('judul');
+                $table->text('isi');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

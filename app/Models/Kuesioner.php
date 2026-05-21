@@ -18,4 +18,9 @@ class Kuesioner extends Model
         'slug',
         'hits'
     ];
+
+    public function pertanyaans()
+    {
+        return $this->hasMany(KuesionerPertanyaan::class, 'kuesioner_id');
+    }
 }

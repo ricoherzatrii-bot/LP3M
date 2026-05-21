@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('capaian_renstra', function (Blueprint $table) {
-            $table->text('program')->nullable()->change();
-            $table->text('indikator')->nullable()->change();
-        });
+        // Skip if columns are already text type (idempotent)
+        try {
+            Schema::table('capaian_renstra', function (Blueprint $table) {
+                $table->text('program')->nullable()->change();
+                $table->text('indikator')->nullable()->change();
+            });
+        } catch (\Exception $e) {
+            // Columns may already be text type, safe to ignore
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('capaian_renstra', function (Blueprint $table) {

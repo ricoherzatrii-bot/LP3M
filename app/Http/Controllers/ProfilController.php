@@ -165,6 +165,14 @@ class ProfilController extends Controller
         
         $kuesioner = $query->first();
         
+        // Eager-load pertanyaan for dynamic form
+        $pertanyaans = collect();
+        if ($kuesioner) {
+            $pertanyaans = \App\Models\KuesionerPertanyaan::where('kuesioner_id', $kuesioner->id)
+                ->orderBy('urutan', 'asc')
+                ->get();
+        }
+        
         $tahunList = \App\Models\Kuesioner::where('kategori', 'Dosen & Karyawan')
                                         ->select('tahun_akademik')
                                         ->whereNotNull('tahun_akademik')
@@ -172,7 +180,7 @@ class ProfilController extends Controller
                                         ->orderBy('tahun_akademik', 'desc')
                                         ->pluck('tahun_akademik');
 
-        return view('pages.kuesioner.dosen', compact('allProfil', 'kuesioner', 'tahunList'));
+        return view('pages.kuesioner.dosen', compact('allProfil', 'kuesioner', 'tahunList', 'pertanyaans'));
     }
 
     public function kuesionerMahasiswa(Request $request) {
@@ -190,6 +198,14 @@ class ProfilController extends Controller
         
         $kuesioner = $query->first();
         
+        // Eager-load pertanyaan for dynamic form
+        $pertanyaans = collect();
+        if ($kuesioner) {
+            $pertanyaans = \App\Models\KuesionerPertanyaan::where('kuesioner_id', $kuesioner->id)
+                ->orderBy('urutan', 'asc')
+                ->get();
+        }
+        
         $prodiList = \App\Models\Kuesioner::where('kategori', 'Mahasiswa')
                                         ->select('prodi')
                                         ->whereNotNull('prodi')
@@ -204,7 +220,7 @@ class ProfilController extends Controller
                                         ->orderBy('tahun_akademik', 'desc')
                                         ->pluck('tahun_akademik');
                                         
-        return view('pages.kuesioner.mahasiswa', compact('allProfil', 'kuesioner', 'prodiList', 'tahunList'));
+        return view('pages.kuesioner.mahasiswa', compact('allProfil', 'kuesioner', 'prodiList', 'tahunList', 'pertanyaans'));
     }
 
     /**

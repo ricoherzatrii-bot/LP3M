@@ -6,24 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('capaian_renstra', function (Blueprint $table) {
-            $table->id();
-            $table->string('indikator');
-            $table->double('target')->default(0);
-            $table->double('realisasi')->default(0);
-            $table->integer('tahun');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('capaian_renstra')) {
+            Schema::create('capaian_renstra', function (Blueprint $table) {
+                $table->id();
+                $table->string('indikator');
+                $table->double('target')->default(0);
+                $table->double('realisasi')->default(0);
+                $table->integer('tahun');
+                $table->timestamps();
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('capaian_renstra');
