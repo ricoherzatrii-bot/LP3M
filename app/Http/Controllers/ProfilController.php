@@ -8,8 +8,21 @@ use Illuminate\Http\Request;
 class ProfilController extends Controller
 {
     /**
-     * Menangani Halaman Artikel - Daftar Kategori
+     * Fitur Pencarian Global
      */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        
+        $results = Profil::where('judul', 'LIKE', "%{$query}%")
+            ->orWhere('isi_konten', 'LIKE', "%{$query}%")
+            ->get();
+
+        $allProfil = Profil::all();
+
+        return view('pages.search', compact('results', 'query', 'allProfil'));
+    }
+
     public function artikelIndex()
     {
         $allProfil = Profil::all();
@@ -127,13 +140,15 @@ class ProfilController extends Controller
      * Menangani Menu Akreditasi
      */
     public function akreditasiIndex() {
-        $allProfil = Profil::all(); // Tambahkan ini jika navbar butuh data profil
-        return view('pages.akreditasi.index', compact('allProfil'));
+        $allProfil = Profil::all();
+        $data = \App\Models\Akreditasi::where('kategori', 'Akreditasi')->get();
+        return view('akreditasi.index', compact('allProfil', 'data'));
     }
 
     public function akreditasiDokumen() {
         $allProfil = Profil::all();
-        return view('pages.akreditasi.dokumen', compact('allProfil'));
+        $data = \App\Models\Akreditasi::where('kategori', 'Dokumen Akreditasi')->get();
+        return view('akreditasi.dokumen', compact('allProfil', 'data'));
     }
 
     /**
@@ -223,16 +238,56 @@ class ProfilController extends Controller
     }
 
     /**
+     * Halaman publik Dokumen SPMI
+     */
+    public function dokumenSpmiPublic(\Illuminate\Http\Request $request)
+    {
+        $allProfil = Profil::all();
+
+        $query = \App\Models\DokumenSpmi::query();
+
+        // Filter per tahun
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->where('tahun', $request->tahun);
+        }
+
+        // Filter per kategori
+        if ($request->has('kategori') && $request->kategori != '') {
+            $query->where('kategori', $request->kategori);
+        }
+
+        $dokumen = $query->orderBy('tahun', 'desc')
+                         ->orderBy('created_at', 'desc')
+                         ->get();
+
+        // Ambil daftar tahun untuk filter
+        $tahunList = \App\Models\DokumenSpmi::select('tahun')
+                        ->distinct()
+                        ->orderBy('tahun', 'desc')
+                        ->pluck('tahun');
+
+        // Ambil daftar kategori untuk filter
+        $kategoriList = \App\Models\DokumenSpmi::select('kategori')
+                        ->distinct()
+                        ->orderBy('kategori')
+                        ->pluck('kategori');
+
+        return view('pages.spmi.dokumen', compact('allProfil', 'dokumen', 'tahunList', 'kategoriList'));
+    }
+
+    /**
      * Menangani Menu Galeri
      */
     public function galleryIndex() {
         $allProfil = Profil::all();
-        return view('pages.gallery.index', compact('allProfil'));
+        $albums = \App\Models\GaleriAlbum::latest()->get();
+        return view('pages.gallery.index', compact('allProfil', 'albums'));
     }
 
     public function galleryVideo() {
         $allProfil = Profil::all();
-        return view('pages.gallery.video', compact('allProfil'));
+        $videos = \App\Models\GaleriVideo::latest()->get();
+        return view('pages.gallery.video', compact('allProfil', 'videos'));
     }
 
     /**

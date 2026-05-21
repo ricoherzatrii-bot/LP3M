@@ -2,16 +2,16 @@
 @section('title', $profil->judul . ' - LPM Politeknik Jambi')
 @section('content')
 
-<div class="relative min-h-screen bg-slate-900 pt-8 pb-24 font-sans overflow-hidden">
+<div class="relative min-h-screen bg-white dark:bg-slate-950 pt-8 pb-24 font-sans overflow-hidden transition-colors duration-500">
     
     <!-- BACKGROUND LAYER -->
     <div class="absolute inset-0 z-0">
         <img src="{{ asset('images/gedung-poljam.png') }}" 
-             class="w-full h-full object-cover opacity-40" 
+             class="w-full h-full object-cover opacity-10 dark:opacity-40" 
              alt="Background Politeknik Jambi">
         
         <!-- Overlay Gradien Lebih Pekat untuk Kontras -->
-        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/95 via-slate-900/70 to-slate-900/95"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-white/95 dark:from-slate-950/95 via-white/70 dark:via-slate-900/70 to-white/95 dark:to-slate-950/95 transition-colors duration-500"></div>
     </div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-16">
@@ -21,26 +21,26 @@
             <!-- MAIN CONTENT (2/3) -->
             <div class="lg:col-span-2">
                 <!-- HEADER -->
-                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 font-serif-luxury leading-tight">
+                <h1 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 font-serif-luxury leading-tight">
                     {{ $profil->judul }}
                 </h1>
                 
                 <!-- META TAGS -->
-                <div class="flex items-center gap-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-8 border-b border-white/10 pb-4">
-                    <span>Admin</span> <span class="text-white/20">•</span>
-                    <span>Profil</span> <span class="text-white/20">•</span>
-                    <span>{{ $profil->created_at ? $profil->created_at->format('d F Y') : '04 February 2023' }}</span> <span class="text-white/20">•</span>
+                <div class="flex items-center gap-3 text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mb-8 border-b border-slate-100 dark:border-white/10 pb-4">
+                    <span>Admin</span> <span class="text-slate-300 dark:text-white/20">•</span>
+                    <span>Profil</span> <span class="text-slate-300 dark:text-white/20">•</span>
+                    <span>{{ $profil->created_at ? $profil->created_at->format('d F Y') : '04 February 2023' }}</span> <span class="text-slate-300 dark:text-white/20">•</span>
                     <span>Hits: {{ $profil->hits ?? 1469 }}</span>
                     
                     <!-- Social Icons (Align Right in Meta row) -->
                     <div class="ml-auto flex gap-3">
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition"><i class="fab fa-facebook-f text-xs"></i></a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white transition"><i class="fab fa-twitter text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 hover:text-white transition"><i class="fab fa-facebook-f text-xs"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-400 hover:text-white transition"><i class="fab fa-twitter text-xs"></i></a>
                     </div>
                 </div>
 
                 <!-- ARTICLE CONTENT -->
-                <article class="custom-prose text-slate-300 leading-relaxed mb-12">
+                <article class="custom-prose text-slate-700 dark:text-slate-300 leading-relaxed mb-12">
                     @if(isset($profil->isi_konten) && !empty($profil->isi_konten))
                         {!! $profil->isi_konten !!}
                     @else
@@ -60,7 +60,7 @@
 
                 <!-- ARTIKEL LAINNYA -->
                 <div>
-                    <h3 class="text-2xl font-bold text-white mb-6">Artikel Lainnya</h3>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Artikel Lainnya</h3>
                     <div class="grid md:grid-cols-3 gap-6">
                         <!-- Card 1 -->
                         <div class="bg-slate-800/40 border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">

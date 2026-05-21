@@ -45,24 +45,7 @@
                     </div>
                 </div>
 
-                <!-- Login Pengguna -->
-                <div class="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/10 p-6">
-                    <h4 class="text-white font-bold text-lg mb-6 pb-4 border-b border-white/10">Login Pengguna</h4>
-                    <div class="space-y-4">
-                        <div class="relative">
-                            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                            <input type="text" placeholder="Username" class="w-full bg-slate-700/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-                        </div>
-                        <div class="relative">
-                            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                            <input type="password" placeholder="Password" class="w-full bg-slate-700/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-                        </div>
-                        <label class="flex items-center gap-2 text-slate-500 text-xs">
-                            <input type="checkbox" class="rounded border-white/20 bg-slate-700/50"> Remember Me
-                        </label>
-                        <a href="{{ route('login') }}" class="block w-full bg-blue-600 text-white text-center py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">Log in</a>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>

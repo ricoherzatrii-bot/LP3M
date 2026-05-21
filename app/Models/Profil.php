@@ -11,8 +11,11 @@ class Profil extends Model
 
     protected $table = 'profils';
 
-    protected $fillable = [
-        'judul',
-        'isi'
+    public $timestamps = false;
+
+    protected $casts = [
+        'created_at' => 'datetime',
     ];
+
+    protected $guarded = [];
 }

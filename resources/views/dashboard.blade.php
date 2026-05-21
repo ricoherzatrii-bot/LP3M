@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
@@ -172,31 +173,7 @@
                     </div>
                 </div>
 
-                <!-- Modul SPMI -->
-                <div class="mb-1">
-                    <button onclick="toggleMenu('menuSPMI')" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-file-signature text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">SPMI</span>
-                        </div>
-                        <i id="icon-menuSPMI" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
-                    </button>
-                    <div id="menuSPMI" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <a onclick="loadPage('Dokumen SPMI')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-folder opacity-40 text-[10px] w-3 text-center"></i> <span>Dokumen SPMI</span></a>
-                        <a onclick="loadPage('Unit')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-users-cog opacity-40 text-[10px] w-3 text-center"></i> <span>Unit</span></a>
-                        <a onclick="loadPage('RTM')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-sync opacity-40 text-[10px] w-3 text-center"></i> <span>RTM</span></a>
-                        <a onclick="loadPage('Dokumen Mutu SPMI')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-file-contract opacity-40 text-[10px] w-3 text-center"></i> <span>Dokumen Mutu SPMI</span></a>
-                        <a onclick="loadPage('e-spmiPoljam')" class="submenu-item py-2.5 px-3 flex items-center justify-between cursor-pointer w-full group/link">
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-globe opacity-40 text-[10px] w-3 text-center"></i>
-                                <span>e-spmiPoljam</span>
-                            </div>
-                            <i class="fas fa-external-link-alt opacity-50 text-[9px] group-hover/link:text-blue-400 transition-colors"></i>
-                        </a>
-                    </div>
-                </div>
+
 
                 <!-- Modul Akreditasi -->
                 <div class="mb-1">
@@ -227,8 +204,9 @@
                         <i id="icon-menuCapaian" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
                     </button>
                     <div id="menuCapaian" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
+                        <a onclick="loadPage('Dokumen SPMI')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-folder opacity-40 text-[10px] w-3 text-center"></i> <span>Dokumen SPMI</span></a>
                         <a onclick="loadPage('Renop')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-file-alt opacity-40 text-[10px] w-3"></i> <span>Renop</span></a>
-                        <a onclick="loadPage('Capaian Renstra')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-chart-bar opacity-40 text-[10px] w-3"></i> <span>Capaian Renstra</span></a>
+                        <a onclick="loadRenstraPanel()" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-chart-bar opacity-40 text-[10px] w-3"></i> <span>Capaian Renstra</span></a>
                         <div class="mt-2 mb-2">
                             <button onclick="toggleMenu('subMenuKepuasan')" class="w-full flex items-center justify-between py-2.5 px-3 hover:text-white transition group/sub rounded-xl border border-transparent hover:border-white/20 bg-white/10 hover:bg-white/20 text-white">
                                 <div class="flex items-center space-x-2.5">
@@ -295,8 +273,8 @@
                         <i id="icon-menuGaleri" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
                     </button>
                     <div id="menuGaleri" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <a onclick="loadPage('Dokumentasi Foto')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-image opacity-40 text-[10px] w-3"></i> <span>Dokumentasi Foto</span></a>
-                        <a onclick="loadPage('Album Kegiatan')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-photo-video opacity-40 text-[10px] w-3"></i> <span>Album Kegiatan</span></a>
+                        <a onclick="loadGaleriFotoPanel()" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-image opacity-40 text-[10px] w-3"></i> <span>Dokumentasi Foto</span></a>
+                        <a onclick="loadGaleriVideoPanel()" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-video opacity-40 text-[10px] w-3"></i> <span>Galeri Video</span></a>
                     </div>
                 </div>
 
@@ -330,7 +308,7 @@
                         <i class="fas fa-cog w-4"></i> Pengaturan
                     </a>
                     <div class="h-px bg-white/10 my-1 mx-2"></div>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-colors">
+                    <a href="{{ url('/') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-colors">
                         <i class="fas fa-sign-out-alt w-4"></i> Logout
                     </a>
                 </div>
@@ -358,14 +336,6 @@
                 </div>
 
                 <div class="flex items-center gap-4 relative z-10">
-                    <!-- Universal Search -->
-                    <!-- Universal Search (CMD+K) -->
-                    <div id="search-trigger" onclick="openSearchModal()" class="hidden xl:flex items-center bg-white/10 rounded-2xl px-5 py-3 shadow-sm border border-white/20 w-80 cursor-pointer hover:bg-white/20 transition-all group backdrop-blur-md">
-                        <i class="fas fa-search text-blue-200 mr-3 group-hover:text-white transition-colors"></i>
-                        <div class="text-sm font-semibold w-full text-blue-200 group-hover:text-white transition-colors">Cari modul atau dokumen...</div>
-                        <kbd class="hidden lg:inline-block bg-black/20 text-blue-100 text-[10px] font-bold px-2 py-1 rounded-lg ml-2 border border-white/10">⌘K</kbd>
-                    </div>
-
                     <!-- Notification -->
                     <button class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-blue-200 hover:text-white border border-white/20 transition-all shadow-sm relative group backdrop-blur-md">
                         <i class="fas fa-bell group-hover:animate-swing"></i>
@@ -380,6 +350,12 @@
                             <span id="clock" class="text-sm font-black tracking-widest leading-none font-display text-white">00:00:00</span>
                         </div>
                     </div>
+
+                    <!-- Sync Excel Button -->
+                    <button onclick="showToast('Fitur Sinkronisasi Excel sedang dikembangkan.', 'info')" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 backdrop-blur-md">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Import Excel</span>
+                    </button>
                 </div>
             </header>
 
@@ -468,7 +444,7 @@
                                 </div>
                             </div>
                             <div class="relative z-10">
-                                <h3 class="text-4xl font-black text-slate-800 tracking-tighter font-display">1,248</h3>
+                                <h3 class="text-4xl font-black text-slate-800 tracking-tighter font-display">{{ number_format($totalMutuDocs ?? 1248) }}</h3>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Dokumen Mutu</p>
                             </div>
                         </div>
@@ -485,7 +461,7 @@
                                 </div>
                             </div>
                             <div class="relative z-10">
-                                <h3 class="text-4xl font-black text-slate-800 tracking-tighter font-display">94.5<span class="text-2xl text-slate-400">%</span></h3>
+                                <h3 class="text-4xl font-black text-slate-800 tracking-tighter font-display">{{ $avgIku ?? 94.5 }}<span class="text-2xl text-slate-400">%</span></h3>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Capaian IKU Institusi</p>
                             </div>
                         </div>
@@ -499,7 +475,7 @@
                                 </div>
                             </div>
                             <div class="relative z-10">
-                                <h3 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Unggul</h3>
+                                <h3 class="text-4xl font-black text-slate-800 tracking-tighter font-display">{{ $totalProdi ?? 8 }} Prodi</h3>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Status Akreditasi</p>
                             </div>
                         </div>
@@ -517,8 +493,8 @@
                                 </div>
                             </div>
                             <div class="relative z-10">
-                                <h3 class="text-4xl font-black text-white tracking-tighter font-display">24</h3>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Auditor Aktif</p>
+                                <h3 class="text-4xl font-black text-white tracking-tighter font-display">{{ number_format($totalResponden ?? 3673) }}</h3>
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Responden Kuesioner</p>
                             </div>
                         </div>
 
@@ -622,8 +598,7 @@
                 <button onclick="closeModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
             </div>
             <div class="p-10">
-                <label class="block text-[11px] font-black text-slate-400 mb-3 uppercase tracking-[0.2em]">Nilai / Konten Parameter</label>
-                <textarea id="editValue" rows="6" class="w-full p-5 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-medium text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all resize-none shadow-inner leading-relaxed"></textarea>
+                <div id="edit-fields-container" class="space-y-4"></div>
                 <div class="mt-8 flex justify-end space-x-4">
                     <button onclick="closeModal()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase">Batal</button>
                     <button onclick="saveData()" class="px-8 py-4 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:bg-blue-700 transition-all hover:-translate-y-1 tracking-widest uppercase">Simpan Perubahan</button>
@@ -641,8 +616,7 @@
                 <button onclick="closeModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
             </div>
             <div class="p-10">
-                <label class="block text-[11px] font-black text-slate-400 mb-3 uppercase tracking-[0.2em]">Deskripsi Konten</label>
-                <textarea id="addValue" rows="6" class="w-full p-5 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none text-sm font-medium text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all resize-none shadow-inner leading-relaxed" placeholder="Masukkan detail konten di sini..."></textarea>
+                <div id="add-fields-container" class="space-y-4"></div>
                 <div class="mt-8 flex justify-end space-x-4">
                     <button onclick="closeModal()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase">Batal</button>
                     <button onclick="addNewData()" class="px-8 py-4 bg-emerald-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:bg-emerald-700 transition-all hover:-translate-y-1 tracking-widest uppercase">Tambahkan Data</button>
@@ -655,31 +629,7 @@
     <!-- TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- COMMAND PALETTE (SEARCH MODAL) -->
-    <div id="searchModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] hidden flex-col items-center pt-[15vh] transition-all opacity-0 pointer-events-none" style="transition: opacity 0.2s ease;">
-        <div class="bg-white/90 backdrop-blur-xl w-full max-w-2xl rounded-3xl shadow-[0_30px_100px_rgba(0,0,0,0.3)] border border-white overflow-hidden transform scale-95 transition-transform duration-200" id="searchModalContent">
-            <div class="flex items-center px-6 py-4 border-b border-slate-100 bg-white">
-                <i class="fas fa-search text-slate-400 text-lg mr-4"></i>
-                <input type="text" id="searchInput" class="w-full bg-transparent border-none outline-none text-xl font-bold text-slate-700 placeholder-slate-300" placeholder="Cari Visi Misi, Akreditasi, Kuesioner..." autocomplete="off">
-                <kbd class="bg-slate-100 text-slate-400 text-[10px] font-bold px-2 py-1 rounded-lg ml-2 border border-slate-200">ESC</kbd>
-            </div>
-            <div class="p-4 max-h-[60vh] overflow-y-auto" id="searchResults">
-                <div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 px-4">Pintasan Cepat</div>
-                <a href="#" onclick="executeSearch('Visi Dan Misi')" class="flex items-center gap-4 px-4 py-3 hover:bg-blue-50 rounded-2xl group transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-blue-100 text-slate-500 group-hover:text-blue-600 flex items-center justify-center transition-colors"><i class="fas fa-bullseye"></i></div>
-                    <div><div class="text-sm font-bold text-slate-700 group-hover:text-blue-700">Visi Dan Misi</div><div class="text-[10px] font-medium text-slate-400">Profil Kampus</div></div>
-                </a>
-                <a href="#" onclick="executeSearch('Dokumen Akreditasi')" class="flex items-center gap-4 px-4 py-3 hover:bg-emerald-50 rounded-2xl group transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-emerald-100 text-slate-500 group-hover:text-emerald-600 flex items-center justify-center transition-colors"><i class="fas fa-certificate"></i></div>
-                    <div><div class="text-sm font-bold text-slate-700 group-hover:text-emerald-700">Dokumen Akreditasi</div><div class="text-[10px] font-medium text-slate-400">Akreditasi</div></div>
-                </a>
-                <a href="#" onclick="executeSearch('Kuesioner')" class="flex items-center gap-4 px-4 py-3 hover:bg-rose-50 rounded-2xl group transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-rose-100 text-slate-500 group-hover:text-rose-600 flex items-center justify-center transition-colors"><i class="fas fa-clipboard-list"></i></div>
-                    <div><div class="text-sm font-bold text-slate-700 group-hover:text-rose-700">Manajemen Kuesioner</div><div class="text-[10px] font-medium text-slate-400">Publikasi & Survei</div></div>
-                </a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- SCRIPTS -->
     <script>
@@ -763,46 +713,7 @@
             });
         }
 
-        // Search Modal Logic
-        const searchModal = document.getElementById('searchModal');
-        const searchModalContent = document.getElementById('searchModalContent');
-        const searchInput = document.getElementById('searchInput');
 
-        function openSearchModal() {
-            searchModal.classList.remove('hidden');
-            setTimeout(() => {
-                searchModal.classList.remove('opacity-0', 'pointer-events-none');
-                searchModalContent.classList.remove('scale-95');
-                searchInput.focus();
-            }, 10);
-        }
-
-        function closeSearchModal() {
-            searchModal.classList.add('opacity-0', 'pointer-events-none');
-            searchModalContent.classList.add('scale-95');
-            setTimeout(() => {
-                searchModal.classList.add('hidden');
-            }, 200);
-        }
-
-        function executeSearch(title) {
-            closeSearchModal();
-            loadPage(title);
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                openSearchModal();
-            }
-            if (e.key === 'Escape' && !searchModal.classList.contains('hidden')) {
-                closeSearchModal();
-            }
-        });
-
-        searchModal.addEventListener('click', (e) => {
-            if(e.target === searchModal) closeSearchModal();
-        });
 
         // Toast Notification Logic
         function showToast(message, type = 'success') {
@@ -903,22 +814,37 @@
             }, 300);
         }
 
-        // Module Pages
+        // Module Pages & Live AJAX Client
+        let loadedFields = [];
+        let currentEditId = null;
+        let retrievedData = [];
+
         function loadPage(title) {
+            // Modul Galeri khusus
+            if (title === 'Dokumentasi Foto') {
+                loadGaleriFotoPanel();
+                return;
+            }
+            if (title === 'Galeri Video') {
+                loadGaleriVideoPanel();
+                return;
+            }
+
             currentTitle = title;
-            const contentData = `Informasi detail mengenai modul ${title}. Sistem ini memungkinkan Anda untuk memanipulasi data sesuai dengan standar penjaminan mutu yang berlaku.`;
-            
             const content = document.getElementById('dynamic-content');
             content.style.opacity = 0;
             
             setTimeout(() => {
-                const singleDataPages = [
-                    'Visi Dan Misi', 'Moto Dan Janji Layanan', 'Kebijakan Mutu POLJAM', 'Sasaran Mutu POLJAM', 'Standar Mutu POLJAM', 'Sasaran Mutu LPM', 'Struktur Organisasi', 'Job Deskripsi', 'Standar Waktu Pelayanan',
-                    'Dokumen SPMI', 'Unit', 'RTM', 'Dokumen Mutu SPMI', 'e-spmiPoljam',
-                    'Akreditasi', 'Dokumen Akreditasi',
-                    'Renop', 'Capaian Renstra', 'Kepuasan Mahasiswa Poljam', 'Kepuasan Mahasiswa Prodi', 'Kepuasan Dosen & Tendik'
-                ];
-                
+
+                // ============================================================
+                // DOKUMEN SPMI — Panel Upload Khusus
+                // ============================================================
+                if (title === 'Dokumen SPMI') {
+                    loadDokumenSpmiPanel();
+                    content.style.opacity = 1;
+                    return;
+                }
+
                 if (title === 'Pengaturan Sistem') {
                     content.innerHTML = `
                     <div class="max-w-5xl mx-auto pb-12">
@@ -949,11 +875,11 @@
                                 <div class="w-full space-y-4 text-left">
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 mb-1">Nama Lengkap</label>
-                                        <input type="text" value="Super Admin" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                        <input type="text" value="Super Admin" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all" readonly>
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 mb-1">Email Utama</label>
-                                        <input type="email" value="admin@poljam.ac.id" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                        <input type="email" value="admin@politeknikjambi.ac.id" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -965,35 +891,15 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div class="md:col-span-2">
                                             <label class="block text-xs font-bold text-slate-500 mb-1">Nama Lembaga / Sistem</label>
-                                            <input type="text" value="LP3M Politeknik Jambi" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                            <input type="text" value="LP3M Politeknik Jambi" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all" readonly>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-slate-500 mb-1">Nomor Telepon Resmi</label>
-                                            <input type="text" value="(0741) 123456" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                            <input type="text" value="0852-7351-8763" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all" readonly>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-slate-500 mb-1">Email Resmi</label>
-                                            <input type="email" value="info@poljam.ac.id" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Card 3: Keamanan -->
-                                <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 border border-rose-100 shadow-[0_15px_40px_rgba(225,29,72,0.03)] relative overflow-hidden group">
-                                    <div class="absolute -right-8 -top-8 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-colors"></div>
-                                    <h3 class="text-[11px] font-black text-rose-400 mb-6 uppercase tracking-[0.2em] border-b border-rose-100/50 pb-4 relative z-10">Keamanan Akun</h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                                        <div class="md:col-span-2">
-                                            <label class="block text-xs font-bold text-slate-500 mb-1">Password Saat Ini</label>
-                                            <input type="password" placeholder="Masukkan password saat ini" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-500 mb-1">Password Baru</label>
-                                            <input type="password" placeholder="Password baru" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-slate-500 mb-1">Konfirmasi Password Baru</label>
-                                            <input type="password" placeholder="Ulangi password baru" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                            <input type="email" value="info@politeknikjambi.ac.id" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -1002,67 +908,7 @@
 
                         <!-- Action Button -->
                         <div class="mt-8 flex justify-end gap-4">
-                            <button onclick="showHome()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase shadow-sm">Batal</button>
-                            <button onclick="showToast('Semua pengaturan sistem berhasil disimpan!'); setTimeout(() => showHome(), 800);" class="px-8 py-4 bg-slate-900 text-white font-bold text-xs rounded-2xl shadow-[0_15px_30px_rgba(15,23,42,0.2)] hover:bg-slate-800 transition-all hover:-translate-y-1 tracking-widest uppercase flex items-center gap-3">
-                                <i class="fas fa-save text-sm"></i>
-                                Simpan Semua Pengaturan
-                            </button>
-                        </div>
-                    </div>
-                    `;
-                    content.style.opacity = 1;
-                    return;
-                }
-                
-                if (singleDataPages.includes(title)) {
-                    content.innerHTML = `
-                    <div class="max-w-5xl mx-auto pb-12">
-                        <!-- Page Header -->
-                        <div class="bg-white/80 backdrop-blur-xl p-10 lg:p-12 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 relative overflow-hidden">
-                            <div class="absolute -right-10 -top-10 text-[200px] text-slate-100 opacity-50 pointer-events-none transform -rotate-12">
-                                <i class="fas fa-pen-nib"></i>
-                            </div>
-                            <div class="relative z-10">
-                                <div class="flex items-center gap-3 mb-4">
-                                    <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
-                                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Konten Tunggal</p>
-                                </div>
-                                <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter font-display leading-none mb-4">${title}</h2>
-                                <p class="text-slate-500 font-medium">Perbarui deskripsi ${title} secara langsung tanpa menggunakan tabel atau *pop-up* tambahan.</p>
-                            </div>
-                        </div>
-
-                        <!-- Form Area -->
-                        <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10">
-                            <label class="block text-[11px] font-black text-slate-400 mb-4 uppercase tracking-[0.2em]">Editor ${title}</label>
-                            
-                            <!-- Editor Toolbar Mockup -->
-                            <div class="flex flex-wrap gap-2 mb-4 p-2 bg-slate-50 border border-slate-100 rounded-2xl w-fit">
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Bold"><i class="fas fa-bold"></i></button>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Italic"><i class="fas fa-italic"></i></button>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Underline"><i class="fas fa-underline"></i></button>
-                                <div class="w-px h-6 bg-slate-200 my-auto mx-2"></div>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Bullet List"><i class="fas fa-list-ul"></i></button>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Number List"><i class="fas fa-list-ol"></i></button>
-                                <div class="w-px h-6 bg-slate-200 my-auto mx-2"></div>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Align Left"><i class="fas fa-align-left"></i></button>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Align Center"><i class="fas fa-align-center"></i></button>
-                                <div class="w-px h-6 bg-slate-200 my-auto mx-2"></div>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Add Link"><i class="fas fa-link"></i></button>
-                                <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Add Image"><i class="fas fa-image"></i></button>
-                            </div>
-
-                            <textarea rows="12" class="w-full p-6 border border-slate-200 rounded-3xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-medium text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all resize-y shadow-inner leading-relaxed" placeholder="Ketik konten ${title} di sini...">Data simulasi ${title} yang saat ini aktif di sistem. 
- 
-Anda dapat langsung mengedit teks ini seperti mengetik di Microsoft Word. Setelah selesai, silakan klik tombol "Simpan Perubahan" di bagian bawah layar.</textarea>
-                            
-                            <div class="mt-10 flex justify-end gap-4 border-t border-slate-100 pt-8">
-                                <button onclick="showHome()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase shadow-sm">Batal</button>
-                                <button onclick="showToast('Pembaruan data ${title} berhasil disimpan secara permanen!')" class="px-8 py-4 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] hover:bg-blue-700 transition-all hover:-translate-y-1 tracking-widest uppercase flex items-center gap-3">
-                                    <i class="fas fa-save text-sm"></i>
-                                    Simpan Perubahan
-                                </button>
-                            </div>
+                            <button onclick="showHome()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase shadow-sm">Kembali</button>
                         </div>
                     </div>
                     `;
@@ -1070,64 +916,190 @@ Anda dapat langsung mengedit teks ini seperti mengetik di Microsoft Word. Setela
                     return;
                 }
 
-                content.innerHTML = `
-                    <div class="max-w-7xl mx-auto pb-12">
-                        
-                        <!-- Page Header -->
-                        <div class="bg-white/80 backdrop-blur-xl p-10 lg:p-12 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative overflow-hidden">
-                            <div class="absolute -right-20 -top-20 text-[200px] text-slate-100 opacity-50 pointer-events-none transform -rotate-12">
-                                <i class="fas fa-layer-group"></i>
-                            </div>
-                            <div class="relative z-10">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
-                                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Modul Aktif</p>
-                                </div>
-                                <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter font-display leading-none">${title}</h2>
-                            </div>
-                            <button onclick="openTambah()" class="relative z-10 bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center gap-3 text-xs font-bold transition-all shadow-[0_15px_30px_rgba(15,23,42,0.2)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(15,23,42,0.3)] hover:bg-slate-800">
-                                <i class="fas fa-plus"></i>
-                                <span class="tracking-widest uppercase">Tambah Entri</span>
-                            </button>
-                        </div>
+                // Ambil data real-time via API
+                fetch(`/admin/page-data?title=${encodeURIComponent(title)}`)
+                    .then(r => r.json())
+                    .then(res => {
+                        if (!res.success) {
+                            showToast(res.message, 'warning');
+                            showHome();
+                            return;
+                        }
 
-                        <!-- Table Area -->
-                        <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)]">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
-                                    <thead class="bg-slate-50/50">
-                                        <tr>
-                                            <th class="px-10 py-6 border-b border-slate-100 w-24 text-center text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">UID</th>
-                                            <th class="px-10 py-6 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Data Konten</th>
-                                            <th class="px-10 py-6 border-b border-slate-100 text-right w-48 text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Manajemen</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="table-body" class="divide-y divide-slate-50">
-                                        <tr class="hover:bg-slate-50/50 transition-colors group">
-                                            <td class="px-10 py-8 font-black text-slate-400 text-center font-display">001</td>
-                                            <td id="desc-content" class="px-10 py-8 leading-relaxed font-semibold text-slate-700 text-sm max-w-2xl">${contentData}</td>
-                                            <td class="px-10 py-8">
-                                                <div class="flex justify-end space-x-2">
-                                                    <button onclick="openModalEdit('${contentData}')" class="text-slate-400 hover:text-blue-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Edit"><i class="fas fa-pen text-sm"></i></button>
-                                                    <button onclick="confirmDelete(this)" class="text-slate-400 hover:text-rose-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Hapus"><i class="fas fa-trash text-sm"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        loadedFields = res.fields;
+
+                        if (res.type === 'single') {
+                            content.innerHTML = `
+                            <div class="max-w-5xl mx-auto pb-12">
+                                <!-- Page Header -->
+                                <div class="bg-white/80 backdrop-blur-xl p-10 lg:p-12 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 relative overflow-hidden">
+                                    <div class="absolute -right-10 -top-10 text-[200px] text-slate-100 opacity-50 pointer-events-none transform -rotate-12">
+                                        <i class="fas fa-pen-nib"></i>
+                                    </div>
+                                    <div class="relative z-10">
+                                        <div class="flex items-center gap-3 mb-4">
+                                            <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
+                                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Konten Tunggal</p>
+                                        </div>
+                                        <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter font-display leading-none mb-4">${title}</h2>
+                                        <p class="text-slate-500 font-medium">Perbarui deskripsi ${title} secara langsung. Perubahan akan langsung disimpan secara permanen di database dan tayang di front-end.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Form Area -->
+                                <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10">
+                                    <label class="block text-[11px] font-black text-slate-400 mb-4 uppercase tracking-[0.2em]">Editor ${title}</label>
+                                    
+                                    <!-- Editor Toolbar Mockup -->
+                                    <div class="flex flex-wrap gap-2 mb-4 p-2 bg-slate-50 border border-slate-100 rounded-2xl w-fit">
+                                        <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Bold"><i class="fas fa-bold"></i></button>
+                                        <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Italic"><i class="fas fa-italic"></i></button>
+                                        <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Underline"><i class="fas fa-underline"></i></button>
+                                        <div class="w-px h-6 bg-slate-200 my-auto mx-2"></div>
+                                        <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                                        <button class="w-10 h-10 rounded-xl hover:bg-white hover:shadow-sm text-slate-500 transition-all flex items-center justify-center" title="Number List"><i class="fas fa-list-ol"></i></button>
+                                    </div>
+
+                                    <textarea id="single-editor-textarea" rows="12" class="w-full p-6 border border-slate-200 rounded-3xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-medium text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all resize-y shadow-inner leading-relaxed" placeholder="Ketik konten ${title} di sini...">${res.data.isi_konten || ''}</textarea>
+                                    
+                                    <div class="mt-10 flex justify-end gap-4 border-t border-slate-100 pt-8">
+                                        <button onclick="showHome()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase shadow-sm">Batal</button>
+                                        <button onclick="saveSingleContent()" class="px-8 py-4 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] hover:bg-blue-700 transition-all hover:-translate-y-1 tracking-widest uppercase flex items-center gap-3">
+                                            <i class="fas fa-save text-sm"></i>
+                                            Simpan Perubahan
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                `;
-                content.style.opacity = 1;
+                            `;
+                        } else {
+                            // Tipe Tabel / List
+                            retrievedData = res.data;
+
+                            // Bangun headers
+                            let headersHtml = `<th class="px-10 py-6 border-b border-slate-100 w-24 text-center text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">UID</th>`;
+                            res.fields.forEach(field => {
+                                const label = field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                                headersHtml += `<th class="px-10 py-6 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">${label}</th>`;
+                            });
+                            headersHtml += `<th class="px-10 py-6 border-b border-slate-100 text-right w-48 text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Manajemen</th>`;
+
+                            // Bangun rows
+                            let rowsHtml = "";
+                            if (res.data.length === 0) {
+                                rowsHtml = `<tr><td colspan="${res.fields.length + 2}" class="px-10 py-12 text-center font-bold text-slate-400">Belum ada data entri di database untuk modul ini.</td></tr>`;
+                            } else {
+                                res.data.forEach((item, index) => {
+                                    const paddedIndex = String(index + 1).padStart(3, '0');
+                                    let cellsHtml = `<td class="px-10 py-8 font-black text-slate-400 text-center font-display">${paddedIndex}</td>`;
+                                    
+                                    res.fields.forEach(field => {
+                                        let displayVal = item[field] || "";
+                                        // strip HTML tags just in case
+                                        if (typeof displayVal === 'string' && displayVal.includes('<')) {
+                                            const temp = document.createElement("div");
+                                            temp.innerHTML = displayVal;
+                                            displayVal = temp.textContent || temp.innerText || "";
+                                        }
+                                        // truncate if too long
+                                        if (displayVal.length > 80) {
+                                            displayVal = displayVal.slice(0, 80) + '...';
+                                        }
+                                        cellsHtml += `<td class="px-10 py-8 leading-relaxed font-semibold text-slate-700 text-sm">${displayVal}</td>`;
+                                    });
+
+                                    cellsHtml += `
+                                    <td class="px-10 py-8">
+                                        <div class="flex justify-end space-x-2">
+                                            <button onclick="openModalEdit(${item.id})" class="text-slate-400 hover:text-blue-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Edit"><i class="fas fa-pen text-sm"></i></button>
+                                            <button onclick="confirmDelete(${item.id}, this)" class="text-slate-400 hover:text-rose-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Hapus"><i class="fas fa-trash text-sm"></i></button>
+                                        </div>
+                                    </td>
+                                    `;
+                                    rowsHtml += `<tr class="hover:bg-slate-50/50 transition-colors group">${cellsHtml}</tr>`;
+                                });
+                            }
+
+                            content.innerHTML = `
+                            <div class="max-w-7xl mx-auto pb-12">
+                                <!-- Page Header -->
+                                <div class="bg-white/80 backdrop-blur-xl p-10 lg:p-12 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative overflow-hidden">
+                                    <div class="absolute -right-20 -top-20 text-[200px] text-slate-100 opacity-50 pointer-events-none transform -rotate-12">
+                                        <i class="fas fa-layer-group"></i>
+                                    </div>
+                                    <div class="relative z-10">
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
+                                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Modul Aktif</p>
+                                        </div>
+                                        <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter font-display leading-none">${title}</h2>
+                                    </div>
+                                    <button onclick="openTambah()" class="relative z-10 bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center gap-3 text-xs font-bold transition-all shadow-[0_15px_30px_rgba(15,23,42,0.2)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(15,23,42,0.3)] hover:bg-slate-800">
+                                        <i class="fas fa-plus"></i>
+                                        <span class="tracking-widest uppercase">Tambah Entri</span>
+                                    </button>
+                                </div>
+
+                                <!-- Table Area -->
+                                <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)]">
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse">
+                                            <thead class="bg-slate-50/50">
+                                                <tr>
+                                                    ${headersHtml}
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table-body" class="divide-y divide-slate-50">
+                                                ${rowsHtml}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        }
+                        content.style.opacity = 1;
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showToast('Gagal memuat data dari server.', 'warning');
+                        showHome();
+                    });
             }, 300);
         }
-        
+
+        // Simpan Halaman Editor Tunggal (Visi Misi, dll)
+        function saveSingleContent() {
+            const val = document.getElementById('single-editor-textarea').value;
+            fetch('/admin/save-page-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    title: currentTitle,
+                    isi_konten: val
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    loadPage(currentTitle);
+                } else {
+                    showToast(res.message, 'warning');
+                }
+            })
+            .catch(err => {
+                showToast('Gagal memproses pembaruan data.', 'warning');
+            });
+        }
+
         // Modal Logic
         function showOverlay() {
             const overlay = document.getElementById('modalOverlay');
             overlay.classList.remove('hidden');
-            // Small delay to allow display:block to apply before animating opacity
             setTimeout(() => {
                 overlay.classList.remove('opacity-0', 'pointer-events-none');
             }, 10);
@@ -1143,8 +1115,20 @@ Anda dapat langsung mengedit teks ini seperti mengetik di Microsoft Word. Setela
             }, 300);
         }
 
-        function openModalEdit(val) {
-            document.getElementById('editValue').value = val;
+        function closeModal() {
+            document.getElementById('modalEdit').classList.add('scale-95');
+            document.getElementById('modalTambah').classList.add('scale-95');
+            hideOverlay();
+        }
+
+        function openModalEdit(id) {
+            currentEditId = id;
+            const record = retrievedData.find(item => item.id == id);
+            if (!record) return;
+
+            // Generate form fields dynamically
+            generateFormFields('edit-fields-container', loadedFields, record);
+
             showOverlay();
             const modal = document.getElementById('modalEdit');
             modal.classList.remove('hidden');
@@ -1152,64 +1136,1409 @@ Anda dapat langsung mengedit teks ini seperti mengetik di Microsoft Word. Setela
         }
 
         function openTambah() {
-            document.getElementById('addValue').value = "";
+            // Generate form fields dynamically (empty)
+            generateFormFields('add-fields-container', loadedFields, {});
+
             showOverlay();
             const modal = document.getElementById('modalTambah');
             modal.classList.remove('hidden');
             setTimeout(() => modal.classList.remove('scale-95'), 10);
         }
 
-        function closeModal() {
-            document.getElementById('modalEdit').classList.add('scale-95');
-            document.getElementById('modalTambah').classList.add('scale-95');
-            hideOverlay();
+        function generateFormFields(containerId, fields, values = {}) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            fields.forEach(field => {
+                const labelText = field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const val = values[field] || "";
+                const isTextArea = ['isi_konten', 'deskripsi', 'konten'].includes(field);
+                
+                let inputHtml = "";
+                if (isTextArea) {
+                    inputHtml = `<textarea id="field-${containerId}-${field}" rows="5" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner leading-relaxed">${val}</textarea>`;
+                } else {
+                    inputHtml = `<input type="text" id="field-${containerId}-${field}" value="${val}" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner">`;
+                }
+                
+                container.innerHTML += `
+                    <div class="mb-4">
+                        <label class="block text-[11px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em]">${labelText}</label>
+                        ${inputHtml}
+                    </div>
+                `;
+            });
         }
 
         function saveData() {
-            const newValue = document.getElementById('editValue').value;
-            const desc = document.getElementById('desc-content');
-            if(desc) desc.innerText = newValue;
-            closeModal();
-            
-            setTimeout(() => showToast("Konfigurasi Sistem Berhasil Diperbarui"), 300);
+            const payload = {
+                title: currentTitle,
+                id: currentEditId
+            };
+
+            loadedFields.forEach(field => {
+                payload[field] = document.getElementById(`field-edit-fields-container-${field}`).value;
+            });
+
+            fetch('/admin/save-page-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    closeModal();
+                    loadPage(currentTitle);
+                } else {
+                    showToast(res.message, 'warning');
+                }
+            })
+            .catch(err => {
+                showToast('Gagal memperbarui data.', 'warning');
+            });
         }
 
         function addNewData() {
-            const val = document.getElementById('addValue').value;
-            if(val.trim() === "") {
-                alert("Validasi Gagal: Parameter tidak boleh kosong.");
+            const payload = {
+                title: currentTitle
+            };
+
+            let hasEmpty = false;
+            loadedFields.forEach(field => {
+                const el = document.getElementById(`field-add-fields-container-${field}`);
+                if (el.value.trim() === "") {
+                    hasEmpty = true;
+                }
+                payload[field] = el.value;
+            });
+
+            if (hasEmpty) {
+                alert("Validasi Gagal: Semua kolom isian harus diisi.");
                 return;
             }
-            
-            const tableBody = document.getElementById("table-body");
-            if(!tableBody) return;
 
-            const rowCount = tableBody.rows.length + 1;
-            const newRow = `
-                <tr class="hover:bg-slate-50/50 transition-colors group">
-                    <td class="px-10 py-8 font-black text-slate-400 text-center font-display">00${rowCount}</td>
-                    <td class="px-10 py-8 leading-relaxed font-semibold text-slate-700 text-sm max-w-2xl animate-fade-in">${val}</td>
-                    <td class="px-10 py-8">
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="openModalEdit('${val}')" class="text-slate-400 hover:text-blue-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1"><i class="fas fa-pen text-sm"></i></button>
-                            <button onclick="confirmDelete(this)" class="text-slate-400 hover:text-rose-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1"><i class="fas fa-trash text-sm"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            tableBody.insertAdjacentHTML('beforeend', newRow);
-            closeModal();
+            fetch('/admin/add-row', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    closeModal();
+                    loadPage(currentTitle);
+                } else {
+                    showToast(res.message, 'warning');
+                }
+            })
+            .catch(err => {
+                showToast('Gagal menambahkan data baru.', 'warning');
+            });
         }
 
-        function confirmDelete(btn) {
-            if(confirm("Tindakan destruktif: Anda yakin ingin menghapus record ini dari basis data?")) {
-                const row = btn.closest('tr');
-                row.style.opacity = 0;
-                row.style.transform = 'translateX(20px)';
-                row.style.transition = 'all 0.3s ease';
-                setTimeout(() => row.remove(), 300);
+        function confirmDelete(id, btn) {
+            if (confirm("Tindakan destruktif: Anda yakin ingin menghapus record ini dari basis data secara permanen?")) {
+                fetch('/admin/delete-row', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        title: currentTitle,
+                        id: id
+                    })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        showToast(res.message, 'success');
+                        const row = btn.closest('tr');
+                        row.style.opacity = 0;
+                        row.style.transform = 'translateX(20px)';
+                        row.style.transition = 'all 0.3s ease';
+                        setTimeout(() => row.remove(), 300);
+                    } else {
+                        showToast(res.message, 'warning');
+                    }
+                })
+                .catch(err => {
+                    showToast('Gagal menghapus data.', 'warning');
+                });
+            }
+        }
+        // ================================================================
+        // DOKUMEN SPMI — Fungsi Panel Upload
+        // ================================================================
+        function toggleUploadForm() {
+            const formContainer = document.getElementById('uploadFormContainer');
+            if (formContainer) {
+                if (formContainer.classList.contains('hidden')) {
+                    formContainer.classList.remove('hidden');
+                    // Add slight delay for animation
+                    setTimeout(() => {
+                        formContainer.classList.remove('opacity-0', 'translate-y-4');
+                    }, 10);
+                } else {
+                    formContainer.classList.add('opacity-0', 'translate-y-4');
+                    setTimeout(() => {
+                        formContainer.classList.add('hidden');
+                    }, 300);
+                }
+            }
+        }
+
+        function loadRenstraPanel() {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = `
+            <div class="max-w-7xl mx-auto pb-12">
+                <!-- Header -->
+                <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-chart-bar"></i></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]"></span>
+                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Capaian Kinerja</p>
+                        </div>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Capaian Renstra</h2>
+                        <p class="text-slate-500 text-sm mt-2">Impor data Renstra dari Excel untuk visualisasi grafik di halaman publik.</p>
+                    </div>
+                </div>
+
+                <!-- Import Form -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <div class="lg:col-span-1 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10">
+                        <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 pb-4 border-b border-slate-100">Impor Excel</h3>
+                        <form id="importRenstraForm" onsubmit="event.preventDefault(); submitImportRenstra();" class="space-y-6">
+                            <div class="p-6 rounded-2xl bg-blue-50/50 border border-blue-100/50">
+                                <label class="block text-[11px] font-bold text-blue-400 uppercase tracking-widest mb-3">File Excel (.xlsx)</label>
+                                <input type="file" id="renstra_file" accept=".xlsx,.xls" required
+                                    class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
+                            </div>
+                            <button type="submit" id="renstraImportBtn" class="w-full bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-3">
+                                <i class="fas fa-file-import"></i> Mulai Impor
+                            </button>
+                            <button type="button" onclick="truncateRenstra()" class="w-full bg-rose-50 text-rose-600 border border-rose-100 font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-rose-100 transition-all flex items-center justify-center gap-3">
+                                <i class="fas fa-trash-alt"></i> Kosongkan Data
+                            </button>
+                        </form>
+                        <div class="mt-8 p-6 rounded-2xl bg-amber-50 border border-amber-100">
+                            <h4 class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-2"><i class="fas fa-info-circle mr-1"></i> Format Excel (6 Kolom)</h4>
+                            <p class="text-[10px] text-amber-600 leading-relaxed font-semibold">
+                                Kolom A: Program (Bisa dikosongkan jika sama)<br>
+                                Kolom B: Indikator Kinerja<br>
+                                Kolom C: PIC (Contoh: WD 1)<br>
+                                Kolom D: Target<br>
+                                Kolom E: Realisasi<br>
+                                Kolom F: Tahun (YYYY)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+                        <div class="px-10 py-7 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <h3 class="text-xl font-black text-slate-800 font-display">Data Terdaftar</h3>
+                             <button onclick="fetchRenstraList()" class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 flex items-center justify-center transition-all">
+                                <i class="fas fa-sync-alt text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto max-h-[500px]">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50/50 sticky top-0 z-10">
+                                    <tr>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Program</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Indikator</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">PIC</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Tahun</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Target</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Realisasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="renstra-tbody" class="divide-y divide-slate-50">
+                                    <tr><td colspan="6" class="px-8 py-10 text-center text-slate-400 font-medium font-display">Memuat data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            fetchRenstraList();
+        }
+
+        function fetchRenstraList() {
+            const tbody = document.getElementById('renstra-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="6" class="px-8 py-10 text-center"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>';
+            
+            fetch('/admin/renstra')
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success && res.data.length > 0) {
+                        tbody.innerHTML = res.data.map(item => `
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-8 py-4 text-[10px] font-bold text-blue-600 uppercase tracking-wider">${item.program || '-'}</td>
+                                <td class="px-8 py-4 text-xs font-semibold text-slate-700">${item.indikator}</td>
+                                <td class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase">${item.pic || '-'}</td>
+                                <td class="px-8 py-4 text-xs font-black text-slate-800 text-center">${item.tahun}</td>
+                                <td class="px-8 py-4 text-xs font-bold text-slate-500 text-center">${item.target}%</td>
+                                <td class="px-8 py-4 text-xs font-bold text-emerald-600 text-center">${item.realisasi}%</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="6" class="px-8 py-16 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Data Renstra masih kosong.</td></tr>';
+                    }
+                });
+        }
+
+        function submitImportRenstra() {
+            const file = document.getElementById('renstra_file').files[0];
+            if (!file) return;
+
+            const btn = document.getElementById('renstraImportBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('_token', '{{ csrf_token() }}');
+
+            fetch('/admin/renstra/import', {
+                method: 'POST',
+                body: fd
+            })
+            .then(r => r.json())
+            .then(res => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    document.getElementById('renstra_file').value = '';
+                    fetchRenstraList();
+                } else {
+                    showToast(res.message, 'warning');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                showToast('Terjadi kesalahan saat mengimpor data.', 'warning');
+            });
+        }
+
+        function truncateRenstra() {
+            if (!confirm('Peringatan: Semua data Renstra akan dihapus secara permanen. Lanjutkan?')) return;
+            fetch('/admin/renstra/truncate', {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    fetchRenstraList();
+                }
+            });
+        }
+
+        function loadDokumenSpmiPanel() {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = `
+            <div class="max-w-7xl mx-auto pb-12">
+                <!-- Header -->
+                <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-file-alt"></i></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
+                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Dokumen</p>
+                        </div>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Dokumen SPMI</h2>
+                        <p class="text-slate-500 text-sm mt-2">Upload, kelola, dan hapus dokumen SPMI. Perubahan langsung tampil di halaman publik.</p>
+                    </div>
+                    <a href="/spmi/dokumen-spmi" target="_blank" class="relative z-10 inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-5 py-3 rounded-xl transition-all">
+                        <i class="fas fa-external-link-alt text-xs"></i> Lihat Halaman Publik
+                    </a>
+                </div>
+
+                <!-- Upload Form -->
+                <div id="uploadFormContainer" class="hidden opacity-0 translate-y-4 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10 mb-8 transition-all duration-300">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                        <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Upload Dokumen Baru</h3>
+                        <button onclick="toggleUploadForm()" class="text-slate-400 hover:text-rose-500 transition-colors text-xs font-bold uppercase tracking-widest"><i class="fas fa-times mr-1"></i> Tutup</button>
+                    </div>
+                    <form id="uploadDokumenForm" enctype="multipart/form-data">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Dokumen <span class="text-rose-500">*</span></label>
+                                <input type="text" id="ud_judul" placeholder="Contoh: Standar Mutu Penelitian" required
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Tahun <span class="text-rose-500">*</span></label>
+                                <input type="number" id="ud_tahun" min="2000" max="2099" placeholder="${new Date().getFullYear()}" required
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Kategori</label>
+                                <input type="text" id="ud_kategori" placeholder="Ketik kategori baru atau pilih..." list="kategori_list"
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all">
+                                <datalist id="kategori_list">
+                                    <option value="Dokumen SPMI">
+                                    <option value="Standar Mutu">
+                                    <option value="Kebijakan Mutu">
+                                    <option value="Prosedur Mutu">
+                                    <option value="Formulir Mutu">
+                                    <option value="Dokumen Pendukung">
+                                </datalist>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi Singkat</label>
+                                <input type="text" id="ud_deskripsi" placeholder="Opsional — keterangan singkat dokumen"
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Drag & Drop Zone -->
+                        <div id="dropzone" onclick="document.getElementById('ud_file').click()"
+                            class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-3xl p-12 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-50 hover:bg-blue-50/30 group">
+                            <div id="dropzone-icon" class="w-16 h-16 rounded-2xl bg-white border border-slate-200 group-hover:border-blue-200 shadow-sm flex items-center justify-center mb-4 transition-all">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+                            </div>
+                            <p id="dropzone-text" class="text-sm font-bold text-slate-500 group-hover:text-blue-600 transition-colors">Klik atau seret file ke sini</p>
+                            <p class="text-xs text-slate-400 mt-1">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP — Maks. 20MB</p>
+                            <input type="file" id="ud_file" name="file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar">
+                        </div>
+
+                        <div class="mt-6 flex justify-end">
+                            <button type="button" id="uploadBtn" onclick="submitUploadDokumen()"
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-widest px-10 py-4 rounded-2xl shadow-[0_10px_25px_rgba(37,99,235,0.3)] hover:-translate-y-1 transition-all flex items-center gap-3">
+                                <i class="fas fa-upload"></i> Upload Dokumen
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Dokumen Table -->
+                <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+                    <div class="px-10 py-7 border-b border-slate-100 flex flex-wrap items-center justify-between bg-slate-50/50 gap-4">
+                        <div>
+                            <h3 class="text-xl font-black text-slate-800 font-display">Daftar Dokumen</h3>
+                            <p id="dok-count" class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Memuat...</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="toggleUploadForm()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                                <i class="fas fa-plus"></i> Tambah Dokumen
+                            </button>
+                            <button onclick="fetchDokumenList()" class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 flex items-center justify-center transition-all" title="Refresh">
+                                <i class="fas fa-sync-alt text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="dokumen-table-wrap" class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-50/50">
+                                <tr>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-12">#</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Judul Dokumen</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-24">Tahun</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-36">Kategori</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-28">File</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-20">↓</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right w-36">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dokumen-tbody" class="divide-y divide-slate-50">
+                                <tr><td colspan="7" class="px-8 py-10 text-center text-slate-400 font-medium">
+                                    <i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div id="editDokumenModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+                <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden">
+                    <div class="px-10 py-7 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                        <h3 class="font-black text-slate-800 text-xl font-display">Edit Dokumen</h3>
+                        <button onclick="closeEditDokModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-10 space-y-4">
+                        <input type="hidden" id="edit_dok_id">
+                        <div>
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Dokumen</label>
+                            <input type="text" id="edit_judul" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Tahun</label>
+                                <input type="number" id="edit_tahun" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Kategori</label>
+                                <input type="text" id="edit_kategori" list="kategori_list" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi</label>
+                            <input type="text" id="edit_deskripsi" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Ganti File (opsional)</label>
+                            <input type="file" id="edit_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
+                                class="w-full p-3 border border-slate-200 rounded-2xl text-sm text-slate-600 bg-slate-50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 file:font-bold file:text-xs">
+                            <p id="edit_current_file" class="text-xs text-slate-400 mt-2"></p>
+                        </div>
+                        <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                            <button onclick="closeEditDokModal()" class="px-6 py-3 text-slate-500 bg-white border border-slate-200 font-bold text-xs rounded-2xl hover:bg-slate-50 transition tracking-widest uppercase">Batal</button>
+                            <button onclick="submitEditDokumen()" class="px-8 py-3 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-lg hover:bg-blue-700 transition-all hover:-translate-y-0.5 tracking-widest uppercase flex items-center gap-2">
+                                <i class="fas fa-save"></i> Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            // Drag-drop events
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('ud_file');
+            if (dropzone && fileInput) {
+                dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('border-blue-400', 'bg-blue-50/50'); });
+                dropzone.addEventListener('dragleave', () => dropzone.classList.remove('border-blue-400', 'bg-blue-50/50'));
+                dropzone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    dropzone.classList.remove('border-blue-400', 'bg-blue-50/50');
+                    if (e.dataTransfer.files.length > 0) {
+                        fileInput.files = e.dataTransfer.files;
+                        updateDropzoneUI(e.dataTransfer.files[0]);
+                    }
+                });
+                fileInput.addEventListener('change', () => {
+                    if (fileInput.files.length > 0) updateDropzoneUI(fileInput.files[0]);
+                });
+            }
+
+            fetchDokumenList();
+        }
+
+        function updateDropzoneUI(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            const icons = { pdf: 'fa-file-pdf text-red-500', doc: 'fa-file-word text-blue-500', docx: 'fa-file-word text-blue-500', xls: 'fa-file-excel text-green-500', xlsx: 'fa-file-excel text-green-500' };
+            const iconClass = icons[ext] || 'fa-file-alt text-slate-500';
+            const size = (file.size / (1024*1024)).toFixed(2) + ' MB';
+            document.getElementById('dropzone-icon').innerHTML = `<i class="fas ${iconClass} text-3xl"></i>`;
+            document.getElementById('dropzone-text').textContent = `✓ ${file.name} (${size})`;
+            document.getElementById('dropzone-text').classList.add('text-blue-600');
+        }
+
+        function fetchDokumenList() {
+            fetch('/admin/dokumen-spmi')
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.success) return;
+                    const tbody = document.getElementById('dokumen-tbody');
+                    const countEl = document.getElementById('dok-count');
+                    if (!tbody) return;
+
+                    countEl.textContent = res.data.length + ' dokumen tersimpan di database';
+
+                    if (res.data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" class="px-8 py-12 text-center text-slate-400 font-medium"><i class="fas fa-folder-open text-3xl block mb-3 opacity-30"></i>Belum ada dokumen. Upload dokumen pertama Anda di atas.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = res.data.map((d, i) => `
+                        <tr class="hover:bg-blue-50/20 transition-colors group">
+                            <td class="px-8 py-6 text-center">
+                                <span class="text-[11px] font-black text-slate-400">${String(i+1).padStart(2,'0')}</span>
+                            </td>
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
+                                        <i class="${d.icon_class || 'fas fa-file-alt text-slate-400'} text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 text-sm leading-snug">${d.judul}</p>
+                                        ${d.deskripsi ? `<p class="text-xs text-slate-400 mt-0.5 line-clamp-1">${d.deskripsi}</p>` : ''}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-6">
+                                <span class="inline-flex items-center bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-black px-3 py-1.5 rounded-xl">${d.tahun}</span>
+                            </td>
+                            <td class="px-8 py-6">
+                                <span class="text-xs font-semibold text-slate-500">${d.kategori}</span>
+                            </td>
+                            <td class="px-8 py-6">
+                                ${d.nama_file ? `
+                                <div>
+                                    <span class="inline-block bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase">${d.tipe_file || 'file'}</span>
+                                    <p class="text-[10px] text-slate-400 mt-1">${d.ukuran_file || ''}</p>
+                                </div>` : '<span class="text-slate-300 text-xs">—</span>'}
+                            </td>
+                            <td class="px-8 py-6 text-center">
+                                <span class="text-sm font-bold text-slate-500">${d.downloads}</span>
+                            </td>
+                            <td class="px-8 py-6">
+                                <div class="flex justify-end gap-2">
+                                    <button onclick="openEditDokModal(${JSON.stringify(d).replace(/"/g,'&quot;')})"
+                                        class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:-translate-y-0.5 flex items-center justify-center transition-all shadow-sm" title="Edit">
+                                        <i class="fas fa-pen text-xs"></i>
+                                    </button>
+                                    <button onclick="deleteDokumen(${d.id}, this)"
+                                        class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-300 hover:-translate-y-0.5 flex items-center justify-center transition-all shadow-sm" title="Hapus">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                })
+                .catch(() => showToast('Gagal memuat daftar dokumen.', 'warning'));
+        }
+
+        function submitUploadDokumen() {
+            const judul = document.getElementById('ud_judul')?.value?.trim();
+            const tahun = document.getElementById('ud_tahun')?.value?.trim();
+            const file  = document.getElementById('ud_file')?.files[0];
+
+            if (!judul) { showToast('Judul dokumen wajib diisi!', 'warning'); return; }
+            if (!tahun) { showToast('Tahun wajib diisi!', 'warning'); return; }
+            if (!file)  { showToast('Pilih file untuk diupload!', 'warning'); return; }
+
+            const formData = new FormData();
+            formData.append('judul',    judul);
+            formData.append('tahun',    tahun);
+            formData.append('deskripsi', document.getElementById('ud_deskripsi')?.value || '');
+            formData.append('kategori', document.getElementById('ud_kategori')?.value || 'Dokumen SPMI');
+            formData.append('file',     file);
+            formData.append('_token',   '{{ csrf_token() }}');
+
+            const btn = document.getElementById('uploadBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengupload...';
+
+            fetch('/admin/dokumen-spmi/upload', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(res => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-upload"></i> Upload Dokumen';
+                    if (res.success) {
+                        showToast(res.message, 'success');
+                        document.getElementById('ud_judul').value = '';
+                        document.getElementById('ud_tahun').value = '';
+                        document.getElementById('ud_deskripsi').value = '';
+                        document.getElementById('ud_file').value = '';
+                        document.getElementById('dropzone-text').textContent = 'Klik atau seret file ke sini';
+                        document.getElementById('dropzone-text').classList.remove('text-blue-600');
+                        document.getElementById('dropzone-icon').innerHTML = '<i class="fas fa-cloud-upload-alt text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>';
+                        fetchDokumenList();
+                    } else {
+                        showToast(res.message || 'Upload gagal.', 'warning');
+                    }
+                })
+                .catch(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-upload"></i> Upload Dokumen';
+                    showToast('Terjadi kesalahan saat upload.', 'warning');
+                });
+        }
+
+        function openEditDokModal(d) {
+            document.getElementById('edit_dok_id').value   = d.id;
+            document.getElementById('edit_judul').value    = d.judul;
+            document.getElementById('edit_tahun').value    = d.tahun;
+            document.getElementById('edit_deskripsi').value= d.deskripsi || '';
+            document.getElementById('edit_current_file').textContent = d.nama_file ? 'File saat ini: ' + d.nama_file + ' (' + (d.ukuran_file||'') + ')' : 'Belum ada file';
+            document.getElementById('edit_kategori').value = d.kategori;
+            document.getElementById('editDokumenModal').classList.remove('hidden');
+        }
+
+        function closeEditDokModal() {
+            document.getElementById('editDokumenModal').classList.add('hidden');
+            document.getElementById('edit_file').value = '';
+        }
+
+        function submitEditDokumen() {
+            const id = document.getElementById('edit_dok_id').value;
+            const formData = new FormData();
+            formData.append('judul',    document.getElementById('edit_judul').value);
+            formData.append('tahun',    document.getElementById('edit_tahun').value);
+            formData.append('deskripsi',document.getElementById('edit_deskripsi').value);
+            formData.append('kategori', document.getElementById('edit_kategori').value);
+            formData.append('_token',   '{{ csrf_token() }}');
+            formData.append('_method',  'POST');
+            const fileEl = document.getElementById('edit_file');
+            if (fileEl.files.length > 0) formData.append('file', fileEl.files[0]);
+
+            fetch(`/admin/dokumen-spmi/${id}/update`, { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        showToast(res.message, 'success');
+                        closeEditDokModal();
+                        fetchDokumenList();
+                    } else {
+                        showToast(res.message || 'Gagal menyimpan.', 'warning');
+                    }
+                })
+                .catch(() => showToast('Terjadi kesalahan.', 'warning'));
+        }
+
+        function deleteDokumen(id, btn) {
+            if (!confirm('Hapus dokumen ini beserta file-nya secara permanen?')) return;
+            fetch(`/admin/dokumen-spmi/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    const row = btn.closest('tr');
+                    row.style.opacity = 0; row.style.transform = 'translateX(20px)'; row.style.transition = 'all 0.3s';
+                    setTimeout(() => { row.remove(); fetchDokumenList(); }, 300);
+                } else {
+                    showToast(res.message || 'Gagal menghapus.', 'warning');
+                }
+            })
+            .catch(() => showToast('Terjadi kesalahan.', 'warning'));
+        }
+
+        // ================================================================
+        // GALERI FOTO & VIDEO — Fungsi Panel Upload Khusus
+        // ================================================================
+        function loadGaleriFotoPanel() {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = `
+            <div class="max-w-7xl mx-auto pb-12">
+                <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-images"></i></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)]"></span>
+                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Media</p>
+                        </div>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Galeri Foto</h2>
+                        <p class="text-slate-500 text-sm mt-2">Daftar album dan foto kegiatan kampus.</p>
+                    </div>
+                    <button onclick="toggleUploadForm()" class="relative z-10 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-2xl shadow-[0_8px_20px_rgba(37,99,235,0.2)] transition-all hover:-translate-y-1">
+                        <i class="fas fa-plus mr-2 text-[10px]"></i> Tambah Album
+                    </button>
+                </div>
+
+                <div id="uploadFormContainer" class="hidden opacity-0 translate-y-4 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10 mb-8 transition-all duration-300">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                        <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Tambah Album Baru</h3>
+                        <button onclick="toggleUploadForm()" class="text-slate-400 hover:text-rose-500 transition-colors text-xs font-bold uppercase tracking-widest"><i class="fas fa-times mr-1"></i> Batal</button>
+                    </div>
+                    <form id="uploadGaleriFotoForm" enctype="multipart/form-data">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Nama Album <span class="text-rose-500">*</span></label>
+                                <input type="text" id="ga_nama" placeholder="Contoh: Wisuda Ke-15 Politeknik Jambi" required
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Link Sampul (Opsional)</label>
+                                <input type="text" id="ga_link" placeholder="Pasang link gambar jika tidak upload file"
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Sampul Foto (Lokal)</label>
+                            <input type="file" id="ga_file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all">
+                        </div>
+                        <button type="button" onclick="submitUploadAlbum()" id="uploadAlbumBtn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] py-5 rounded-2xl shadow-xl transition-all">
+                            <i class="fas fa-save mr-2"></i> Simpan Album
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.02)] overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 border-b border-slate-100">
+                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-20 text-center">No</th>
+                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Album</th>
+                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="galeri-foto-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            `;
+            fetchAlbums();
+        }
+
+        function loadGaleriVideoPanel() {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = `
+            <div class="max-w-7xl mx-auto pb-12">
+                <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-video"></i></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.6)]"></span>
+                            <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Video</p>
+                        </div>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Galeri Video</h2>
+                        <p class="text-slate-500 text-sm mt-2">Upload file video atau pasang link YouTube.</p>
+                    </div>
+                    <button onclick="toggleUploadForm()" class="relative z-10 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all hover:-translate-y-1">
+                        <i class="fas fa-plus mr-2 text-[10px]"></i> Tambah Video
+                    </button>
+                </div>
+
+                <div id="uploadFormContainer" class="hidden opacity-0 translate-y-4 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10 mb-8 transition-all duration-300">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                        <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Tambah Video Baru</h3>
+                        <button onclick="toggleUploadForm()" class="text-slate-400 hover:text-rose-500 transition-colors text-xs font-bold uppercase tracking-widest"><i class="fas fa-times mr-1"></i> Batal</button>
+                    </div>
+                    <form id="uploadGaleriVideoForm" enctype="multipart/form-data">
+                        <div class="mb-6">
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Video <span class="text-rose-500">*</span></label>
+                            <input type="text" id="gv_judul" placeholder="Contoh: Profil LPM Poljam 2024" required
+                                class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi Singkat</label>
+                            <input type="text" id="gv_deskripsi" placeholder="Keterangan singkat tentang video ini"
+                                class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Upload Video (Lokal - Max 40MB)</label>
+                            <input type="file" id="gv_file" accept="video/mp4,video/x-matroska,video/x-ms-wmv" required class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 transition-all">
+                            <p class="text-[9px] text-slate-400 mt-2 italic font-bold">Limit server: 40MB.</p>
+                        </div>
+                        <button type="button" onclick="submitUploadVideo()" id="uploadVideoBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[11px] py-5 rounded-2xl shadow-xl transition-all">
+                            <i class="fas fa-save mr-2"></i> Simpan Video
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.02)] overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 border-b border-slate-100">
+                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-20 text-center">No</th>
+                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Judul Video</th>
+                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="galeri-video-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            `;
+            fetchVideos();
+        }
+
+        // Logic Fetching & Uploading
+        function fetchAlbums() {
+            fetch('/admin/galeri-album').then(r => r.json()).then(res => {
+                const tbody = document.getElementById('galeri-foto-tbody');
+                if (!tbody || !res.success) return;
+                tbody.innerHTML = res.data.map((d, i) => {
+                    let coverUrl = '/images/gedung-poljam.png';
+                    if (d.sampul_foto) {
+                        coverUrl = d.sampul_foto.startsWith('http') ? d.sampul_foto : '/storage/gallery/' + d.sampul_foto;
+                    } else if (d.first_foto) {
+                        coverUrl = '/storage/gallery/' + d.first_foto.file_path;
+                    }
+                    
+                    return `
+                    <tr class="hover:bg-blue-50/10 border-b border-slate-50 transition-colors">
+                        <td class="px-8 py-4 text-center text-[11px] font-black text-slate-400 uppercase">${String(i+1).padStart(2,'0')}</td>
+                        <td class="px-8 py-4">
+                            <div class="flex items-center gap-4">
+                                <img src="${coverUrl}" 
+                                     class="w-12 h-8 rounded-lg object-cover shadow-sm bg-slate-100" onerror="this.src='/images/gedung-poljam.png'">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-800">${d.nama_album}</p>
+                                    <p class="text-[10px] text-slate-400">${d.created_at ? d.created_at.substring(0,10) : ''}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-4">
+                            <div class="flex justify-end gap-2">
+                                <button onclick="openManagePhotos(${d.id}, '${d.nama_album.replace(/'/g,"\\'")}')"
+                                    class="text-emerald-500 hover:text-emerald-700 py-2 px-3 bg-emerald-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
+                                    <i class="fas fa-images mr-1"></i> Foto
+                                </button>
+                                <button onclick="openEditAlbum(${d.id}, '${d.nama_album.replace(/'/g,"\\'")}')"
+                                    class="text-blue-500 hover:text-blue-700 py-2 px-3 bg-blue-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
+                                    <i class="fas fa-pen mr-1"></i>
+                                </button>
+                                <button onclick="deleteAlbum(${d.id})" class="text-rose-500 hover:text-rose-700 py-2 px-3 bg-rose-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('') || '<tr><td colspan="3" class="px-8 py-10 text-center text-slate-300">Belum ada album.</td></tr>';
+            });
+        }
+
+        function fetchVideos() {
+            fetch('/admin/galeri-video').then(r => r.json()).then(res => {
+                const tbody = document.getElementById('galeri-video-tbody');
+                if (!tbody || !res.success) return;
+                tbody.innerHTML = res.data.map((d, i) => {
+                    let youtubeId = null;
+                    if (d.link_youtube) {
+                        const m = d.link_youtube.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/live\/)([^"&?\/ ]{11})/);
+                        if (m) youtubeId = m[1];
+                    }
+                    const thumb = youtubeId ? `https://img.youtube.com/vi/${youtubeId}/default.jpg` : '/images/gedung-poljam.png';
+
+                    return `
+                    <tr class="hover:bg-blue-50/10 border-b border-slate-50 transition-colors">
+                        <td class="px-8 py-4 text-center text-[11px] font-black text-slate-400 uppercase">${String(i+1).padStart(2,'0')}</td>
+                        <td class="px-8 py-4">
+                            <div class="flex items-center gap-4">
+                                <div class="relative w-12 h-8 rounded-lg overflow-hidden group/thumb cursor-pointer" 
+                                     onclick="playDashboardVideo('${d.link_youtube || ''}', '${d.judul.replace(/'/g,"\\'")}')">
+                                    <img src="${thumb}" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center text-white opacity-0 group-hover/thumb:opacity-100 transition-opacity">
+                                        <i class="fas fa-play text-[10px]"></i>
+                                    </div>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-bold text-slate-800 truncate">${d.judul}</p>
+                                    <p class="text-[10px] text-slate-400 max-w-xs truncate">${d.link_youtube || '-'}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-4">
+                            <div class="flex justify-end gap-2">
+                                <button onclick="playDashboardVideo('${d.link_youtube || ''}', '${d.judul.replace(/'/g,"\\'")}')"
+                                    class="text-rose-500 hover:text-rose-700 py-2 px-3 bg-rose-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button onclick="openEditVideo(${d.id}, '${d.judul.replace(/'/g,"\\'")}', '${(d.link_youtube||'').replace(/'/g,"\\'")}', '${(d.deskripsi||'').replace(/'/g,"\\'")}')"
+                                    class="text-blue-500 hover:text-blue-700 py-2 px-3 bg-blue-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
+                                    <i class="fas fa-pen mr-1"></i>
+                                </button>
+                                <button onclick="deleteVideo(${d.id})" class="text-rose-500 hover:text-rose-700 py-2 px-3 bg-rose-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('') || '<tr><td colspan="3" class="px-8 py-10 text-center text-slate-300">Belum ada video.</td></tr>';
+            });
+        }
+
+        function submitUploadAlbum() {
+            const nama = document.getElementById('ga_nama').value;
+            const file = document.getElementById('ga_file').files[0];
+            const link = document.getElementById('ga_link').value;
+            if(!nama) return showToast('Nama album wajib diisi', 'warning');
+
+            const fd = new FormData();
+            fd.append('nama_album', nama);
+            if(file) fd.append('sampul_foto', file);
+            if(link) fd.append('link_extern', link);
+            fd.append('_token', '{{ csrf_token() }}');
+
+            const btn = document.getElementById('uploadAlbumBtn');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengunggah...';
+
+            fetch('/admin/galeri-album/upload', {
+                method: 'POST', 
+                body: fd,
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(r => {
+                if (!r.ok) return r.json().then(err => { throw err; });
+                return r.json();
+            })
+            .then(res => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                if(res.success) { 
+                    showToast(res.message, 'success'); 
+                    toggleUploadForm(); 
+                    fetchAlbums(); 
+                    document.getElementById('uploadGaleriFotoForm').reset();
+                } else {
+                    showToast(res.message || 'Gagal menyimpan.', 'warning');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                console.error(err);
+                let msg = 'Terjadi kesalahan sistem.';
+                if (err.errors) {
+                    msg = Object.values(err.errors).flat().join(' ');
+                } else if (err.message) {
+                    msg = err.message;
+                }
+                showToast(msg, 'warning');
+            });
+        }
+
+        function submitUploadVideo() {
+            const judul = document.getElementById('gv_judul').value;
+            const file = document.getElementById('gv_file').files[0];
+            const desc = document.getElementById('gv_deskripsi').value;
+            if(!judul) return showToast('Judul video wajib diisi', 'warning');
+            if(!file) return showToast('File video wajib diunggah', 'warning');
+
+            const fd = new FormData();
+            fd.append('judul', judul);
+            fd.append('deskripsi', desc);
+            if(file) fd.append('video_file', file);
+            fd.append('_token', '{{ csrf_token() }}');
+
+            const btn = document.getElementById('uploadVideoBtn');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengunggah...';
+
+            fetch('/admin/galeri-video/upload', {
+                method: 'POST', 
+                body: fd,
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(r => {
+                if (!r.ok) return r.json().then(err => { throw err; });
+                return r.json();
+            })
+            .then(res => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                if(res.success) { 
+                    showToast(res.message, 'success'); 
+                    toggleUploadForm(); 
+                    fetchVideos(); 
+                    document.getElementById('uploadGaleriVideoForm').reset();
+                } else {
+                    showToast(res.message || 'Gagal menyimpan.', 'warning');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                console.error(err);
+                let msg = 'Terjadi kesalahan sistem.';
+                if (err.errors) {
+                    msg = Object.values(err.errors).flat().join(' ');
+                } else if (err.message) {
+                    msg = err.message;
+                }
+                showToast(msg, 'warning');
+            });
+        }
+
+        function deleteAlbum(id) {
+            if(!confirm('Hapus album ini secara permanen?')) return;
+            fetch('/admin/galeri-album/' + id, {method: 'DELETE', body: new FormData(), headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}})
+                .then(r => r.json()).then(res => { if(res.success) { showToast(res.message, 'success'); fetchAlbums(); } });
+        }
+
+        function deleteVideo(id) {
+            if(!confirm('Hapus video ini secara permanen?')) return;
+            fetch('/admin/galeri-video/' + id, {method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}})
+                .then(r => r.json()).then(res => { if(res.success) { showToast(res.message, 'success'); fetchVideos(); } });
+        }
+
+        function toggleUploadForm() {
+            const container = document.getElementById('uploadFormContainer');
+            if(!container) return;
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                setTimeout(() => { container.classList.remove('opacity-0', 'translate-y-4'); }, 10);
+            } else {
+                container.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => { container.classList.add('hidden'); }, 300);
+            }
+        }
+
+        // ================================================================
+        // EDIT ALBUM
+        // ================================================================
+        let currentEditAlbumId = null;
+        function openEditAlbum(id, namaAlbum) {
+            currentEditAlbumId = id;
+            document.getElementById('ea_nama').value = namaAlbum;
+            document.getElementById('ea_link').value = '';
+            document.getElementById('editAlbumModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('editAlbumModal').classList.remove('opacity-0');
+                document.getElementById('editAlbumModalBox').classList.remove('scale-95');
+            }, 10);
+        }
+        function closeEditAlbumModal() {
+            document.getElementById('editAlbumModal').classList.add('opacity-0');
+            document.getElementById('editAlbumModalBox').classList.add('scale-95');
+            setTimeout(() => document.getElementById('editAlbumModal').classList.add('hidden'), 200);
+        }
+        function saveEditAlbum() {
+            const nama = document.getElementById('ea_nama').value;
+            const file = document.getElementById('ea_file').files[0];
+            const link = document.getElementById('ea_link').value;
+            if(!nama) return showToast('Nama album wajib diisi', 'warning');
+            const fd = new FormData();
+            fd.append('nama_album', nama);
+            if(file) fd.append('sampul_foto', file);
+            if(link) fd.append('link_extern', link);
+            fd.append('_token', '{{ csrf_token() }}');
+            fetch('/admin/galeri-album/' + currentEditAlbumId + '/update', {
+                method:'POST', 
+                body: fd, 
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(r => {
+                    if (!r.ok) return r.json().then(err => { throw err; });
+                    return r.json();
+                })
+                .then(res => {
+                    if(res.success) { showToast(res.message, 'success'); closeEditAlbumModal(); fetchAlbums(); }
+                    else showToast(res.message || 'Gagal menyimpan.', 'warning');
+                })
+                .catch(err => {
+                    console.error(err);
+                    let msg = 'Gagal memperbarui album.';
+                    if (err.errors) msg = Object.values(err.errors).flat().join(' ');
+                    showToast(msg, 'warning');
+                });
+        }
+
+        // ================================================================
+        // EDIT VIDEO
+        // ================================================================
+        let currentEditVideoId = null;
+        function openEditVideo(id, judul, link, deskripsi) {
+            currentEditVideoId = id;
+            document.getElementById('ev_judul').value = judul.trim();
+            document.getElementById('ev_deskripsi').value = deskripsi.trim();
+            document.getElementById('editVideoModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('editVideoModal').classList.remove('opacity-0');
+                document.getElementById('editVideoModalBox').classList.remove('scale-95');
+            }, 10);
+        }
+        function closeEditVideoModal() {
+            document.getElementById('editVideoModal').classList.add('opacity-0');
+            document.getElementById('editVideoModalBox').classList.add('scale-95');
+            setTimeout(() => document.getElementById('editVideoModal').classList.add('hidden'), 200);
+        }
+        function saveEditVideo() {
+            const judul = document.getElementById('ev_judul').value;
+            const desc = document.getElementById('ev_deskripsi').value;
+            const file = document.getElementById('ev_file').files[0];
+            if(!judul) return showToast('Judul video wajib diisi', 'warning');
+            const fd = new FormData();
+            fd.append('judul', judul);
+            if(desc) fd.append('deskripsi', desc);
+            if(file) fd.append('video_file', file);
+            fd.append('_token', '{{ csrf_token() }}');
+            fetch('/admin/galeri-video/' + currentEditVideoId + '/update', {
+                method:'POST', 
+                body: fd,
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(r => {
+                    if (!r.ok) return r.json().then(err => { throw err; });
+                    return r.json();
+                })
+                .then(res => {
+                    if(res.success) { showToast(res.message, 'success'); closeEditVideoModal(); fetchVideos(); }
+                    else showToast(res.message || 'Gagal menyimpan.', 'warning');
+                })
+                .catch(err => {
+                    console.error(err);
+                    let msg = 'Gagal memperbarui video.';
+                    if (err.errors) msg = Object.values(err.errors).flat().join(' ');
+                    showToast(msg, 'warning');
+                });
+        }
+
+        // ================================================================
+        // MANAGE PHOTOS IN ALBUM
+        // ================================================================
+        let currentManageAlbumId = null;
+
+        function openManagePhotos(id, namaAlbum) {
+            currentManageAlbumId = id;
+            document.getElementById('mp_album_name').innerText = namaAlbum;
+            document.getElementById('managePhotosModal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('managePhotosModal').classList.remove('opacity-0');
+                document.getElementById('managePhotosModalBox').classList.remove('scale-95');
+            }, 10);
+            fetchAlbumPhotos();
+        }
+
+        function closeManagePhotosModal() {
+            document.getElementById('managePhotosModal').classList.add('opacity-0');
+            document.getElementById('managePhotosModalBox').classList.add('scale-95');
+            setTimeout(() => document.getElementById('managePhotosModal').classList.add('hidden'), 200);
+        }
+
+        function fetchAlbumPhotos() {
+            const container = document.getElementById('mp_photos_grid');
+            container.innerHTML = '<div class="col-span-full py-10 text-center"><i class="fas fa-spinner fa-spin text-slate-300 text-2xl"></i></div>';
+            
+            fetch(`/admin/galeri-album/${currentManageAlbumId}/photos`)
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        container.innerHTML = res.data.map(p => `
+                            <div class="relative group rounded-2xl overflow-hidden aspect-square border border-slate-100 bg-slate-50">
+                                <img src="/storage/gallery/${p.file_path}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <button onclick="deletePhoto(${p.id})" class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 transition-colors">
+                                        <i class="fas fa-trash text-[10px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('') || '<div class="col-span-full py-10 text-center text-slate-300 font-semibold uppercase tracking-widest text-[10px]">Belum ada foto di album ini.</div>';
+                    }
+                });
+        }
+
+        function submitAddPhotos() {
+            const files = document.getElementById('mp_files').files;
+            if (files.length === 0) return showToast('Pilih foto terlebih dahulu', 'warning');
+
+            const btn = document.getElementById('mp_upload_btn');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengunggah...';
+
+            const fd = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                fd.append('photos[]', files[i]);
+            }
+            fd.append('_token', '{{ csrf_token() }}');
+
+            fetch(`/admin/galeri-album/${currentManageAlbumId}/photos/upload`, {
+                method: 'POST',
+                body: fd,
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(r => {
+                if (!r.ok) return r.json().then(err => { throw err; });
+                return r.json();
+            })
+            .then(res => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    document.getElementById('mp_files').value = '';
+                    fetchAlbumPhotos();
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                let msg = 'Gagal mengunggah foto.';
+                if (err.errors) msg = Object.values(err.errors).flat().join(' ');
+                showToast(msg, 'warning');
+            });
+        }
+
+        function deletePhoto(id) {
+            if (!confirm('Hapus foto ini?')) return;
+            fetch(`/admin/galeri-foto/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    fetchAlbumPhotos();
+                }
+            });
+        }
+
+        function playDashboardVideo(url, title) {
+            let youtubeId = null;
+            let isLocal = false;
+            if (url) {
+                const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/live\/)([^"&?\/ ]{11})/;
+                const matches = url.match(regex);
+                if (matches && matches[1]) {
+                    youtubeId = matches[1];
+                } else if (!url.startsWith('http')) {
+                    isLocal = true;
+                }
+            }
+
+            if (youtubeId) {
+                Swal.fire({
+                    title: `<span class="text-slate-800 font-bold text-lg">${title}</span>`,
+                    html: `
+                        <div class="aspect-video rounded-2xl overflow-hidden shadow-2xl border border-slate-100 mt-4">
+                            <iframe width="100%" height="100%" 
+                                src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1" 
+                                title="${title}" frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen></iframe>
+                        </div>
+                    `,
+                    background: '#fff',
+                    width: '800px',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    customClass: {
+                        popup: 'rounded-[2.5rem] border border-white shadow-2xl',
+                        closeButton: 'text-slate-400 hover:text-rose-500'
+                    }
+                });
+            } else if (isLocal) {
+                const videoUrl = '/storage/gallery/videos/' + url;
+                Swal.fire({
+                    title: `<span class="text-slate-800 font-bold text-lg">${title}</span>`,
+                    html: `
+                        <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-100 mt-4">
+                            <video width="100%" height="auto" controls autoplay playsinline style="max-height: 70vh;">
+                                <source src="${videoUrl}" type="video/mp4">
+                                Browser Anda tidak mendukung tag pemutar video HTML5.
+                            </video>
+                        </div>
+                    `,
+                    background: '#fff',
+                    width: '800px',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    customClass: {
+                        popup: 'rounded-[2.5rem] border border-white shadow-2xl',
+                        closeButton: 'text-slate-400 hover:text-rose-500'
+                    }
+                });
+            } else {
+                showToast('Url video tidak valid atau video tidak ditemukan.', 'warning');
             }
         }
     </script>
+
+    <!-- EDIT ALBUM MODAL -->
+    <div id="editAlbumModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="editAlbumModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
+            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <div>
+                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Album Foto</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Perbarui nama & sampul album</p>
+                </div>
+                <button onclick="closeEditAlbumModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-10 space-y-5">
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Nama Album <span class="text-rose-500">*</span></label>
+                    <input type="text" id="ea_nama" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Ganti Sampul (Upload - Max 5MB)</label>
+                    <input type="file" id="ea_file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Atau Link Gambar</label>
+                    <input type="text" id="ea_link" placeholder="https://..." class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button onclick="closeEditAlbumModal()" class="px-6 py-3 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors uppercase tracking-widest">Batal</button>
+                    <button onclick="saveEditAlbum()" class="px-6 py-3 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-widest"><i class="fas fa-save mr-1"></i> Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT VIDEO MODAL -->
+    <div id="editVideoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="editVideoModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
+            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <div>
+                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Video</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Perbarui data video</p>
+                </div>
+                <button onclick="closeEditVideoModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-10 space-y-5">
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Video <span class="text-rose-500">*</span></label>
+                    <input type="text" id="ev_judul" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi</label>
+                    <input type="text" id="ev_deskripsi" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Ganti File Video (Lokal - Max 40MB)</label>
+                    <input type="file" id="ev_file" accept="video/mp4,video/x-matroska,video/x-ms-wmv" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button onclick="closeEditVideoModal()" class="px-6 py-3 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors uppercase tracking-widest">Batal</button>
+                    <button onclick="saveEditVideo()" class="px-6 py-3 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-widest"><i class="fas fa-save mr-1"></i> Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MANAGE PHOTOS MODAL -->
+    <div id="managePhotosModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+        <div id="managePhotosModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl overflow-hidden scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]">
+            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Kelola Foto Album</h3>
+                    <p id="mp_album_name" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">Nama Album</p>
+                </div>
+                <button onclick="closeManagePhotosModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="p-10 overflow-y-auto custom-scrollbar flex-grow">
+                <!-- Upload Area -->
+                <div class="mb-10 p-8 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-grow w-full">
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Tambah Foto Baru (Pilih banyak foto sekaligus)</label>
+                            <input type="file" id="mp_files" multiple accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-all cursor-pointer">
+                        </div>
+                        <button id="mp_upload_btn" onclick="submitAddPhotos()" class="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest text-[10px] px-8 py-4 rounded-2xl shadow-lg shadow-emerald-200 transition-all active:scale-95">
+                            <i class="fas fa-upload mr-2"></i> Unggah Foto
+                        </button>
+                    </div>
+                    <p class="text-[9px] text-slate-400 mt-4 leading-relaxed font-semibold uppercase tracking-wider italic">* Ukuran file disarankan di bawah 10MB per foto. Anda dapat memilih beberapa file sekaligus.</p>
+                </div>
+
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daftar Foto dalam Album</h4>
+                </div>
+                
+                <div id="mp_photos_grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <!-- Photos will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

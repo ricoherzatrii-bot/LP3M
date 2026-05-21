@@ -189,6 +189,27 @@ INSERT INTO `galeri_fotos` (`id`, `album_id`, `file_path`, `keterangan`, `create
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `galeri_videos`
+--
+
+CREATE TABLE `galeri_videos` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `judul` varchar(255) NOT NULL,
+  `slug` varchar(255) DEFAULT NULL,
+  `link_youtube` varchar(255) DEFAULT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `thumbnail` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `galeri_videos` (kosong - diisi melalui dashboard)
+--
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `home_counters`
 --
 
