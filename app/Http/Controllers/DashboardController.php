@@ -51,11 +51,11 @@ class DashboardController extends Controller
 
         if (isset($profilSlugs[$title])) {
             return [
-                'type' => 'single',
+                'type' => 'table',
                 'model' => Profil::class,
-                'query' => ['slug' => $profilSlugs[$title]],
+                'query' => ['kategori' => $title],
                 'fields' => ['judul', 'isi_konten'],
-                'defaults' => ['kategori' => 'Profil', 'judul' => $title, 'slug' => $profilSlugs[$title]],
+                'defaults' => ['kategori' => $title, 'judul' => $title],
             ];
         }
 
@@ -75,6 +75,16 @@ class DashboardController extends Controller
                 'query' => ['kategori' => $spmiKategori[$title]],
                 'fields' => ['judul', 'deskripsi', 'nama_file', 'link_eksternal'],
                 'defaults' => ['kategori' => $spmiKategori[$title]],
+            ];
+        }
+
+        if ($title === 'Dokumen SPMI') {
+            return [
+                'type' => 'table',
+                'model' => DokumenSpmi::class,
+                'query' => [],
+                'fields' => ['judul', 'kategori', 'tahun', 'path_file'],
+                'defaults' => [],
             ];
         }
 
@@ -100,8 +110,17 @@ class DashboardController extends Controller
         }
 
         // 4. Capaian Kinerja
+        if ($title === 'Renop') {
+            return [
+                'type' => 'table',
+                'model' => Capaian::class,
+                'query' => ['kategori' => 'Renop'],
+                'fields' => ['judul', 'deskripsi', 'link_file'],
+                'defaults' => ['kategori' => 'Renop'],
+            ];
+        }
+
         $capaianKategori = [
-            'Renop' => ['kategori' => 'Renop'],
             'Capaian Renstra' => ['kategori' => 'Capaian Renstra'],
             'Kepuasan Mahasiswa Poljam' => ['kategori' => 'Kepuasan Mahasiswa', 'sub_kategori' => 'Poljam 2020/2021'],
             'Kepuasan Mahasiswa Prodi' => ['kategori' => 'Kepuasan Mahasiswa', 'sub_kategori' => 'Prodi 2020/2021'],
@@ -122,10 +141,10 @@ class DashboardController extends Controller
         if ($title === 'Kuesioner Dosen & Karyawan') {
             return [
                 'type' => 'table',
-                'model' => Kuesioner::class,
-                'query' => ['kategori' => 'Dosen & Karyawan'],
-                'fields' => ['judul', 'tahun_akademik', 'link_embed_grafik'],
-                'defaults' => ['kategori' => 'Dosen & Karyawan'],
+                'model' => \App\Models\KuesionerDosenKaryawan::class,
+                'query' => [],
+                'fields' => ['tahun_akademik', 'program', 'sangat_setuju', 'setuju', 'cukup_setuju', 'tidak_setuju', 'sangat_tidak_setuju'],
+                'defaults' => [],
             ];
         }
 
@@ -234,10 +253,10 @@ class DashboardController extends Controller
     /**
      * Check if a field is an image field based on its name
      */
-    private function isImageField($field)
+    private function isFileField($field)
     {
         $f = strtolower($field);
-        return str_contains($f, 'gambar') || str_contains($f, 'foto') || str_contains($f, 'file');
+        return str_contains($f, 'gambar') || str_contains($f, 'foto') || str_contains($f, 'file') || str_contains($f, 'dokumen');
     }
 
     /**
@@ -278,14 +297,18 @@ class DashboardController extends Controller
 
             // Handle file uploads for image fields
             foreach ($updateData as $key => $value) {
-                if ($this->isImageField($key)) {
-                    if ($request->hasFile($key)) {
-                        $request->validate([$key => 'image|mimes:jpg,jpeg,png,webp|max:2048']);
-                        // Delete old file if exists
-                        if ($record->$key && \Storage::disk('public')->exists($record->$key)) {
-                            \Storage::disk('public')->delete($record->$key);
-                        }
-                        $updateData[$key] = $request->file($key)->store('artikel', 'public');
+            if ($this->isFileField($key)) {
+                if ($request->hasFile($key)) {
+                    // Check if document or image based on key
+                    $isDoc = str_contains(strtolower($key), 'path_file') || str_contains(strtolower($key), 'link_file');
+                    $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
+                    $request->validate([$key => $rules]);
+                    
+                    // Delete old file if exists
+                    if ($record->$key && \Storage::disk('public')->exists($record->$key)) {
+                        \Storage::disk('public')->delete($record->$key);
+                    }
+                    $updateData[$key] = $request->file($key)->store('uploads', 'public');
                     } else {
                         // If it's an image field but no file uploaded, don't overwrite with empty
                         // Unless the field is explicitly sent as empty (not handled by FormData if not selected)
@@ -294,16 +317,26 @@ class DashboardController extends Controller
                 }
             }
             
-            // Tambahkan auto-slug jika ada judul
-            if (isset($updateData['judul'])) {
-                $updateData['slug'] = Str::slug($updateData['judul']);
-            } elseif (isset($updateData['nama_album'])) {
-                $updateData['slug'] = Str::slug($updateData['nama_album']);
+            try {
+                // Tambahkan auto-slug jika ada judul dan tabel memiliki kolom slug
+                $hasSlugColumn = \Schema::hasColumn((new $modelClass)->getTable(), 'slug');
+                if ($hasSlugColumn) {
+                    if (isset($updateData['judul'])) {
+                        $updateData['slug'] = Str::slug($updateData['judul']);
+                    } elseif (isset($updateData['nama_album'])) {
+                        $updateData['slug'] = Str::slug($updateData['nama_album']);
+                    }
+                }
+
+                $record->update($updateData);
+
+                return response()->json(['success' => true, 'message' => 'Data entri berhasil diperbarui secara permanen!']);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error: ' . $e->getMessage()
+                ]);
             }
-
-            $record->update($updateData);
-
-            return response()->json(['success' => true, 'message' => 'Data entri berhasil diperbarui secara permanen!']);
         }
     }
 
@@ -324,36 +357,49 @@ class DashboardController extends Controller
 
         // Handle file uploads for image fields
         foreach ($insertData as $key => $value) {
-            if ($this->isImageField($key)) {
+            if ($this->isFileField($key)) {
                 if ($request->hasFile($key)) {
-                    $request->validate([$key => 'image|mimes:jpg,jpeg,png,webp|max:2048']);
-                    $insertData[$key] = $request->file($key)->store('artikel', 'public');
+                    // Check if document or image based on key
+                    $isDoc = str_contains(strtolower($key), 'path_file') || str_contains(strtolower($key), 'link_file');
+                    $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
+                    $request->validate([$key => $rules]);
+                    $insertData[$key] = $request->file($key)->store('uploads', 'public');
                 } else {
                     unset($insertData[$key]);
                 }
             }
         }
 
-        // Gabungkan dengan query filter (agar kategori sesuai otomatis) dan default values
-        $finalData = array_merge($mapping['query'], $mapping['defaults'], $insertData);
+        try {
+            // Gabungkan dengan query filter (agar kategori sesuai otomatis) dan default values
+            $finalData = array_merge($mapping['query'], $mapping['defaults'], $insertData);
 
-        // Tambahkan auto-slug
-        if (isset($finalData['judul'])) {
-            $finalData['slug'] = Str::slug($finalData['judul']);
-        } elseif (isset($finalData['nama_album'])) {
-            $finalData['slug'] = Str::slug($finalData['nama_album']);
-        } else {
-            // Fallback for missing title when generating slug
-            $finalData['slug'] = 'post-' . time() . '-' . rand(100, 999);
+            // Tambahkan auto-slug hanya jika tabel memiliki kolom slug
+            $hasSlugColumn = \Schema::hasColumn((new $modelClass)->getTable(), 'slug');
+            if ($hasSlugColumn) {
+                if (isset($finalData['judul'])) {
+                    $finalData['slug'] = Str::slug($finalData['judul']);
+                } elseif (isset($finalData['nama_album'])) {
+                    $finalData['slug'] = Str::slug($finalData['nama_album']);
+                } else {
+                    // Fallback for missing title when generating slug
+                    $finalData['slug'] = 'post-' . time() . '-' . rand(100, 999);
+                }
+            }
+
+            $record = $modelClass::create($finalData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data entri baru berhasil ditambahkan secara permanen ke basis data!',
+                'data' => $record
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
         }
-
-        $record = $modelClass::create($finalData);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data entri baru berhasil ditambahkan secara permanen ke basis data!',
-            'data' => $record
-        ]);
     }
 
     /**

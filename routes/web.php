@@ -84,8 +84,13 @@ Route::post('/admin/add-row', [App\Http\Controllers\DashboardController::class, 
 Route::post('/admin/delete-row', [App\Http\Controllers\DashboardController::class, 'deleteRow'])->name('admin.delete_row');
 
 // Fitur Olah Profil di dalam Back-End Admin
-Route::get('/profil', [ProfilController::class, 'index'])->name('admin.profil.index');
+Route::get('/profil', [ProfilController::class, 'indexAdmin'])->name('admin.profil.index');
 Route::post('/profil', [ProfilController::class, 'store'])->name('admin.profil.store');
+Route::get('/profil/create', [ProfilController::class, 'create'])->name('admin.profil.create');
+Route::post('/profil/save', [ProfilController::class, 'saveData'])->name('admin.profil.save');
+Route::get('/profil/{id}/edit', [ProfilController::class, 'edit'])->name('admin.profil.edit');
+Route::post('/profil/{id}/update', [ProfilController::class, 'update'])->name('admin.profil.update');
+Route::delete('/profil/{id}', [ProfilController::class, 'destroy'])->name('admin.profil.destroy');
 
 // ============================================
 // --- SISTEM MANAJEMEN DOKUMEN SPMI ---
@@ -137,3 +142,14 @@ Route::delete('/admin/kuesioner/pertanyaan/{id}', [\App\Http\Controllers\Kuesion
 
 // Public: Submit Kuesioner Response
 Route::post('/kuesioner/submit', [\App\Http\Controllers\KuesionerPertanyaanController::class, 'submitResponse'])->name('kuesioner.submit');
+
+// ============================================
+// --- MANAJEMEN KUESIONER DOSEN & KARYAWAN ---
+// ============================================
+Route::get('/admin/kuesioner-dosen/data', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'index'])->name('admin.kuesioner_dosen.index');
+Route::post('/admin/kuesioner-dosen/store', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'store'])->name('admin.kuesioner_dosen.store');
+Route::post('/admin/kuesioner-dosen/{id}/update', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'update'])->name('admin.kuesioner_dosen.update');
+Route::delete('/admin/kuesioner-dosen/{id}', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'destroy'])->name('admin.kuesioner_dosen.destroy');
+Route::post('/admin/kuesioner-dosen/import', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'import'])->name('admin.kuesioner_dosen.import');
+Route::get('/admin/kuesioner-dosen/stats', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'getStats'])->name('admin.kuesioner_dosen.stats');
+Route::delete('/admin/kuesioner-dosen/truncate', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'truncate'])->name('admin.kuesioner_dosen.truncate');

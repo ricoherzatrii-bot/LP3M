@@ -43,6 +43,16 @@
                 <article class="custom-prose text-slate-700 dark:text-slate-300 leading-relaxed mb-12">
                     @if(isset($profil->isi_konten) && !empty($profil->isi_konten))
                         {!! $profil->isi_konten !!}
+                        
+                        {{-- Render additional items in the same category if any --}}
+                        @if(isset($profilList) && $profilList->count() > 0)
+                            @foreach($profilList as $item)
+                                <div class="mt-12 pt-12 border-t border-slate-100 dark:border-white/10">
+                                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-6 uppercase">{{ $item->judul }}</h2>
+                                    {!! $item->isi_konten !!}
+                                </div>
+                            @endforeach
+                        @endif
                     @else
                         <p class="italic text-slate-500">Content sedang diproses, silahkan kunjungi beberapa saat lagi...</p>
                     @endif

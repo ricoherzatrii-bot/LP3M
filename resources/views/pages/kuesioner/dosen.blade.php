@@ -209,49 +209,93 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         // --- 1. GROUPED BAR CHART ---
+                        const chartDataRaw = @json($chartData);
+                        const hasData = chartDataRaw && chartDataRaw.length > 0;
+                        
+                        const labels = hasData ? chartDataRaw.map(item => {
+                            let text = item.program;
+                            return text.length > 20 ? text.substring(0, 20) + '...' : text;
+                        }) : ['Belum Ada Data'];
+
+                        const datasets = [
+                            {
+                                label: 'Sangat Setuju',
+                                data: hasData ? chartDataRaw.map(item => item.sangat_setuju) : [0],
+                                backgroundColor: 'rgba(34, 197, 94, 0.85)',
+                                borderRadius: 6,
+                                barPercentage: 0.8,
+                                categoryPercentage: 0.7
+                            },
+                            {
+                                label: 'Setuju',
+                                data: hasData ? chartDataRaw.map(item => item.setuju) : [0],
+                                backgroundColor: 'rgba(59, 130, 246, 0.85)',
+                                borderRadius: 6,
+                                barPercentage: 0.8,
+                                categoryPercentage: 0.7
+                            },
+                            {
+                                label: 'Cukup',
+                                data: hasData ? chartDataRaw.map(item => item.cukup_setuju) : [0],
+                                backgroundColor: 'rgba(234, 179, 8, 0.85)',
+                                borderRadius: 6,
+                                barPercentage: 0.8,
+                                categoryPercentage: 0.7
+                            },
+                            {
+                                label: 'Tidak Setuju',
+                                data: hasData ? chartDataRaw.map(item => item.tidak_setuju) : [0],
+                                backgroundColor: 'rgba(249, 115, 22, 0.85)',
+                                borderRadius: 6,
+                                barPercentage: 0.8,
+                                categoryPercentage: 0.7
+                            },
+                            {
+                                label: 'Sangat Tidak',
+                                data: hasData ? chartDataRaw.map(item => item.sangat_tidak_setuju) : [0],
+                                backgroundColor: 'rgba(239, 68, 68, 0.85)',
+                                borderRadius: 6,
+                                barPercentage: 0.8,
+                                categoryPercentage: 0.7
+                            }
+                        ];
+
                         const ctxBar = document.getElementById('groupedBarChart').getContext('2d');
                         new Chart(ctxBar, {
                             type: 'bar',
                             data: {
-                                labels: ['Januari', 'Februari', 'Maret', 'April'],
-                                datasets: [
-                                    {
-                                        label: 'Realisasi',
-                                        data: [7, 8, 15, 18],
-                                        backgroundColor: 'rgba(244, 63, 94, 0.8)',
-                                        borderRadius: 8,
-                                        barPercentage: 0.8,
-                                        categoryPercentage: 0.6
-                                    },
-                                    {
-                                        label: 'Target',
-                                        data: [6, 8, 10, 14],
-                                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                                        borderRadius: 8,
-                                        barPercentage: 0.8,
-                                        categoryPercentage: 0.6
-                                    },
-                                    {
-                                        label: 'Tahun Lalu',
-                                        data: [5, 4, 5, 8],
-                                        backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                                        borderRadius: 8,
-                                        barPercentage: 0.8,
-                                        categoryPercentage: 0.6
-                                    }
-                                ]
+                                labels: labels,
+                                datasets: datasets
                             },
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
-                                plugins: { legend: { display: false } },
+                                plugins: { 
+                                    legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
+                                    tooltip: {
+                                        mode: 'index',
+                                        intersect: false,
+                                        callbacks: {
+                                            title: function(context) {
+                                                if (hasData) {
+                                                    return chartDataRaw[context[0].dataIndex].program;
+                                                }
+                                                return context[0].label;
+                                            },
+                                            label: function(context) {
+                                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                                            }
+                                        }
+                                    }
+                                },
                                 scales: {
                                     y: { 
                                         beginAtZero: true,
+                                        max: 100,
                                         grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
-                                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                                        ticks: { color: '#94a3b8', font: { size: 10 }, callback: value => value + "%" }
                                     },
-                                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { weight: 'bold' } } }
+                                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } } }
                                 }
                             }
                         });

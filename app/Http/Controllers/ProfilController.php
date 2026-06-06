@@ -82,10 +82,10 @@ class ProfilController extends Controller
      */
     public function show($slug)
     {
-        // 1. Ambil SEMUA data profil untuk dropdown di Navbar (agar menu tetap ada 10)
+        // 1. Ambil SEMUA data profil untuk dropdown di Navbar
         $allProfil = Profil::all(); 
 
-        // 2. Cari data spesifik berdasarkan slug untuk isi konten
+        // 2. Cari data spesifik berdasarkan slug
         $profil = Profil::where('slug', $slug)->first();
 
         // Cek jika data tidak ada
@@ -93,8 +93,13 @@ class ProfilController extends Controller
             return "Data dengan slug ($slug) tidak ditemukan di database.";
         }
 
-        // 3. Kirim variabel 'allProfil' ke view
-        return view('pages.profil.show', compact('profil', 'allProfil'));
+        // 3. Ambil juga semua item pendukung dalam kategori yang sama jika ada
+        $profilList = Profil::where('kategori', $profil->kategori)
+            ->where('id', '!=', $profil->id)
+            ->get();
+
+        // 4. Kirim variabel ke view
+        return view('pages.profil.show', compact('profil', 'allProfil', 'profilList'));
     }
 
     /**
@@ -180,7 +185,16 @@ class ProfilController extends Controller
                                         ->orderBy('tahun_akademik', 'desc')
                                         ->pluck('tahun_akademik');
 
-        return view('pages.kuesioner.dosen', compact('allProfil', 'kuesioner', 'tahunList', 'pertanyaans'));
+        // Ambil data untuk grafik
+        $chartDataQuery = \App\Models\KuesionerDosenKaryawan::query();
+        if ($request->has('tahun_akademik') && $request->tahun_akademik != '') {
+            $chartDataQuery->where('tahun_akademik', $request->tahun_akademik);
+        } elseif ($tahunList->count() > 0) {
+            $chartDataQuery->where('tahun_akademik', $tahunList->first());
+        }
+        $chartData = $chartDataQuery->get();
+
+        return view('pages.kuesioner.dosen', compact('allProfil', 'kuesioner', 'tahunList', 'pertanyaans', 'chartData'));
     }
 
     public function kuesionerMahasiswa(Request $request) {
@@ -315,13 +329,101 @@ class ProfilController extends Controller
         return view('profil', compact('data'));
     }
 
-    public function store(Request $request)
+    public function indexAdmin()
     {
-        Profil::create([
-            'judul' => $request->judul,
-            'isi' => $request->isi
+        $profils = Profil::all();
+        return view('admin.profil.index', compact('profils'));
+    }
+
+    public function create()
+    {
+        $kategoris = [
+            'Visi & Misi',
+            'Tugas Pokok',
+            'Sejarah',
+            'Struktur Organisasi',
+            'Tim Manajemen',
+            'Berita',
+            'Kegiatan',
+            'Profil',
+        ];
+        return view('admin.profil.create', compact('kategoris'));
+    }
+
+    public function edit($id)
+    {
+        $profil = Profil::findOrFail($id);
+        $kategoris = [
+            'Visi & Misi',
+            'Tugas Pokok',
+            'Sejarah',
+            'Struktur Organisasi',
+            'Tim Manajemen',
+            'Berita',
+            'Kegiatan',
+            'Profil',
+        ];
+        return view('admin.profil.edit', compact('profil', 'kategoris'));
+    }
+
+    public function saveData(Request $request)
+    {
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'isi_konten' => 'required|string',
+            'slug' => 'nullable|string|unique:profils,slug',
+            'penulis' => 'nullable|string|max:100',
         ]);
 
-        return redirect('/profil');
+        if (empty($validated['slug'])) {
+            $validated['slug'] = \Illuminate\Support\Str::slug($validated['judul']);
+        }
+
+        Profil::create($validated);
+
+        return redirect()->route('admin.profil.index')->with('success', 'Data profil berhasil ditambahkan!');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $profil = Profil::findOrFail($id);
+
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'isi_konten' => 'required|string',
+            'slug' => 'nullable|string|unique:profils,slug,' . $id,
+            'penulis' => 'nullable|string|max:100',
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = \Illuminate\Support\Str::slug($validated['judul']);
+        }
+
+        $profil->update($validated);
+
+        return redirect()->route('admin.profil.index')->with('success', 'Data profil berhasil diupdate!');
+    }
+
+    public function destroy($id)
+    {
+        $profil = Profil::findOrFail($id);
+        $profil->delete();
+
+        return redirect()->route('admin.profil.index')->with('success', 'Data profil berhasil dihapus!');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'kategori' => 'required|string|max:100',
+            'isi_konten' => 'required|string',
+        ]);
+
+        Profil::create($validated);
+
+        return response()->json(['message' => 'Data berhasil disimpan'], 201);
     }
 }
