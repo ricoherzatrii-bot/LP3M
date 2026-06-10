@@ -13,7 +13,34 @@ use App\Http\Controllers\ProfilController;
 // Mengarah ke halaman depan dulu
 Route::get('/', function () {
     $allProfil = \App\Models\Profil::all();
-    $sliderItems = \App\Models\Artikel::latest()->take(5)->get();
+    $sliders = \App\Models\Slider::orderBy('urutan', 'asc')->get();
+    
+    $sliderItems = collect();
+    if ($sliders->count() > 0) {
+        foreach($sliders as $s) {
+            $sliderItems->push((object)[
+                'judul' => $s->judul,
+                'subjudul' => $s->sub_judul,
+                'gambar' => $s->gambar,
+                'url' => $s->link_url ?? '#',
+                'is_external' => true
+            ]);
+        }
+    } else {
+        // Fallback ke Artikel
+        $articles = \App\Models\Artikel::latest()->take(5)->get();
+        foreach($articles as $a) {
+            $sliderItems->push((object)[
+                'judul' => $a->judul,
+                'subjudul' => Str::limit(strip_tags($a->isi_konten), 100),
+                'gambar' => $a->gambar_fitur,
+                'url' => route('berita.show', $a->slug),
+                'is_external' => false,
+                'created_at' => $a->created_at
+            ]);
+        }
+    }
+
     $beritaList = \App\Models\Artikel::latest()->paginate(6);
     return view('welcome', compact('allProfil', 'sliderItems', 'beritaList'));
 })->name('home');
@@ -98,6 +125,13 @@ Route::delete('/profil/{id}', [ProfilController::class, 'destroy'])->name('admin
 Route::get('/admin/dokumen-spmi', [\App\Http\Controllers\DokumenSpmiController::class, 'index'])->name('admin.dokumen_spmi.index');
 Route::post('/admin/dokumen-spmi/upload', [\App\Http\Controllers\DokumenSpmiController::class, 'store'])->name('admin.dokumen_spmi.store');
 Route::post('/admin/dokumen-spmi/{id}/update', [\App\Http\Controllers\DokumenSpmiController::class, 'update'])->name('admin.dokumen_spmi.update');
+Route::delete('/admin/dokumen-spmi/{id}', [\App\Http\Controllers\DokumenSpmiController::class, 'destroy'])->name('admin.dokumen_spmi.destroy');
+
+// --- SISTEM MANAJEMEN SLIDER HOMEPAGE ---
+Route::get('/admin/slider', [\App\Http\Controllers\SliderController::class, 'index'])->name('admin.slider.index');
+Route::post('/admin/slider', [\App\Http\Controllers\SliderController::class, 'store'])->name('admin.slider.store');
+Route::post('/admin/slider/{id}/update', [\App\Http\Controllers\SliderController::class, 'update'])->name('admin.slider.update');
+Route::delete('/admin/slider/{id}', [\App\Http\Controllers\SliderController::class, 'destroy'])->name('admin.slider.destroy');
 Route::delete('/admin/dokumen-spmi/{id}', [\App\Http\Controllers\DokumenSpmiController::class, 'destroy'])->name('admin.dokumen_spmi.destroy');
 Route::get('/dokumen-spmi/{id}/download', [\App\Http\Controllers\DokumenSpmiController::class, 'download'])->name('dokumen_spmi.download');
 

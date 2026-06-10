@@ -110,36 +110,6 @@
         </div>
     </div>
 
-    <!-- TOP BAR -->
-<div class="bg-[#0056b3] py-3 border-b border-[#004494] w-full">
-    <div class="w-full px-6 lg:px-16 flex justify-between items-center text-[10px] font-bold tracking-widest text-white uppercase">
-        <div class="flex gap-8">
-            <a href="mailto:info@politeknikjambi.ac.id" class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer relative z-50">
-                <i class="fas fa-envelope text-yellow-400"></i> <span class="notranslate">info@politeknikjambi.ac.id</span>
-            </a>
-            <a href="tel:+62741123456" class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer relative z-50">
-                <i class="fas fa-phone text-yellow-400"></i> <span class="notranslate">+62 741 123 456</span>
-            </a>
-        </div>
-        <div class="flex gap-6 items-center">
-            <div class="flex gap-3 border-r pr-6 border-white/20">
-                <a href="https://www.instagram.com/politeknikjambi?igsh=MTJ0bmZzamZyaThz" target="_blank" class="text-white hover:text-yellow-400 transition cursor-pointer relative z-50"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-96VS6wE9FWq" target="_blank" class="text-white hover:text-yellow-400 transition cursor-pointer relative z-50"><i class="fab fa-tiktok"></i></a>
-                <a href="https://youtube.com/@poltekjambi?si=vHzgQPg277MlnDlO" target="_blank" class="text-white hover:text-yellow-400 transition cursor-pointer relative z-50"><i class="fab fa-youtube"></i></a>
-            </div>
-            <div class="flex gap-3 text-white ml-2 relative z-50">
-                <span class="cursor-pointer hover:text-yellow-400 transition flex items-center gap-1" onclick="changeLanguage('id')">
-                    ID <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" class="w-4 h-3 object-cover rounded-sm inline" alt="ID">
-                </span>
-                <span class="text-white/30">|</span>
-                <span class="cursor-pointer hover:text-yellow-400 transition flex items-center gap-1" onclick="changeLanguage('en')">
-                    EN <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" class="w-4 h-3 object-cover rounded-sm inline" alt="EN">
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-
     <!-- NAVIGATION BAR -->
     @include('components.navbar')
 
@@ -155,22 +125,26 @@
             <div id="news-slider" class="relative bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 w-full group">
                 <div id="slider-wrapper" class="relative h-72 md:h-[450px] w-full">
                     @foreach($sliderItems as $index => $item)
-                        <a href="{{ route('berita.show', $item->slug) }}" class="slider-item absolute inset-0 opacity-0 transition-all duration-1000 z-0 {{ $index == 0 ? 'opacity-100 z-10' : '' }}" data-index="{{ $index }}">
+                        <a href="{{ $item->url }}" class="slider-item absolute inset-0 opacity-0 transition-all duration-1000 z-0 {{ $index == 0 ? 'opacity-100 z-10' : '' }}" data-index="{{ $index }}">
                             <div class="relative h-full w-full overflow-hidden">
-                                @if($item->gambar_fitur)
-                                    <img src="{{ asset('storage/' . $item->gambar_fitur) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                @if($item->gambar)
+                                    <img src="{{ asset('storage/' . $item->gambar) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
                                 @else
                                     <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">
                                 @endif
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
                                 <div class="absolute bottom-0 left-0 right-0 p-8 pb-14 md:p-12 md:pb-20">
-                                    <span class="inline-block px-3 py-1 bg-yellow-400 text-[#0056b3] text-[9px] font-black uppercase tracking-widest rounded-full mb-4 shadow-md">Berita Utama</span>
+                                    <span class="inline-block px-3 py-1 bg-yellow-400 text-[#0056b3] text-[9px] font-black uppercase tracking-widest rounded-full mb-4 shadow-md">
+                                        {{ isset($item->is_external) && $item->is_external ? 'Slide Utama' : 'Berita Utama' }}
+                                    </span>
                                     <h3 class="text-white text-3xl md:text-5xl font-bold leading-tight group-hover:text-yellow-400 transition max-w-4xl">{{ $item->judul }}</h3>
+                                    @if(isset($item->created_at))
                                     <div class="flex items-center gap-4 mt-4">
-                                        <span class="text-slate-300 text-xs flex items-center gap-2"><i class="far fa-calendar-alt"></i> {{ $item->created_at ? $item->created_at->translatedFormat('d F Y') : '-' }}</span>
+                                        <span class="text-slate-300 text-xs flex items-center gap-2"><i class="far fa-calendar-alt"></i> {{ $item->created_at->translatedFormat('d F Y') }}</span>
                                     </div>
+                                    @endif
                                     <p class="text-slate-200 text-sm mt-3 line-clamp-2 max-w-3xl opacity-80">
-                                        {!! Str::limit(strip_tags($item->isi_konten), 200) !!}
+                                        {!! $item->subjudul !!}
                                     </p>
                                 </div>
                             </div>

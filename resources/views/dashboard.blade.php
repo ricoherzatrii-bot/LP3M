@@ -243,6 +243,19 @@
                     </div>
                 </div>
 
+                <!-- Modul Slider -->
+                <div class="mb-1">
+                    <button onclick="loadSliderPanel()" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
+                                <i class="fas fa-images text-sm"></i>
+                            </div>
+                            <span class="text-[13px] font-semibold tracking-wide">Slider Homepage</span>
+                        </div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-yellow-400 opacity-0 group-hover:opacity-100 shadow-[0_0_8px_rgba(250,204,21,0.6)]"></div>
+                    </button>
+                </div>
+
                 <div class="text-[10px] font-black text-white uppercase tracking-[0.2em] px-4 mb-4 mt-6 opacity-90">Publikasi & Survei</div>
 
                 <!-- Modul Kuesioner -->
@@ -258,7 +271,7 @@
                     </button>
                     <div id="menuKuesioner" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
                         <a onclick="loadPage('Kuesioner Dosen & Karyawan')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-user-tie opacity-40 text-[10px] w-3 text-center"></i> <span>Kuesioner Dosen & Karyawan</span></a>
-                        <a onclick="loadPage('Kuisioner Mahasiswa')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-user-edit opacity-40 text-[10px] w-3 text-center"></i> <span>Kuisioner Mahasiswa</span></a>
+                        <a onclick="loadPage('Kuesioner Mahasiswa')" class="submenu-item block py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-user-graduate opacity-40 text-[10px] w-3 text-center"></i> <span>Kuesioner Mahasiswa</span></a>
                     </div>
                 </div>
 
@@ -866,6 +879,10 @@
                 loadKuesionerDosenPanel();
                 return;
             }
+            if (title === 'Kuesioner Mahasiswa') {
+                loadKuesionerMahasiswaPanel();
+                return;
+            }
 
 
             currentTitle = title;
@@ -1410,39 +1427,52 @@
                 <!-- Import Form -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                     <div class="lg:col-span-1 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] p-10">
-                        <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 pb-4 border-b border-slate-100">Impor Excel</h3>
+                        <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 pb-4 border-b border-slate-100">Sync Matriks Renstra</h3>
                         <form id="importRenstraForm" onsubmit="event.preventDefault(); submitImportRenstra();" class="space-y-6">
-                            <div class="p-6 rounded-2xl bg-blue-50/50 border border-blue-100/50">
-                                <label class="block text-[11px] font-bold text-blue-400 uppercase tracking-widest mb-3">File Excel (.xlsx)</label>
-                                <input type="file" id="renstra_file" accept=".xlsx,.xls" required
-                                    class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
+                            <div class="p-6 rounded-2xl bg-blue-50/50 border border-blue-100/50 space-y-4">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-blue-400 uppercase tracking-widest mb-3">File Matriks (.xlsx)</label>
+                                    <input type="file" id="renstra_file" accept=".xlsx,.xls" required
+                                        class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-blue-400 uppercase tracking-widest mb-3">Tahun (Opsional - Timpa Tahun di Excel)</label>
+                                    <select id="renstra_import_year" class="w-full bg-white border border-blue-100 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all">
+                                        <option value="">Gunakan Tahun dari Excel</option>
+                                        @foreach(range(date('Y')-5, date('Y')+5) as $y)
+                                            <option value="{{ $y }}">{{ $y }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <button type="submit" id="renstraImportBtn" class="w-full bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-3">
-                                <i class="fas fa-file-import"></i> Mulai Impor
+                                <i class="fas fa-sync-alt"></i> Process & Sync Matrix
                             </button>
-                            <a href="/admin/renstra/template" class="w-full bg-blue-50 text-blue-600 border border-blue-100 font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-blue-100 transition-all flex items-center justify-center gap-3">
-                                <i class="fas fa-download"></i> Download Template
-                            </a>
                             <button type="button" onclick="truncateRenstra()" class="w-full bg-rose-50 text-rose-600 border border-rose-100 font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-rose-100 transition-all flex items-center justify-center gap-3">
                                 <i class="fas fa-trash-alt"></i> Kosongkan Data
                             </button>
                         </form>
                         <div class="mt-8 p-6 rounded-2xl bg-amber-50 border border-amber-100">
-                            <h4 class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-2"><i class="fas fa-info-circle mr-1"></i> Format Excel (6 Kolom)</h4>
+                            <h4 class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-2"><i class="fas fa-info-circle mr-1"></i> Format Matriks (Column A-I)</h4>
                             <p class="text-[10px] text-amber-600 leading-relaxed font-semibold">
-                                Kolom A: Program (Bisa dikosongkan jika sama)<br>
-                                Kolom B: Indikator Kinerja<br>
-                                Kolom C: PIC (Contoh: WD 1)<br>
-                                Kolom D: Target<br>
-                                Kolom E: Realisasi<br>
-                                Kolom F: Tahun (YYYY)
+                                Kolom A: Tahun<br>
+                                Kolom B-I: Pillar Strategic (I - VIII)<br>
+                                Baris 1: Judul/Header Pillar
                             </p>
                         </div>
                     </div>
 
                     <div class="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] overflow-hidden">
                         <div class="px-10 py-7 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                            <h3 class="text-xl font-black text-slate-800 font-display">Data Terdaftar</h3>
+                            <div class="flex items-center gap-6">
+                                <h3 class="text-xl font-black text-slate-800 font-display">Data Terdaftar</h3>
+                                <select id="filter-tahun-renstra" onchange="fetchRenstraList()" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer">
+                                    <option value="">Semua Tahun</option>
+                                    @foreach(range(date('Y')-5, date('Y')+5) as $y)
+                                        <option value="{{ $y }}">{{ $y }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                              <button onclick="fetchRenstraList()" class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 flex items-center justify-center transition-all">
                                 <i class="fas fa-sync-alt text-sm"></i>
                             </button>
@@ -1451,17 +1481,14 @@
                             <table class="w-full text-left border-collapse">
                                 <thead class="bg-slate-50/50 sticky top-0 z-10">
                                     <tr>
-                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Program</th>
-                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Indikator</th>
-                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">PIC</th>
                                         <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Tahun</th>
-                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Target</th>
-                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Realisasi</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Program</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Persentase (Capaian)</th>
                                         <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="renstra-tbody" class="divide-y divide-slate-50">
-                                    <tr><td colspan="6" class="px-8 py-10 text-center text-slate-400 font-medium font-display">Memuat data...</td></tr>
+                                    <tr><td colspan="4" class="px-8 py-10 text-center text-slate-400 font-medium font-display">Memuat data...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1475,20 +1502,33 @@
         function fetchRenstraList() {
             const tbody = document.getElementById('renstra-tbody');
             if(!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="6" class="px-8 py-10 text-center"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>';
+            const filterTahun = document.getElementById('filter-tahun-renstra')?.value || '';
+            tbody.innerHTML = '<tr><td colspan="4" class="px-8 py-10 text-center"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>';
             
             fetch('/admin/renstra')
                 .then(r => r.json())
                 .then(res => {
                     if (res.success && res.data.length > 0) {
-                        tbody.innerHTML = res.data.map(item => `
+                        let filteredData = res.data;
+                        if(filterTahun) {
+                            filteredData = res.data.filter(item => item.tahun == filterTahun);
+                        }
+
+                        tbody.innerHTML = filteredData.map(item => `
                             <tr class="hover:bg-slate-50/50 transition-colors">
-                                <td class="px-8 py-4 text-[10px] font-bold text-blue-600 uppercase tracking-wider">${item.program || '-'}</td>
-                                <td class="px-8 py-4 text-xs font-semibold text-slate-700">${item.indikator}</td>
-                                <td class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase">${item.pic || '-'}</td>
-                                <td class="px-8 py-4 text-xs font-black text-slate-800 text-center">${item.tahun}</td>
-                                <td class="px-8 py-4 text-xs font-bold text-slate-500 text-center">${item.target}%</td>
-                                <td class="px-8 py-4 text-xs font-bold text-emerald-600 text-center">${item.realisasi}%</td>
+                                <td class="px-8 py-4 text-xs font-black text-slate-800 text-center tracking-tighter">${item.tahun}</td>
+                                <td class="px-8 py-4">
+                                    <div class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-0.5">${item.program || '-'}</div>
+                                    <div class="text-[9px] font-medium text-slate-400 uppercase tracking-widest italic">${item.indikator}</div>
+                                </td>
+                                <td class="px-8 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-3">
+                                        <div class="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner flex-shrink-0">
+                                            <div class="h-full bg-emerald-500 rounded-full" style="width: ${item.realisasi}%"></div>
+                                        </div>
+                                        <span class="text-xs font-black text-slate-700">${item.realisasi}%</span>
+                                    </div>
+                                </td>
                                 <td class="px-8 py-4 text-right">
                                     <div class="flex justify-end gap-2">
                                         <button onclick='openRenstraModal(${JSON.stringify(item)})' class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all border border-blue-100"><i class="fas fa-edit text-[10px]"></i></button>
@@ -1497,28 +1537,36 @@
                                 </td>
                             </tr>
                         `).join('');
+
+                        if(filteredData.length === 0 && filterTahun) {
+                             tbody.innerHTML = '<tr><td colspan="4" class="px-8 py-16 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Data untuk tahun ' + filterTahun + ' tidak ditemukan.</td></tr>';
+                        }
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="6" class="px-8 py-16 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Data Renstra masih kosong.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="4" class="px-8 py-16 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Data Renstra masih kosong.</td></tr>';
                     }
                 });
         }
 
         function submitImportRenstra() {
-            const file = document.getElementById('renstra_file').files[0];
+            const fileInput = document.getElementById('renstra_file');
+            const yearOverride = document.getElementById('renstra_import_year')?.value;
+            const file = fileInput.files[0];
             if (!file) return;
 
             const btn = document.getElementById('renstraImportBtn');
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Syncing Matrix...';
 
             const fd = new FormData();
             fd.append('file', file);
+            if (yearOverride) fd.append('tahun_override', yearOverride);
             fd.append('_token', '{{ csrf_token() }}');
 
             fetch('/admin/renstra/import', {
                 method: 'POST',
-                body: fd
+                body: fd,
+                headers: { 'Accept': 'application/json' }
             })
             .then(r => r.json())
             .then(res => {
@@ -1941,8 +1989,21 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengupload...';
 
-            fetch('/admin/dokumen-spmi/upload', { method: 'POST', body: formData })
-                .then(r => r.json())
+            fetch('/admin/dokumen-spmi/upload', { 
+                method: 'POST', 
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(async r => {
+                    const data = await r.json();
+                    if (!r.ok) {
+                        throw new Error(data.message || 'Terjadi kesalahan sistem.');
+                    }
+                    return data;
+                })
                 .then(res => {
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-upload"></i> Upload Dokumen';
@@ -1960,10 +2021,10 @@
                         showToast(res.message || 'Upload gagal.', 'warning');
                     }
                 })
-                .catch(() => {
+                .catch(err => {
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-upload"></i> Upload Dokumen';
-                    showToast('Terjadi kesalahan saat upload.', 'warning');
+                    showToast(err.message || 'Terjadi kesalahan saat upload.', 'warning');
                 });
         }
 
@@ -2029,12 +2090,276 @@
         }
 
         // ================================================================
-        // KUESIONER DOSEN & KARYAWAN — Full CRUD + Excel Import + Chart
+        // SLIDER HOMEPAGE MANAGEMENT
         // ================================================================
-        let kuesionerChart = null;
+        function loadSliderPanel() {
+            currentTitle = 'Slider Homepage';
+            const content = document.getElementById('dynamic-content');
+            content.style.opacity = 0;
+
+            setTimeout(() => {
+                content.innerHTML = `
+                <div class="max-w-7xl mx-auto pb-12">
+                    <!-- Header -->
+                    <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-images"></i></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
+                                <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Visual</p>
+                            </div>
+                            <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Slider Homepage</h2>
+                            <p class="text-slate-500 text-sm mt-2">Kelola gambar slide utama yang tampil di halaman depan website.</p>
+                        </div>
+                        <button onclick="openSliderModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.2)] transition-all hover:-translate-y-1 flex items-center gap-3 relative z-10">
+                            <i class="fas fa-plus"></i> Tambah Slide
+                        </button>
+                    </div>
+
+                    <!-- Slider Cards Grid -->
+                    <div id="slider-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Loading State -->
+                        <div class="col-span-full py-20 text-center">
+                            <i class="fas fa-spinner fa-spin text-4xl text-slate-300"></i>
+                            <p class="mt-4 text-slate-400 font-bold uppercase tracking-widest text-[10px]">Memuat Slide...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDER MODAL -->
+                <div id="sliderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="sliderModalInner">
+                        <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-slate-800 text-xl font-display tracking-tight mb-1" id="sliderModalTitle">Tambah Slide</h3>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Slider Homepage</p>
+                            </div>
+                            <button onclick="closeSliderModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
+                        </div>
+                        <form id="sliderForm" onsubmit="event.preventDefault(); submitSlider();" class="p-10 space-y-5">
+                            <input type="hidden" id="slider_id">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Judul Utama</label>
+                                <input type="text" id="sl_judul" placeholder="Contoh: Implementasi Standar Mutu" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Sub Judul / Deskripsi Singkat</label>
+                                <textarea id="sl_sub_judul" rows="2" placeholder="Deskripsi singkat yang tampil di bawah judul..." class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Urutan Tampil</label>
+                                    <input type="number" id="sl_urutan" value="0" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Link URL (Opsional)</label>
+                                    <input type="text" id="sl_link" placeholder="#" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Gambar Slide (Rekomendasi: 1920x800)</label>
+                                <div id="slider-drop-area" class="relative border-2 border-dashed border-slate-200 hover:border-blue-400 bg-slate-50/50 rounded-2xl p-6 text-center transition-all group cursor-pointer">
+                                    <input type="file" id="sl_gambar" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewSliderImage(this)">
+                                    <div id="sl_preview_container" class="hidden mb-4">
+                                        <img id="sl_preview_img" class="max-h-32 mx-auto rounded-xl shadow-sm border-2 border-white">
+                                    </div>
+                                    <div id="sl_placeholder">
+                                        <i class="fas fa-cloud-upload-alt text-3xl text-slate-300 group-hover:text-blue-500 transition-colors mb-2"></i>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Klik atau seret gambar ke sini</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                                <button type="button" onclick="closeSliderModal()" class="px-6 py-3 text-slate-500 bg-white border border-slate-200 font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 rounded-xl transition-all">Batal</button>
+                                <button type="submit" id="sliderSubmitBtn" class="px-6 py-3 bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all hover:-translate-y-0.5">Simpan Slide</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                `;
+                content.style.opacity = 1;
+                fetchSliderList();
+            }, 300);
+        }
+
+        function fetchSliderList() {
+            const grid = document.getElementById('slider-grid');
+            if(!grid) return;
+
+            fetch('/admin/slider')
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        if (res.data.length === 0) {
+                            grid.innerHTML = `<div class="col-span-full py-20 text-center bg-white/40 rounded-[2rem] border border-dashed border-slate-200">
+                                <i class="fas fa-images text-4xl text-slate-200 mb-4 block"></i>
+                                <p class="text-slate-400 font-bold uppercase tracking-widest text-[11px]">Belum ada slide. Klik "Tambah Slide" di atas.</p>
+                            </div>`;
+                            return;
+                        }
+
+                        grid.innerHTML = res.data.map(m => `
+                            <div class="group relative bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_10px_30px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500">
+                                <div class="aspect-[16/9] w-full overflow-hidden relative">
+                                    <img src="/storage/${m.gambar}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='/images/gedung-poljam.png'">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60"></div>
+                                    <div class="absolute top-4 right-4 flex gap-2">
+                                        <button onclick='openSliderModal(${JSON.stringify(m).replace(/'/g, "&apos;")})' class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-blue-600 shadow-lg flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
+                                        <button onclick="deleteSlider(${m.id})" class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-rose-600 shadow-lg flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
+                                    </div>
+                                    <div class="absolute top-4 left-4">
+                                        <span class="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg">Urutan: ${m.urutan}</span>
+                                    </div>
+                                </div>
+                                <div class="p-8">
+                                    <h4 class="text-slate-800 font-black text-lg line-clamp-1 mb-2 font-display tracking-tight">${m.judul || 'Tanpa Judul'}</h4>
+                                    <p class="text-slate-500 text-xs line-clamp-2 font-medium leading-relaxed mb-4">${m.sub_judul || '-'}</p>
+                                    <div class="flex items-center gap-2 text-[9px] font-black text-blue-500 uppercase tracking-widest">
+                                        <i class="fas fa-link"></i>
+                                        <span class="truncate">${m.link_url || '#'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(() => showToast('Gagal memuat slider.', 'warning'));
+        }
+
+        function openSliderModal(data = null) {
+            const modal = document.getElementById('sliderModal');
+            const inner = document.getElementById('sliderModalInner');
+            const form  = document.getElementById('sliderForm');
+            const title = document.getElementById('sliderModalTitle');
+            
+            form.reset();
+            document.getElementById('slider_id').value = '';
+            document.getElementById('sl_preview_container').classList.add('hidden');
+            document.getElementById('sl_placeholder').classList.remove('hidden');
+
+            if (data) {
+                title.textContent = 'Edit Slide';
+                document.getElementById('slider_id').value = data.id;
+                document.getElementById('sl_judul').value = data.judul || '';
+                document.getElementById('sl_sub_judul').value = data.sub_judul || '';
+                document.getElementById('sl_urutan').value = data.urutan || 0;
+                document.getElementById('sl_link').value = data.link_url || '';
+                
+                if (data.gambar) {
+                    document.getElementById('sl_preview_img').src = '/storage/' + data.gambar;
+                    document.getElementById('sl_preview_container').classList.remove('hidden');
+                    document.getElementById('sl_placeholder').classList.add('hidden');
+                }
+            } else {
+                title.textContent = 'Tambah Slide';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                inner.classList.remove('scale-95', 'opacity-0');
+            }, 50);
+        }
+
+        function closeSliderModal() {
+            const modal = document.getElementById('sliderModal');
+            const inner = document.getElementById('sliderModalInner');
+            inner.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function previewSliderImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('sl_preview_img').src = e.target.result;
+                    document.getElementById('sl_preview_container').classList.remove('hidden');
+                    document.getElementById('sl_placeholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function submitSlider() {
+            const id = document.getElementById('slider_id').value;
+            const btn = document.getElementById('sliderSubmitBtn');
+            const originalText = btn.innerHTML;
+            
+            const fd = new FormData();
+            fd.append('judul', document.getElementById('sl_judul').value);
+            fd.append('sub_judul', document.getElementById('sl_sub_judul').value);
+            fd.append('urutan', document.getElementById('sl_urutan').value);
+            fd.append('link_url', document.getElementById('sl_link').value);
+            fd.append('_token', '{{ csrf_token() }}');
+            
+            const fileInput = document.getElementById('sl_gambar');
+            if (fileInput.files.length > 0) {
+                fd.append('gambar', fileInput.files[0]);
+            } else if (!id) {
+                showToast('Gambar slide wajib diupload!', 'warning');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+
+            const url = id ? `/admin/slider/${id}/update` : '/admin/slider';
+            
+            fetch(url, { method: 'POST', body: fd })
+                .then(r => r.json())
+                .then(res => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    if (res.success) {
+                        showToast(res.message, 'success');
+                        closeSliderModal();
+                        fetchSliderList();
+                    } else {
+                        showToast(res.message || 'Gagal menyimpan.', 'warning');
+                    }
+                })
+                .catch(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    showToast('Terjadi kesalahan server.', 'warning');
+                });
+        }
+
+        function deleteSlider(id) {
+            if (!confirm('Hapus slide ini?')) return;
+            fetch(`/admin/slider/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    fetchSliderList();
+                } else {
+                    showToast(res.message || 'Gagal menghapus.', 'warning');
+                }
+            })
+            .catch(() => showToast('Terjadi kesalahan koneksi.', 'warning'));
+        }
+
+        // ================================================================
+        // KUESIONER MODULES — Shared State
+        // ================================================================
         let kuesionerData = [];
+        let kuesionerChart = null;
         let kuesionerEditId = null;
 
+        let kuesionerDataStudent = [];
+        let kuesionerChartStudent = null;
+        let kuesionerEditIdStudent = null;
+
+        // ================================================================
+        // KUESIONER DOSEN & KARYAWAN — Full CRUD + Excel Import + Chart
+        // ================================================================
         function loadKuesionerDosenPanel() {
             currentTitle = 'Kuesioner Dosen & Karyawan';
             const content = document.getElementById('dynamic-content');
@@ -2489,7 +2814,7 @@
             if (!confirm(msg)) return;
 
             try {
-                const r = await fetch(`/admin/kuesioner-dosen/truncate${tahun ? '?tahun_akademik='+tahun : ''}`, {
+                const r = await fetch(`/admin/kuesioner-dosen/truncate?kategori=Dosen & Karyawan${tahun ? '&tahun_akademik='+tahun : ''}`, {
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
                 });
@@ -2497,7 +2822,7 @@
                 if (res.success) {
                     showToast(res.message, 'success');
                     const selector = document.getElementById('kdFilterTahun');
-                    selector.innerHTML = '<option value="">Semua Tahun</option>';
+                    if (selector) selector.innerHTML = '<option value="">Semua Tahun</option>';
                     initKuesionerPanel();
                 }
             } catch (e) {
@@ -2505,8 +2830,463 @@
             }
         }
 
+        // ================================================================
+        // KUESIONER MAHASISWA — Panel Import + Table + Chart
+        // ================================================================
+        function loadKuesionerMahasiswaPanel() {
+            currentTitle = 'Kuesioner Mahasiswa';
+            const content = document.getElementById('dynamic-content');
+            content.style.opacity = 0;
+
+            setTimeout(() => {
+                content.innerHTML = `
+                <div class="max-w-7xl mx-auto pb-12">
+                    <!-- Header Area -->
+                    <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col lg:flex-row justify-between items-center gap-8 relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-user-graduate"></i></div>
+                        <div class="relative z-10 w-full lg:w-auto text-center lg:text-left">
+                            <div class="flex items-center justify-center lg:justify-start gap-3 mb-3">
+                                <span class="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.6)]"></span>
+                                <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Survei Kepuasan Mahasiswa</p>
+                            </div>
+                            <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter font-display leading-none">Kuesioner Mahasiswa</h2>
+                            <p class="text-slate-500 text-sm mt-4 font-medium">Kelola data kepuasan mahasiswa melalui upload excel dan pantau visualisasi grafiknya.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap justify-center gap-3 relative z-10">
+                            <button onclick="toggleImportKM()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-black uppercase tracking-widest px-6 py-4 rounded-2xl shadow-[0_10px_20px_rgba(79,70,229,0.2)] transition-all hover:-translate-y-1 flex items-center gap-3">
+                                <i class="fas fa-file-excel"></i> Import Excel
+                            </button>
+                            <button onclick="openKMAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest px-6 py-4 rounded-2xl shadow-[0_10px_20px_rgba(16,185,129,0.2)] transition-all hover:-translate-y-1 flex items-center gap-3">
+                                <i class="fas fa-plus"></i> Tambah Data
+                            </button>
+                            <button onclick="truncateKM()" class="bg-white border border-rose-100 text-rose-500 hover:bg-rose-50 text-[11px] font-black uppercase tracking-widest px-6 py-4 rounded-2xl shadow-sm transition-all hover:-translate-y-1 flex items-center gap-3">
+                                <i class="fas fa-trash-alt"></i> Kosongkan
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Import Form -->
+                    <div id="importKMContainer" class="hidden opacity-0 translate-y-4 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-10 mb-8 transition-all duration-300">
+                        <div class="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                            <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Import Data Mahasiswa via Excel</h3>
+                            <button onclick="toggleImportKM()" class="text-slate-400 hover:text-rose-500 transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2"><i class="fas fa-times"></i> Batal</button>
+                        </div>
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-8">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-xs font-black text-indigo-700 mb-1 flex items-center gap-2"><i class="fas fa-info-circle"></i> Format Baru: Excel Pivoted (Horizontal)</h4>
+                                    <p class="text-[10px] text-indigo-500 font-medium leading-relaxed">Aspek Penilaian berada di Baris Header (Kolom C ke kanan). Kriteria (SB, B, K, SK) berada di Baris 2 - 5.</p>
+                                </div>
+                                <span class="bg-indigo-100 text-indigo-700 text-[9px] font-black px-2 py-1 rounded">REKOMENDASI</span>
+                            </div>
+                            <div class="grid grid-cols-5 gap-2 text-center mb-3">
+                                <div class="bg-white rounded-lg py-2 px-1 border border-indigo-100"><p class="text-[8px] font-black text-slate-500">Kolom A</p><p class="text-[9px] font-bold text-slate-400">Tahun</p></div>
+                                <div class="bg-white rounded-lg py-2 px-1 border border-indigo-100"><p class="text-[8px] font-black text-slate-500">Kolom B</p><p class="text-[9px] font-bold text-slate-800">Kriteria</p></div>
+                                <div class="bg-white rounded-lg py-2 px-1 border border-indigo-100 shadow-sm"><p class="text-[8px] font-black text-indigo-500">Kolom C</p><p class="text-[9px] font-bold text-indigo-700 italic">Aspek 1</p></div>
+                                <div class="bg-white rounded-lg py-2 px-1 border border-indigo-100 shadow-sm"><p class="text-[8px] font-black text-indigo-500">Kolom D</p><p class="text-[9px] font-bold text-indigo-700 italic">Aspek 2</p></div>
+                                <div class="bg-white rounded-lg py-2 px-1 border border-indigo-100 shadow-sm"><p class="text-[8px] font-black text-indigo-500">Kolom E</p><p class="text-[9px] font-bold text-indigo-700 italic">dst...</p></div>
+                            </div>
+                            <div class="flex items-center gap-4 text-[9px] text-slate-500 font-bold bg-white/50 p-2 rounded-xl border border-slate-100">
+                                <span class="flex items-center gap-1"><i class="fas fa-check-circle text-emerald-500"></i> Sangat Baik</span>
+                                <span class="flex items-center gap-1"><i class="fas fa-check-circle text-blue-500"></i> Baik</span>
+                                <span class="flex items-center gap-1"><i class="fas fa-check-circle text-orange-500"></i> Kurang</span>
+                                <span class="flex items-center gap-1"><i class="fas fa-check-circle text-rose-500"></i> Sangat Kurang</span>
+                            </div>
+                        </div>
+                        <form id="importKMForm" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Tahun Akademik</label>
+                                <input type="text" id="km_import_tahun" placeholder="Contoh: 2023/2024" required
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Program Studi</label>
+                                <input type="text" id="km_import_prodi" placeholder="Contoh: D3 Mesin" required
+                                    class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                            </div>
+                            <div class="flex-grow">
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">File Excel (.xlsx / .xls)</label>
+                                <input type="file" id="km_import_file" accept=".xlsx, .xls" required
+                                    class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all">
+                            </div>
+                            <div class="md:col-span-3">
+                                <button type="button" onclick="submitImportKM()" id="importKMBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[11px] py-5 rounded-2xl shadow-xl transition-all hover:shadow-2xl hover:-translate-y-0.5">
+                                    <i class="fas fa-cloud-upload-alt mr-2"></i> Jalankan Import Data Mahasiswa
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div class="bg-white/80 backdrop-blur-xl rounded-2xl border border-white shadow-sm p-4 mb-6 flex flex-wrap items-center gap-4">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Filter Tahun:</span>
+                        <select onchange="loadKMTable(this.value)" id="kmFilterTahun" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 min-w-[160px]">
+                            <option value="">Semua Tahun</option>
+                        </select>
+                        <span class="ml-auto text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="kmTotalCount">0 Data</span>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] mb-8">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50/50">
+                                    <tr>
+                                        <th class="px-6 py-5 border-b border-slate-100 w-16 text-center text-[10px] uppercase font-black text-slate-400 tracking-[0.15em]">No</th>
+                                        <th class="px-6 py-5 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-[0.15em]">Tahun & Prodi</th>
+                                        <th class="px-6 py-5 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-[0.15em]">Aspek Penilaian</th>
+                                        <th class="px-6 py-5 border-b border-slate-100 text-center text-[10px] uppercase font-black text-emerald-500 tracking-[0.15em]">SB</th>
+                                        <th class="px-6 py-5 border-b border-slate-100 text-center text-[10px] uppercase font-black text-blue-500 tracking-[0.15em]">B</th>
+                                        <th class="px-6 py-5 border-b border-slate-100 text-center text-[10px] uppercase font-black text-orange-500 tracking-[0.15em]">K</th>
+                                        <th class="px-6 py-5 border-b border-slate-100 text-center text-[10px] uppercase font-black text-rose-500 tracking-[0.15em]">SK</th>
+                                        <th class="px-6 py-5 border-b border-slate-100 text-right w-36 text-[10px] uppercase font-black text-slate-400 tracking-[0.15em]">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="kmTableBody" class="divide-y divide-slate-50">
+                                    <tr><td colspan="9" class="px-6 py-12 text-center font-bold text-slate-300 italic">Memuat data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Chart Section -->
+                    <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] min-h-[450px] flex flex-col">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Visualisasi Data Mahasiswa</h3>
+                                <p class="text-slate-800 font-bold text-lg" id="chartTitleStudent">Grafik Kepuasan Mahasiswa</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shadow-inner border border-indigo-100"><i class="fas fa-graduation-cap"></i></div>
+                        </div>
+                        <div class="flex-grow flex items-center justify-center relative" style="min-height:350px">
+                            <canvas id="kmLiveChart"></canvas>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-slate-100 flex flex-wrap gap-4 justify-center">
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-md" style="background:rgba(34,197,94,0.85)"></span><span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sangat Baik</span></div>
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-md" style="background:rgba(59,130,246,0.85)"></span><span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Baik</span></div>
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-md" style="background:rgba(249,115,22,0.85)"></span><span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Kurang</span></div>
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-md" style="background:rgba(239,68,68,0.85)"></span><span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sangat Kurang</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KM ADD/EDIT MODAL -->
+                <div id="kmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4" style="transition: opacity .3s ease;">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-transform duration-300" id="kmModalInner">
+                        <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-slate-800 text-xl font-display tracking-tight mb-1" id="kmModalTitle">Tambah Data</h3>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kuesioner Mahasiswa</p>
+                            </div>
+                            <button onclick="closeKMModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
+                        </div>
+                        <div class="p-10 space-y-5">
+                            <input type="hidden" id="km_edit_id">
+                             <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Tahun Akademik</label>
+                                    <input type="text" id="km_tahun" placeholder="2023/2024" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Program Studi</label>
+                                    <input type="text" id="km_prodi" placeholder="Contoh: Teknik Informatika" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Aspek Penilaian</label>
+                                <input type="text" id="km_program" placeholder="Contoh: Reliability" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                            </div>
+                            <div class="grid grid-cols-4 gap-3">
+                                <div>
+                                    <label class="block text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-2 text-center">SB (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" id="km_ss" placeholder="0" class="w-full p-3 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-700 bg-slate-50 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] font-black text-blue-500 uppercase tracking-widest mb-2 text-center">B (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" id="km_s" placeholder="0" class="w-full p-3 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-700 bg-slate-50 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] font-black text-orange-500 uppercase tracking-widest mb-2 text-center">K (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" id="km_ts" placeholder="0" class="w-full p-3 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-700 bg-slate-50 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] font-black text-rose-500 uppercase tracking-widest mb-2 text-center">SK (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" id="km_sts" placeholder="0" class="w-full p-3 border border-slate-200 rounded-xl text-center text-sm font-bold text-slate-700 bg-slate-50 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 outline-none transition-all">
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-4 pt-4 border-t border-slate-100">
+                                <button onclick="closeKMModal()" class="px-6 py-3.5 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase">Batal</button>
+                                <button onclick="submitKMForm()" id="kmSubmitBtn" class="px-6 py-3.5 bg-indigo-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(79,70,229,0.25)] hover:bg-indigo-700 transition-all hover:-translate-y-0.5 tracking-widest uppercase">Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+                content.style.opacity = 1;
+                initKuesionerMahasiswaPanel();
+            }, 300);
+        }
+
+        async function initKuesionerMahasiswaPanel() {
+            try {
+                const r = await fetch('/admin/kuesioner-dosen/data?kategori=Mahasiswa');
+                const res = await r.json();
+                if (!res.success) return;
+                
+                kuesionerDataStudent = res.data;
+                const years = res.years;
+                const selector = document.getElementById('kmFilterTahun');
+                if (selector) {
+                    selector.innerHTML = '<option value="">Semua Tahun</option>';
+                    years.forEach(y => {
+                        const opt = document.createElement('option');
+                        opt.value = y; opt.textContent = y;
+                        selector.appendChild(opt);
+                    });
+                }
+                renderKMTable(kuesionerDataStudent);
+                renderKMChart(kuesionerDataStudent);
+            } catch(e) {
+                showToast('Gagal memuat data kuesioner mahasiswa.', 'warning');
+            }
+        }
+
+        async function loadKMTable(tahun = '') {
+            try {
+                const url = `/admin/kuesioner-dosen/data?kategori=Mahasiswa${tahun ? '&tahun_akademik='+encodeURIComponent(tahun) : ''}`;
+                const r = await fetch(url);
+                const res = await r.json();
+                if (!res.success) return;
+                kuesionerDataStudent = res.data;
+                renderKMTable(kuesionerDataStudent);
+                renderKMChart(kuesionerDataStudent);
+            } catch(e) {
+                showToast('Gagal memuat data.', 'warning');
+            }
+        }
+
+        function renderKMTable(data) {
+            const tbody = document.getElementById('kmTableBody');
+            const countEl = document.getElementById('kmTotalCount');
+            if (countEl) countEl.textContent = data.length + ' Data';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-12 text-center font-bold text-slate-300 italic">Belum ada data mahasiswa. Silakan import Excel atau tambah manual.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map((item, idx) => `
+                <tr class="hover:bg-indigo-50/30 transition-colors group">
+                    <td class="px-6 py-5 text-center font-black text-slate-400 text-xs">${idx + 1}</td>
+                    <td class="px-6 py-5 text-xs font-bold text-slate-600">
+                        <div class="flex flex-col gap-1">
+                            <span class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg border border-indigo-100 w-fit">
+                                <i class="fas fa-calendar-alt text-[9px]"></i> ${item.tahun_akademik}
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 bg-slate-50 text-slate-600 px-3 py-1 rounded-lg border border-slate-100 w-fit text-[9px]">
+                                <i class="fas fa-university text-[8px]"></i> ${item.prodi || '-'}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-5 text-sm font-bold text-slate-800">${item.program}</td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-emerald-50 text-emerald-700 text-xs font-black px-2.5 py-1 rounded-lg border border-emerald-100">${item.sangat_setuju}%</span></td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-blue-50 text-blue-700 text-xs font-black px-2.5 py-1 rounded-lg border border-blue-100">${item.setuju}%</span></td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-orange-50 text-orange-700 text-xs font-black px-2.5 py-1 rounded-lg border border-orange-100">${item.tidak_setuju}%</span></td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-rose-50 text-rose-700 text-xs font-black px-2.5 py-1 rounded-lg border border-rose-100">${item.sangat_tidak_setuju}%</span></td>
+                    <td class="px-6 py-5">
+                        <div class="flex justify-end gap-2">
+                            <button onclick="openKMEditModal(${item.id})" class="text-slate-400 hover:text-indigo-600 bg-white border border-slate-200 w-10 h-10 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center transition-all hover:-translate-y-0.5" title="Edit"><i class="fas fa-pen text-xs"></i></button>
+                            <button onclick="deleteKMRow(${item.id})" class="text-slate-400 hover:text-rose-600 bg-white border border-slate-200 w-10 h-10 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center transition-all hover:-translate-y-0.5" title="Hapus"><i class="fas fa-trash text-xs"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderKMChart(data) {
+            const chartTitle = document.getElementById('chartTitleStudent');
+            if (data.length === 0) {
+                if (kuesionerChartStudent) kuesionerChartStudent.destroy();
+                kuesionerChartStudent = null;
+                if (chartTitle) chartTitle.textContent = 'Belum Ada Data';
+                return;
+            }
+
+            const activeTahun = data[0].tahun_akademik;
+            if (chartTitle) chartTitle.textContent = `Kepuasan Mahasiswa — T.A ${activeTahun}`;
+
+            const labels = data.map(i => i.program.length > 20 ? i.program.substring(0, 20) + '...' : i.program);
+            const datasets = [
+                { label: 'Sangat Baik', data: data.map(i => i.sangat_setuju), backgroundColor: 'rgba(34, 197, 94, 0.85)', borderRadius: 6 },
+                { label: 'Baik', data: data.map(i => i.setuju), backgroundColor: 'rgba(59, 130, 246, 0.85)', borderRadius: 6 },
+                { label: 'Kurang', data: data.map(i => i.tidak_setuju), backgroundColor: 'rgba(249, 115, 22, 0.85)', borderRadius: 6 },
+                { label: 'Sangat Kurang', data: data.map(i => i.sangat_tidak_setuju), backgroundColor: 'rgba(239, 68, 68, 0.85)', borderRadius: 6 }
+            ];
+
+            const ctx = document.getElementById('kmLiveChart');
+            if (!ctx) return;
+            if (kuesionerChartStudent) kuesionerChartStudent.destroy();
+            kuesionerChartStudent = new Chart(ctx.getContext('2d'), {
+                type: 'bar',
+                data: { labels, datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function openKMAddModal() {
+            kuesionerEditIdStudent = null;
+            if (document.getElementById('kmModalTitle')) document.getElementById('kmModalTitle').textContent = 'Tambah Data Kuesioner Mahasiswa';
+            document.getElementById('km_edit_id').value = '';
+            document.getElementById('km_tahun').value = '';
+            document.getElementById('km_prodi').value = '';
+            document.getElementById('km_program').value = '';
+            document.getElementById('km_ss').value = '';
+            document.getElementById('km_s').value = '';
+            document.getElementById('km_ts').value = '';
+            document.getElementById('km_sts').value = '';
+            document.getElementById('kmModal').classList.remove('hidden');
+        }
+
+        function openKMEditModal(id) {
+            const item = kuesionerDataStudent.find(d => d.id === id);
+            if (!item) return;
+            kuesionerEditIdStudent = id;
+            document.getElementById('kmModalTitle').textContent = 'Edit Data Kuesioner Mahasiswa';
+            document.getElementById('km_edit_id').value = id;
+            document.getElementById('km_tahun').value = item.tahun_akademik;
+            document.getElementById('km_prodi').value = item.prodi || '';
+            document.getElementById('km_program').value = item.program;
+            document.getElementById('km_ss').value = item.sangat_setuju;
+            document.getElementById('km_s').value = item.setuju;
+            document.getElementById('km_ts').value = item.tidak_setuju;
+            document.getElementById('km_sts').value = item.sangat_tidak_setuju;
+            document.getElementById('kmModal').classList.remove('hidden');
+        }
+
+        function closeKMModal() {
+            document.getElementById('kmModal').classList.add('hidden');
+            kuesionerEditIdStudent = null;
+        }
+
+        async function submitKMForm() {
+            const payload = {
+                tahun_akademik: document.getElementById('km_tahun').value,
+                prodi: document.getElementById('km_prodi').value,
+                program: document.getElementById('km_program').value,
+                kategori: 'Mahasiswa',
+                sangat_setuju: parseFloat(document.getElementById('km_ss').value) || 0,
+                setuju: parseFloat(document.getElementById('km_s').value) || 0,
+                tidak_setuju: parseFloat(document.getElementById('km_ts').value) || 0,
+                sangat_tidak_setuju: parseFloat(document.getElementById('km_sts').value) || 0,
+                cukup_setuju: 0
+            };
+            if (!payload.tahun_akademik || !payload.program) return showToast('Harap isi semua field utama.', 'warning');
+
+            const isEdit = !!kuesionerEditIdStudent;
+            const url = isEdit ? `/admin/kuesioner-dosen/${kuesionerEditIdStudent}/update` : '/admin/kuesioner-dosen/store';
+
+            try {
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const res = await r.json();
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    closeKMModal();
+                    loadKMTable(document.getElementById('kmFilterTahun').value);
+                }
+            } catch (e) { showToast('Gagal menyimpan data.', 'warning'); }
+        }
+
+        async function deleteKMRow(id) {
+            if (!confirm('Hapus data ini?')) return;
+            try {
+                const r = await fetch(`/admin/kuesioner-dosen/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                });
+                const res = await r.json();
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    loadKMTable(document.getElementById('kmFilterTahun').value);
+                }
+            } catch (e) { showToast('Gagal menghapus.', 'warning'); }
+        }
+
+        function toggleImportKM() {
+            const container = document.getElementById('importKMContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                setTimeout(() => container.classList.remove('opacity-0', 'translate-y-4'), 10);
+            } else {
+                container.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => container.classList.add('hidden'), 300);
+            }
+        }
+
+        async function submitImportKM() {
+            const tahun = document.getElementById('km_import_tahun').value;
+            const prodi = document.getElementById('km_import_prodi').value;
+            const file = document.getElementById('km_import_file').files[0];
+            if (!tahun || !prodi || !file) return showToast('Lengkapi form import (Tahun, Prodi, File).', 'warning');
+
+            const btn = document.getElementById('importKMBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengimpor...';
+
+            const fd = new FormData();
+            fd.append('tahun_akademik', tahun);
+            fd.append('prodi', prodi);
+            fd.append('file', file);
+            fd.append('kategori', 'Mahasiswa');
+            fd.append('_token', '{{ csrf_token() }}');
+
+            try {
+                const r = await fetch('/admin/kuesioner-dosen/import', { method: 'POST', body: fd });
+                const res = await r.json();
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    toggleImportKM();
+                    initKuesionerMahasiswaPanel();
+                } else showToast(res.message, 'warning');
+            } catch (e) { showToast('Terjadi kesalahan import.', 'warning'); }
+            finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-cloud-upload-alt mr-2"></i> Jalankan Import Data Mahasiswa';
+            }
+        }
+
+        async function truncateKM() {
+            const tahun = document.getElementById('kmFilterTahun').value;
+            const msg = tahun ? `Hapus data mahasiswa tahun ${tahun}?` : "Hapus SEMUA data kuesioner mahasiswa?";
+            if (!confirm(msg)) return;
+            try {
+                const r = await fetch(`/admin/kuesioner-dosen/truncate?kategori=Mahasiswa${tahun ? '&tahun_akademik='+tahun : ''}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                });
+                const res = await r.json();
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    initKuesionerMahasiswaPanel();
+                }
+            } catch (e) { showToast('Gagal mengosongkan.', 'warning'); }
+        }
+
         // Keep backward compat for old sidebar calls
-        function fetchKuesionerStats(tahun) { loadKuesionerTable(tahun || ''); }
+        function fetchKuesionerStats(tahun) { 
+            if (currentTitle === 'Kuesioner Mahasiswa') loadKMTable(tahun || '');
+            else loadKuesionerTable(tahun || '');
+        }
 
         // ================================================================
         // GALERI FOTO & VIDEO — Fungsi Panel Upload Khusus

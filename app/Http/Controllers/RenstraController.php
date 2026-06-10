@@ -25,21 +25,41 @@ class RenstraController extends Controller
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
-        $selectedYear = $request->get('tahun', $availableYears->first());
+        $selectedYears = $request->get('tahun', [$availableYears->first()]);
+        
+        // Ensure selectedYears is an array (handle comma-separated string from URL if needed)
+        if (!is_array($selectedYears)) {
+            $selectedYears = array_filter(explode(',', $selectedYears));
+        }
 
-        $data = CapaianRenstra::where('tahun', $selectedYear)
+        // Filter valid years
+        $selectedYears = array_filter($selectedYears, function($y) use ($availableYears) {
+            return $availableYears->contains($y);
+        });
+
+        // Default to latest year if empty
+        if (empty($selectedYears)) {
+            $selectedYears = [$availableYears->first()];
+        }
+
+        // Aggregate data across selected years (average target and realisasi per indicator)
+        $data = CapaianRenstra::whereIn('tahun', $selectedYears)
+            ->selectRaw('program, indikator, ROUND(AVG(target), 2) as target, ROUND(AVG(realisasi), 2) as realisasi')
+            ->groupBy('program', 'indikator')
             ->orderBy('program', 'asc')
             ->get()
             ->groupBy('program');
 
-        // Yearly trend for line chart
-        $yearlyStats = CapaianRenstra::selectRaw('tahun, ROUND(AVG(realisasi),1) as avg_realisasi, ROUND(AVG(target),1) as avg_target, COUNT(*) as total_indikator')
+        // Yearly trend for line chart (Sync with selection)
+        $yearlyStats = CapaianRenstra::whereIn('tahun', $selectedYears)
+            ->selectRaw('tahun, ROUND(AVG(realisasi),1) as avg_realisasi, ROUND(AVG(target),1) as avg_target, COUNT(*) as total_indikator')
             ->groupBy('tahun')
             ->orderBy('tahun', 'asc')
             ->get();
 
-        // All-year program stats for horizontal multi-bar chart
-        $allProgramStats = CapaianRenstra::selectRaw('program, tahun, ROUND(AVG(realisasi),2) as avg_realisasi')
+        // All-year program stats for horizontal multi-bar chart (Sync with selection)
+        $allProgramStats = CapaianRenstra::whereIn('tahun', $selectedYears)
+            ->selectRaw('program, tahun, ROUND(AVG(realisasi),2) as avg_realisasi')
             ->groupBy('program', 'tahun')
             ->orderBy('program')
             ->orderBy('tahun')
@@ -54,7 +74,7 @@ class RenstraController extends Controller
             ->get()
             ->groupBy('program');
 
-        return view('pages.renstra', compact('data', 'availableYears', 'selectedYear', 'yearlyStats', 'allProgramStats', 'indicators'));
+        return view('pages.renstra', compact('data', 'availableYears', 'selectedYears', 'yearlyStats', 'allProgramStats', 'indicators'));
     }
 
     public function import(Request $request)
@@ -67,45 +87,60 @@ class RenstraController extends Controller
             if ($xlsx = SimpleXLSX::parse($request->file('file')->path())) {
                 $rows = $xlsx->rows();
                 
-                // Skip first 2 rows (Instruction row and Header row)
-                unset($rows[0], $rows[1]);
+                if (count($rows) < 2) {
+                    return response()->json(['success' => false, 'message' => 'File Excel kosong atau tidak valid.'], 400);
+                }
 
-                $currentProgram = null;
+                $headers = $rows[0]; // Row 0: Tahun, Pillar I, Pillar II, ...
+                unset($rows[0]); // Remove headers
+
+                $yearOverride = $request->input('tahun_override');
+                $importedCount = 0;
 
                 foreach ($rows as $row) {
-                    // Column mapping: A[0]: Program, B[1]: Indikator, C[2]: PIC, D[3]: Target, E[4]: Realisasi, F[5]: Tahun
-                    
-                    // Skip rows where Indikator is empty or just whitespace
-                    $indikator = trim($row[1] ?? '');
-                    
-                    // Propagation logic for Program
-                    $program = trim($row[0] ?? '');
-                    if (!empty($program)) {
-                        $currentProgram = $program;
+                    $tahun = $yearOverride ?: trim($row[0] ?? '');
+                    if (empty($tahun) || !is_numeric($tahun)) continue;
+
+                    // Iterate through pillars (Column B onwards)
+                    for ($i = 1; $i < count($headers); $i++) {
+                        $program = trim($headers[$i] ?? '');
+                        if (empty($program)) continue;
+
+                        $realisasiRaw = $row[$i] ?? 0;
+                        
+                        // Handle percentage string/decimal
+                        if (is_string($realisasiRaw) && str_contains($realisasiRaw, '%')) {
+                            $realisasi = (double) str_replace(['%', ','], ['', '.'], $realisasiRaw);
+                        } else {
+                            $realisasi = (double) $realisasiRaw;
+                            // If user input 0.75 thinking it's 75%, but the frontend expects 75.0, 
+                            // we should check. Usually SimpleXLSX handles numbers.
+                            // If it's less than 1 (except 0), it might be a ratio.
+                            if ($realisasi > 0 && $realisasi <= 1) {
+                                $realisasi *= 100;
+                            }
+                        }
+
+                        // Update or Create
+                        CapaianRenstra::updateOrCreate(
+                            [
+                                'tahun'     => (int) $tahun,
+                                'program'   => $program,
+                                'indikator' => 'Rata-rata Capaian Strategy' // Default indicator for matrix
+                            ],
+                            [
+                                'pic'       => 'LPM', // Default PIC for matrix import
+                                'target'    => 100,  // Target default 100%
+                                'realisasi' => round($realisasi, 2)
+                            ]
+                        );
+                        $importedCount++;
                     }
-
-                    // If both program and indicator are empty, it's likely an empty row between groups
-                    if (empty($indikator) && empty($program)) continue;
-                    
-                    // If it's a section header (program name but no indicator), just update currentProgram
-                    if (empty($indikator) && !empty($program)) continue;
-
-                    // Validate that we have an indicator to save
-                    if (empty($indikator)) continue;
-
-                    CapaianRenstra::create([
-                        'program'   => $currentProgram,
-                        'indikator' => $indikator,
-                        'pic'       => trim($row[2] ?? null),
-                        'target'    => (double) str_replace(',', '.', $row[3] ?? 0),
-                        'realisasi' => (double) str_replace(',', '.', $row[4] ?? 0),
-                        'tahun'     => (int) ($row[5] ?? date('Y'))
-                    ]);
                 }
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Data Capaian Renstra berhasil diimpor dengan format 6 kolom.'
+                    'message' => "Data Matrix Renstra ($importedCount entri) berhasil disinkronisasi."
                 ]);
             } else {
                 return response()->json([

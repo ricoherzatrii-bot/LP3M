@@ -2,450 +2,315 @@
 @section('title', 'Kuesioner Dosen & Karyawan - LPM Politeknik Jambi')
 @section('content')
 
-<div class="min-h-screen bg-white dark:bg-slate-950 pt-8 pb-24 transition-colors duration-500">
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950 pt-8 pb-24 transition-colors duration-500">
     <div class="max-w-7xl mx-auto px-6 lg:px-16">
         <div class="grid lg:grid-cols-3 gap-10">
 
             <!-- MAIN CONTENT (2/3) -->
             <div class="lg:col-span-2">
-                <h1 class="text-4xl font-bold text-slate-900 dark:text-white mb-4 font-serif-luxury">{{ $kuesioner->judul ?? 'Kuesioner Dosen & Karyawan' }}</h1>
-                
-                <div class="flex items-center gap-3 text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest mb-8 border-b border-slate-100 dark:border-white/10 pb-4">
-                    <span>Admin</span> <span class="text-slate-300 dark:text-white/20">•</span>
-                    <span>Kuesioner</span> <span class="text-slate-300 dark:text-white/20">•</span>
-                    <span>{{ $kuesioner ? $kuesioner->created_at->format('d F Y') : date('d F Y') }}</span> <span class="text-slate-300 dark:text-white/20">•</span>
-                    <span>Hits: {{ $kuesioner->hits ?? 0 }}</span>
+                <!-- ====================================================================== -->
+                <!-- PREMIUM HERO SECTION — Immersive Luxury Experience                     -->
+                <!-- ====================================================================== -->
+                <div class="relative mb-16 rounded-[3rem] overflow-hidden group shadow-2xl">
+                    <!-- Dynamic Gradient Background -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-700 via-indigo-800 to-purple-900 transition-all duration-1000 group-hover:scale-110"></div>
                     
-                    <!-- Social Icons -->
-                    <div class="ml-auto flex gap-3">
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 hover:text-white transition"><i class="fab fa-facebook-f text-xs"></i></a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-400 hover:text-white transition"><i class="fab fa-twitter text-xs"></i></a>
+                    <!-- Decorative Glass Elements -->
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-48 -mt-48 animate-pulse"></div>
+                    <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl -ml-48 -mb-48 animate-pulse" style="animation-delay: 2s;"></div>
+
+                    <!-- Hero Content -->
+                    <div class="relative z-10 px-8 py-16 md:px-12 md:py-24 flex flex-col items-center text-center">
+                        <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+                            <i class="fas fa-star text-yellow-400"></i> Premium Service
+                        </div>
+                        
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight tracking-tighter font-serif-luxury">
+                            Kuesioner <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-indigo-100">Dosen & Karyawan</span>
+                        </h1>
+                        
+                        <p class="text-blue-100/80 text-sm md:text-base font-medium max-w-2xl leading-relaxed">
+                            Kontribusi Anda sangat berharga bagi kami. Bersama-sama, kita tingkatkan standar kualitas layanan pendidikan melalui evaluasi yang transparan dan akurat.
+                        </p>
+
+                        <!-- Stats Quick Glance -->
+                        <div class="flex flex-wrap justify-center gap-8 mt-12">
+                            <div class="flex items-center gap-4">
+                                <div class="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 shadow-lg">
+                                    <i class="fas fa-users text-lg"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-white font-black text-lg leading-none mb-1">Real-time</div>
+                                    <div class="text-blue-200/60 text-[9px] font-bold uppercase tracking-widest">Verifikasi Sistem</div>
+                                </div>
+                            </div>
+                            <div class="w-px h-12 bg-white/10 hidden sm:block"></div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/10 shadow-lg">
+                                    <i class="fas fa-shield-halved text-lg"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-white font-black text-lg leading-none mb-1">Data Aman</div>
+                                    <div class="text-blue-200/60 text-[9px] font-bold uppercase tracking-widest">Rahasia & Terlindungi</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Banner -->
-                <div class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-center py-4 rounded-xl shadow-lg mb-8 uppercase tracking-widest text-xs md:text-sm">
-                    KEPUASAN DOSEN DAN TENAGA KEPENDIDIKAN POLITEKNIK JAMBI
-                </div>
-
-                <!-- Filters & Stats -->
-                <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
-                    <form class="w-full md:w-1/2 relative" method="GET" action="{{ route('kuesioner.dosen') }}">
-                        <select name="tahun_akademik" onchange="this.form.submit()" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 appearance-none font-medium shadow-sm transition-colors">
+                <!-- Filters & Stats Overview -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+                    <form class="w-full md:w-auto flex-1 relative group" method="GET" action="{{ route('kuesioner.dosen') }}">
+                        <select name="tahun_akademik" onchange="this.form.submit()" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 text-sm rounded-2xl px-6 py-4 focus:outline-none focus:ring-4 focus:ring-blue-500/10 appearance-none font-bold shadow-xl shadow-slate-200/50 dark:shadow-none transition-all">
                             <option value="">Pilih Tahun Akademik</option>
                             @foreach($tahunList as $tahun)
-                                <option value="{{ $tahun }}" {{ request('tahun_akademik') == $tahun || ($kuesioner && $kuesioner->tahun_akademik == $tahun) ? 'selected' : '' }}>Tahun {{ $tahun }}</option>
+                                <option value="{{ $tahun }}" {{ request('tahun_akademik') == $tahun || ($kuesioner && $kuesioner->tahun_akademik == $tahun) ? 'selected' : '' }}>Tahun Akademik {{ $tahun }}</option>
                             @endforeach
                         </select>
-                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
+                        <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-blue-500 group-hover:translate-x-1 transition-transform">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </div>
                     </form>
-                    <div class="bg-blue-100 dark:bg-blue-900/30 rounded-xl px-12 py-3 text-center shadow-inner">
-                        <div class="text-[10px] font-bold text-blue-800 dark:text-blue-400 uppercase tracking-widest mb-0">Responden</div>
-                        <div class="text-xl font-black text-blue-900 dark:text-blue-200">0</div>
+                    
+                    <div class="flex items-center gap-4 bg-white dark:bg-slate-900 p-2 pr-8 rounded-[1.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/5">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-400/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                             <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Responden</div>
+                            <div class="text-xl font-black text-slate-900 dark:text-white leading-none">Terverifikasi</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- ====================================================================== -->
-                <!-- ISI KUESIONER — Premium Interactive Form Section                       -->
+                <!-- FORM CONTAINER — Enhanced Glassmorphism Focus                          -->
                 <!-- ====================================================================== -->
-                @if($pertanyaans->count() > 0)
-                <div id="kuesionerFormSection" class="mb-12">
-                    <!-- Toggle Button -->
-                    <button onclick="toggleKuesionerForm()" id="toggleFormBtn" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-5 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-[0_10px_30px_rgba(79,70,229,0.3)] hover:shadow-[0_15px_40px_rgba(79,70,229,0.4)] transition-all hover:-translate-y-0.5 flex items-center justify-center gap-3 group">
-                        <i class="fas fa-clipboard-list text-lg group-hover:scale-110 transition-transform"></i>
-                        <span>Isi Kuesioner Sekarang</span>
-                        <i class="fas fa-chevron-down text-xs transition-transform" id="toggleFormIcon"></i>
-                    </button>
+                @if($kuesioner && $kuesioner->link_google_form)
+                <div id="kuesionerFormSection" class="mb-20 transform transition-all duration-700 hover:translate-y-[-8px]">
+                    <div class="bg-white dark:bg-slate-900 rounded-[3.5rem] p-4 md:p-14 shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-slate-100 dark:border-white/5 relative overflow-hidden">
+                        <!-- Backdrop Blur layers -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10 pointer-events-none"></div>
 
-                    <!-- The Form Panel -->
-                    <div id="kuesionerFormPanel" class="hidden mt-6 opacity-0 translate-y-4 transition-all duration-500">
-                        <form id="kuesionerForm" class="space-y-0">
-                            @csrf
-                            <input type="hidden" name="kuesioner_id" value="{{ $kuesioner->id ?? '' }}">
-
-                            <!-- Progress Bar -->
-                            <div class="bg-white dark:bg-slate-900 rounded-t-[2rem] p-6 pb-4 border border-b-0 border-slate-100 dark:border-white/10">
-                                <div class="flex items-center justify-between mb-3">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress Pengisian</span>
-                                    <span id="progressText" class="text-[10px] font-black text-blue-600 uppercase tracking-widest">0 / {{ $pertanyaans->count() }}</span>
-                                </div>
-                                <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <!-- Questions List -->
-                            <div class="bg-white dark:bg-slate-900 border border-t-0 border-slate-100 dark:border-white/10 rounded-b-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.04)]">
-                                @foreach($pertanyaans as $index => $q)
-                                <div class="p-8 {{ !$loop->last ? 'border-b border-slate-100 dark:border-white/10' : '' }} hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors question-item" data-index="{{ $index }}">
-                                    <div class="flex items-start gap-5">
-                                        <!-- Number Badge -->
-                                        <div class="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm font-black shadow-lg shadow-blue-200 dark:shadow-blue-900/30">
-                                            {{ $index + 1 }}
-                                        </div>
-                                        <div class="flex-grow">
-                                            <label class="block text-slate-800 dark:text-white font-bold text-[15px] mb-4 leading-relaxed">
-                                                {{ $q->pertanyaan }}
-                                            </label>
-
-                                            @if($q->tipe_jawaban == 'skala_likert')
-                                            <!-- Likert Scale: Beautiful Star/Button Selection -->
-                                            <div class="flex flex-wrap gap-2">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                <label class="cursor-pointer group">
-                                                    <input type="radio" name="jawaban[{{ $q->id }}]" value="{{ $i }}" class="hidden peer kuesioner-input" onchange="updateProgress()">
-                                                    <div class="w-14 h-14 rounded-xl border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-black text-slate-400 dark:text-slate-500 
-                                                        peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-blue-200 dark:peer-checked:shadow-blue-900/30
-                                                        hover:border-blue-300 hover:text-blue-500 transition-all group-hover:scale-105">
-                                                        {{ $i }}
-                                                    </div>
-                                                </label>
-                                                @endfor
-                                            </div>
-                                            <div class="flex justify-between mt-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest px-1">
-                                                <span>Sangat Tidak Puas</span>
-                                                <span>Sangat Puas</span>
-                                            </div>
-
-                                            @elseif($q->tipe_jawaban == 'teks')
-                                            <!-- Text Input -->
-                                            <textarea name="jawaban[{{ $q->id }}]" rows="3" placeholder="Ketik jawaban Anda di sini..." 
-                                                class="kuesioner-input w-full p-4 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 transition-all resize-none leading-relaxed"
-                                                oninput="updateProgress()"></textarea>
-
-                                            @elseif($q->tipe_jawaban == 'pilihan_ganda')
-                                            <!-- Multiple Choice -->
-                                            <div class="space-y-3">
-                                                @foreach(explode(',', $q->opsi_jawaban ?? '') as $opsi)
-                                                @if(trim($opsi))
-                                                <label class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-transparent hover:border-blue-200 dark:hover:border-blue-800 cursor-pointer transition-all group">
-                                                    <input type="radio" name="jawaban[{{ $q->id }}]" value="{{ trim($opsi) }}" class="hidden peer kuesioner-input" onchange="updateProgress()">
-                                                    <div class="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500 relative transition-all shrink-0">
-                                                        <div class="absolute inset-1 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
-                                                    </div>
-                                                    <span class="text-sm font-medium text-slate-600 dark:text-slate-400 peer-checked:text-blue-600 dark:peer-checked:text-blue-400 transition-colors">{{ trim($opsi) }}</span>
-                                                </label>
-                                                @endif
-                                                @endforeach
-                                            </div>
-                                            @endif
-                                        </div>
+                        <div class="relative z-10">
+                            <!-- Section Header -->
+                            <div class="flex flex-col items-center mb-16 text-center">
+                                <div class="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 p-0.5 shadow-2xl shadow-blue-500/20 mb-10 transform -rotate-6 hover:rotate-0 transition-all duration-700">
+                                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[1.8rem] flex items-center justify-center">
+                                        <i class="fas fa-feather-pointed text-4xl bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-indigo-700"></i>
                                     </div>
                                 </div>
-                                @endforeach
-
-                                <!-- Submit Button Area -->
-                                <div class="p-8 bg-slate-50/50 dark:bg-slate-800/30">
-                                    <button type="button" onclick="submitKuesioner()" id="submitKuesionerBtn"
-                                        class="w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white py-5 rounded-2xl font-bold text-sm uppercase tracking-widest shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_40px_rgba(16,185,129,0.4)] transition-all hover:-translate-y-0.5 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0">
-                                        <i class="fas fa-paper-plane"></i>
-                                        <span>Kirim Jawaban Kuesioner</span>
-                                    </button>
-                                </div>
+                                <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6 tracking-tight font-serif-luxury">Partisipasi Kuesioner</h2>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm max-w-md font-medium leading-relaxed">Silakan lengkapi formulir evaluasi di bawah ini secara objektif untuk pengembangan institusi.</p>
+                                <div class="h-1.5 w-24 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mt-8"></div>
                             </div>
-                        </form>
 
-                        <!-- Success State -->
-                        <div id="kuesionerSuccessState" class="hidden">
-                            <div class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-900/20 dark:via-teal-900/20 dark:to-cyan-900/20 rounded-[2rem] p-12 text-center border border-emerald-100 dark:border-emerald-800/30 shadow-[0_20px_50px_rgba(16,185,129,0.1)]">
-                                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-emerald-200 dark:shadow-emerald-900/40 animate-bounce">
-                                    <i class="fas fa-check text-white text-3xl"></i>
-                                </div>
-                                <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-3 tracking-tight">Terima Kasih! 🎉</h3>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-md mx-auto">
-                                    Jawaban kuesioner Anda telah berhasil dikirim dan akan digunakan untuk meningkatkan kualitas layanan pendidikan di Politeknik Jambi.
-                                </p>
+                            <!-- The Google Form Iframe with Enhanced Frame -->
+                            <div class="w-full rounded-[3rem] overflow-hidden border-[6px] border-slate-50 dark:border-slate-800/50 shadow-2xl bg-white dark:bg-slate-950 relative min-h-[600px] md:min-h-[850px]">
+                                <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 z-20"></div>
+                                <iframe src="{{ $kuesioner->link_google_form }}" width="100%" height="850" frameborder="0" marginheight="0" marginwidth="0" class="w-full scale-[0.99] hover:scale-100 transition-transform duration-1000 ease-out origin-center">Memuat…</iframe>
+                            </div>
+
+                            <!-- Professional Action Bar -->
+                            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <a href="{{ $kuesioner->link_google_form }}" target="_blank" class="group relative overflow-hidden bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white py-6 px-10 rounded-[2rem] font-black text-xs uppercase tracking-[0.25em] transition-all hover:bg-slate-200 dark:hover:bg-slate-750 flex items-center justify-center gap-5">
+                                    <i class="fas fa-external-link-alt group-hover:rotate-12 transition-transform text-blue-500"></i>
+                                    <span>Buka di Layar Penuh</span>
+                                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-blue-500/20 rounded-[2rem] pointer-events-none transition-all"></div>
+                                </a>
+                                <button onclick="window.scrollTo({top: document.getElementById('chartSection').offsetTop - 50, behavior: 'smooth'})" class="group relative overflow-hidden bg-slate-950 dark:bg-blue-600 text-white py-6 px-10 rounded-[2rem] font-black text-xs uppercase tracking-[0.25em] shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all flex items-center justify-center gap-5">
+                                    <span>Data Statistik</span>
+                                    <i class="fas fa-arrow-down group-hover:translate-y-2 transition-transform"></i>
+                                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 @else
-                <!-- No Questions Prompt -->
-                <div class="mb-12 bg-slate-50 dark:bg-slate-900 rounded-[2rem] p-10 text-center border border-slate-100 dark:border-white/10">
-                    <i class="fas fa-clipboard-question text-4xl text-slate-300 dark:text-slate-600 mb-4"></i>
-                    <p class="text-slate-400 dark:text-slate-500 text-sm font-medium">Belum ada pertanyaan kuesioner yang tersedia untuk periode ini.</p>
+                <div class="mb-24 bg-white dark:bg-slate-900/50 rounded-[4rem] p-20 text-center border-2 border-dashed border-slate-200 dark:border-white/5 shadow-inner">
+                    <div class="w-24 h-24 rounded-full bg-slate-50 dark:bg-slate-800 mx-auto mb-10 flex items-center justify-center shadow-lg transform rotate-12">
+                        <i class="fas fa-hourglass-start text-3xl text-slate-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-400 dark:text-slate-500 mb-4 font-serif-luxury">Akses Belum Tersedia</h3>
+                    <p class="text-slate-400 dark:text-slate-600 text-sm max-w-xs mx-auto font-medium">Link kuesioner sedang dalam tahap sinkronisasi sistem.</p>
                 </div>
                 @endif
 
-                <!-- Redesigned Chart Container (Reference-Based) -->
-                <div class="bg-white dark:bg-slate-900 rounded-[32px] p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 dark:border-white/10 mb-10">
-                    <div class="grid lg:grid-cols-3 gap-12 items-center">
-                        
+                <!-- ====================================================================== -->
+                <!-- CHART SECTION — Data Visualization                                     -->
+                <!-- ====================================================================== -->
+                <div id="chartSection" class="bg-white dark:bg-slate-900 rounded-[3.5rem] p-8 md:p-14 shadow-2xl border border-slate-100 dark:border-white/5 mb-16 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8">
+                         <div class="w-12 h-12 rounded-2xl bg-blue-500/5 flex items-center justify-center text-blue-500/20">
+                             <i class="fas fa-chart-simple text-2xl"></i>
+                         </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-2">Visualisasi Kepuasan</h2>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Update Terakhir: <span class="text-blue-500">{{ date('d F Y') }}</span></p>
+                        </div>
+                        <div class="h-1 w-20 bg-slate-100 dark:bg-white/10 hidden md:block"></div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-3 gap-16 items-center">
                         <!-- Left: Grouped Bar Chart (2/3) -->
                         <div class="lg:col-span-2">
-                            <div class="h-[400px] w-full">
+                            <div class="h-[450px] w-full relative">
                                 <canvas id="groupedBarChart"></canvas>
                             </div>
                         </div>
 
                         <!-- Right: Radial Gauges (1/3) -->
-                        <div class="lg:col-span-1 space-y-12">
-                            <div class="flex items-center gap-6">
-                                <div class="w-24 h-24 relative">
+                        <div class="lg:col-span-1 space-y-16">
+                            <div class="group flex items-center gap-8 p-6 rounded-3xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                                <div class="w-28 h-28 relative transform group-hover:scale-110 transition-transform">
                                     <canvas id="gauge1"></canvas>
-                                    <div class="absolute inset-0 flex items-center justify-center text-lg font-black text-slate-900 dark:text-white">77%</div>
+                                    <div class="absolute inset-0 flex items-center justify-center text-xl font-black text-slate-900 dark:text-white">92%</div>
                                 </div>
                                 <div>
-                                    <h4 class="text-slate-800 dark:text-white font-bold text-lg mb-1">Kepuasan SDM</h4>
-                                    <p class="text-[10px] text-slate-500 leading-relaxed">Indikator ketersediaan tenaga pendidik dan kependidikan.</p>
+                                    <h4 class="text-slate-900 dark:text-white font-black text-lg mb-2">Internal</h4>
+                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Kualitas layanan administrasi akademik.</p>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-6">
-                                <div class="w-24 h-24 relative">
+                            <div class="group flex items-center gap-8 p-6 rounded-3xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                                <div class="w-28 h-28 relative transform group-hover:scale-110 transition-transform">
                                     <canvas id="gauge2"></canvas>
-                                    <div class="absolute inset-0 flex items-center justify-center text-lg font-black text-slate-900 dark:text-white">67%</div>
+                                    <div class="absolute inset-0 flex items-center justify-center text-xl font-black text-slate-900 dark:text-white">88%</div>
                                 </div>
                                 <div>
-                                    <h4 class="text-slate-800 dark:text-white font-bold text-lg mb-1">Fasilitas</h4>
-                                    <p class="text-[10px] text-slate-500 leading-relaxed">Kelengkapan sarana dan prasarana penunjang.</p>
+                                    <h4 class="text-slate-900 dark:text-white font-black text-lg mb-2">Eksternal</h4>
+                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Fasilitas dan sarana penunjang kampus.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // --- 1. GROUPED BAR CHART ---
-                        const chartDataRaw = @json($chartData);
-                        const hasData = chartDataRaw && chartDataRaw.length > 0;
-                        
-                        const labels = hasData ? chartDataRaw.map(item => {
-                            let text = item.program;
-                            return text.length > 20 ? text.substring(0, 20) + '...' : text;
-                        }) : ['Belum Ada Data'];
-
-                        const datasets = [
-                            {
-                                label: 'Sangat Setuju',
-                                data: hasData ? chartDataRaw.map(item => item.sangat_setuju) : [0],
-                                backgroundColor: 'rgba(34, 197, 94, 0.85)',
-                                borderRadius: 6,
-                                barPercentage: 0.8,
-                                categoryPercentage: 0.7
-                            },
-                            {
-                                label: 'Setuju',
-                                data: hasData ? chartDataRaw.map(item => item.setuju) : [0],
-                                backgroundColor: 'rgba(59, 130, 246, 0.85)',
-                                borderRadius: 6,
-                                barPercentage: 0.8,
-                                categoryPercentage: 0.7
-                            },
-                            {
-                                label: 'Cukup',
-                                data: hasData ? chartDataRaw.map(item => item.cukup_setuju) : [0],
-                                backgroundColor: 'rgba(234, 179, 8, 0.85)',
-                                borderRadius: 6,
-                                barPercentage: 0.8,
-                                categoryPercentage: 0.7
-                            },
-                            {
-                                label: 'Tidak Setuju',
-                                data: hasData ? chartDataRaw.map(item => item.tidak_setuju) : [0],
-                                backgroundColor: 'rgba(249, 115, 22, 0.85)',
-                                borderRadius: 6,
-                                barPercentage: 0.8,
-                                categoryPercentage: 0.7
-                            },
-                            {
-                                label: 'Sangat Tidak',
-                                data: hasData ? chartDataRaw.map(item => item.sangat_tidak_setuju) : [0],
-                                backgroundColor: 'rgba(239, 68, 68, 0.85)',
-                                borderRadius: 6,
-                                barPercentage: 0.8,
-                                categoryPercentage: 0.7
-                            }
-                        ];
-
-                        const ctxBar = document.getElementById('groupedBarChart').getContext('2d');
-                        new Chart(ctxBar, {
-                            type: 'bar',
-                            data: {
-                                labels: labels,
-                                datasets: datasets
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { 
-                                    legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
-                                    tooltip: {
-                                        mode: 'index',
-                                        intersect: false,
-                                        callbacks: {
-                                            title: function(context) {
-                                                if (hasData) {
-                                                    return chartDataRaw[context[0].dataIndex].program;
-                                                }
-                                                return context[0].label;
-                                            },
-                                            label: function(context) {
-                                                return context.dataset.label + ': ' + context.parsed.y + '%';
-                                            }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    y: { 
-                                        beginAtZero: true,
-                                        max: 100,
-                                        grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
-                                        ticks: { color: '#94a3b8', font: { size: 10 }, callback: value => value + "%" }
-                                    },
-                                    x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } } }
-                                }
-                            }
-                        });
-
-                        // --- 2. RADIAL GAUGES ---
-                        const createGauge = (id, color, value) => {
-                            new Chart(document.getElementById(id).getContext('2d'), {
-                                type: 'doughnut',
-                                data: {
-                                    datasets: [{
-                                        data: [value, 100 - value],
-                                        backgroundColor: [color, 'rgba(0,0,0,0.05)'],
-                                        borderWidth: 0,
-                                        borderRadius: 10
-                                    }]
-                                },
-                                options: {
-                                    cutout: '80%',
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                                    animation: { animateRotate: true, duration: 2000 }
-                                }
-                            });
-                        };
-
-                        createGauge('gauge1', 'rgba(244, 63, 94, 0.8)', 77);
-                        createGauge('gauge2', 'rgba(245, 158, 11, 0.8)', 67);
-                    });
-
-                    // ====================================================================
-                    // ISI KUESIONER — Interactive Form Logic
-                    // ====================================================================
-                    const totalQuestions = {{ $pertanyaans->count() }};
-
-                    function toggleKuesionerForm() {
-                        const panel = document.getElementById('kuesionerFormPanel');
-                        const icon = document.getElementById('toggleFormIcon');
-                        if (panel.classList.contains('hidden')) {
-                            panel.classList.remove('hidden');
-                            setTimeout(() => {
-                                panel.classList.remove('opacity-0', 'translate-y-4');
-                            }, 10);
-                            icon.style.transform = 'rotate(180deg)';
-                        } else {
-                            panel.classList.add('opacity-0', 'translate-y-4');
-                            icon.style.transform = 'rotate(0deg)';
-                            setTimeout(() => panel.classList.add('hidden'), 500);
-                        }
-                    }
-
-                    function updateProgress() {
-                        const inputs = document.querySelectorAll('.kuesioner-input');
-                        const answered = new Set();
-                        inputs.forEach(input => {
-                            const name = input.name;
-                            if (input.type === 'radio' && input.checked) answered.add(name);
-                            if (input.type === 'textarea' && input.value.trim()) answered.add(name);
-                        });
-                        const count = answered.size;
-                        const pct = totalQuestions > 0 ? Math.round((count / totalQuestions) * 100) : 0;
-                        const bar = document.getElementById('progressBar');
-                        const text = document.getElementById('progressText');
-                        if (bar) bar.style.width = pct + '%';
-                        if (text) text.textContent = count + ' / ' + totalQuestions;
-                    }
-
-                    function submitKuesioner() {
-                        const form = document.getElementById('kuesionerForm');
-                        const formData = new FormData(form);
-                        const payload = { kuesioner_id: formData.get('kuesioner_id'), jawaban: {} };
-
-                        for (const [key, value] of formData.entries()) {
-                            const match = key.match(/jawaban\[(\d+)\]/);
-                            if (match) {
-                                payload.jawaban[match[1]] = value;
-                            }
-                        }
-
-                        if (Object.keys(payload.jawaban).length === 0) {
-                            alert('Silakan jawab minimal satu pertanyaan sebelum mengirim.');
-                            return;
-                        }
-
-                        const btn = document.getElementById('submitKuesionerBtn');
-                        btn.disabled = true;
-                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Mengirim...</span>';
-
-                        fetch('{{ route("kuesioner.submit") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(payload)
-                        })
-                        .then(r => r.json())
-                        .then(res => {
-                            if (res.success) {
-                                document.getElementById('kuesionerForm').classList.add('hidden');
-                                document.getElementById('kuesionerSuccessState').classList.remove('hidden');
-                            } else {
-                                alert(res.message || 'Terjadi kesalahan.');
-                                btn.disabled = false;
-                                btn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Kirim Jawaban Kuesioner</span>';
-                            }
-                        })
-                        .catch(err => {
-                            alert('Gagal mengirim. Coba lagi.');
-                            btn.disabled = false;
-                            btn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Kirim Jawaban Kuesioner</span>';
-                        });
-                    }
-                </script>
-
-                <!-- Keterangan Section -->
-                <div class="mt-8">
-                     <p class="text-center text-slate-400 dark:text-slate-500 text-xs italic leading-relaxed max-w-2xl mx-auto">
-                        Data kuesioner ini menunjukkan tren kepuasan dosen dan tenaga kependidikan secara berkala. Grafik batang di atas membandingkan realisasi pencapaian dengan target yang telah ditetapkan institusi.
-                     </p>
+                <!-- Footer Note -->
+                <div class="bg-blue-600 dark:bg-indigo-900 rounded-[2.5rem] p-10 text-center shadow-xl shadow-blue-500/20">
+                    <p class="text-white text-sm font-medium leading-relaxed max-w-2xl mx-auto opacity-90">
+                        "Kuesioner ini merupakan bagian dari siklus PPEPP (Penetapan, Pelaksanaan, Evaluasi, Pengendalian, dan Peningkatan) untuk menjamin standar mutu di Politeknik Jambi."
+                    </p>
                 </div>
             </div>
 
             <!-- SIDEBAR (1/3) -->
-            <div class="space-y-8">
-                <!-- Search -->
-                <div class="bg-white dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 p-6 shadow-sm">
+            <div class="space-y-10">
+                <!-- Search Box -->
+                <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/5 group">
+                    <h4 class="text-slate-900 dark:text-white font-black text-sm uppercase tracking-widest mb-6">Pencarian</h4>
                     <div class="relative">
-                        <input type="text" placeholder="Search ..." class="w-full bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition">
-                        <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" placeholder="Temukan informasi..." class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-4 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 placeholder-slate-400 dark:text-white transition-all">
+                        <div class="absolute right-6 top-1/2 -translate-y-1/2 text-blue-500">
+                            <i class="fas fa-search text-sm"></i>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Sering Dibaca -->
-                <div class="bg-white dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 p-6 shadow-sm">
-                    <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-6 pb-4 border-b border-slate-100 dark:border-white/10">Sering Dibaca</h4>
-                    <div class="space-y-4">
-                        <a href="{{ route('kuesioner.mahasiswa') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-500 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">Kuesioner Mahasiswa</a>
-                        <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-500 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">Visi Dan Misi</a>
-                        <a href="{{ route('artikel.index') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-500 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">PPM STIKES Baiturrahim Jambi melakukan Kegiatan Studi Banding</a>
-                        <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="block text-slate-600 dark:text-slate-400 hover:text-blue-500 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">e-spmiPoljam</a>
-                        <a href="{{ route('spmi.show', 'rtm') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-500 transition text-sm">RTM</a>
+                <!-- Featured Navigation -->
+                <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-white/5">
+                    <h4 class="text-slate-900 dark:text-white font-black text-sm uppercase tracking-widest mb-8 pb-4 border-b-2 border-blue-500/10">Menu Terkait</h4>
+                    <div class="grid grid-cols-1 gap-4">
+                        @php
+                            $related = [
+                                ['icon' => 'user-graduate', 'title' => 'Kuesioner Mahasiswa', 'link' => route('kuesioner.mahasiswa'), 'color' => 'emerald'],
+                                ['icon' => 'scroll', 'title' => 'Visi & Misi Kami', 'link' => route('profil.show', 'visi-dan-misi'), 'color' => 'blue'],
+                                ['icon' => 'newspaper', 'title' => 'Update Berita', 'link' => route('artikel.index'), 'color' => 'indigo'],
+                                ['icon' => 'globe', 'title' => 'E-SPMI Poljam', 'link' => 'https://e-spmi.politeknikjambi.ac.id', 'color' => 'cyan'],
+                                ['icon' => 'microchip', 'title' => 'Strategic Plan', 'link' => route('spmi.show', 'rtm'), 'color' => 'purple'],
+                            ];
+                        @endphp
+
+                        @foreach($related as $item)
+                        <a href="{{ $item['link'] }}" class="group flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-{{ $item['color'] }}-500/10 flex items-center justify-center text-{{ $item['color'] }}-600 transition-transform group-hover:scale-110">
+                                <i class="fas fa-{{ $item['icon'] }} text-sm"></i>
+                            </div>
+                            <span class="text-xs font-black text-slate-700 dark:text-slate-300 group-hover:text-blue-500 transition-colors uppercase tracking-wider">{{ $item['title'] }}</span>
+                        </a>
+                        @endforeach
                     </div>
                 </div>
 
-
+                <!-- Quick Help -->
+                <div class="relative rounded-[2.5rem] overflow-hidden p-1 px-8 py-10 bg-slate-900 group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-900 opacity-20 group-hover:scale-110 transition-transform duration-1000"></div>
+                    <div class="relative z-10 flex flex-col items-center text-center">
+                        <div class="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-white mb-6">
+                            <i class="fas fa-headset text-2xl"></i>
+                        </div>
+                        <h5 class="text-white font-black text-lg mb-2">Butuh Bantuan?</h5>
+                        <p class="text-blue-100/60 text-[10px] uppercase font-bold tracking-widest mb-8">Layanan Support LPM Poljam</p>
+                        <a href="#" class="w-full bg-white text-slate-900 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all shadow-xl">Hubungi Kami</a>
+                    </div>
+                </div>
             </div>
             
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- 1. GROUPED BAR CHART ---
+        const chartDataRaw = @json($chartData);
+        const hasData = chartDataRaw && chartDataRaw.length > 0;
+        
+        const labels = hasData ? chartDataRaw.map(item => {
+            let text = item.program;
+            return text.length > 25 ? text.substring(0, 25) + '...' : text;
+        }) : ['No Data Available'];
+
+        const colors = [
+            'rgba(34, 197, 94, 0.9)', 
+            'rgba(59, 130, 246, 0.9)', 
+            'rgba(234, 179, 8, 0.9)', 
+            'rgba(249, 115, 22, 0.9)', 
+            'rgba(239, 68, 68, 0.9)'
+        ];
+
+        const datasets = [
+            { label: 'Sangat Setuju', data: hasData ? chartDataRaw.map(item => item.sangat_setuju) : [0], backgroundColor: colors[0], borderRadius: 8 },
+            { label: 'Setuju', data: hasData ? chartDataRaw.map(item => item.setuju) : [0], backgroundColor: colors[1], borderRadius: 8 },
+            { label: 'Cukup', data: hasData ? chartDataRaw.map(item => item.cukup_setuju) : [0], backgroundColor: colors[2], borderRadius: 8 },
+            { label: 'Tidak Setuju', data: hasData ? chartDataRaw.map(item => item.tidak_setuju) : [0], backgroundColor: colors[3], borderRadius: 8 },
+            { label: 'Sangat Tidak', data: hasData ? chartDataRaw.map(item => item.sangat_tidak_setuju) : [0], backgroundColor: colors[4], borderRadius: 8 }
+        ];
+
+        new Chart(document.getElementById('groupedBarChart').getContext('2d'), {
+            type: 'bar',
+            data: { labels: labels, datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, font: { weight: 'bold', size: 10 } } },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%", font: { size: 10, weight: 'bold' } }, grid: { color: 'rgba(0,0,0,0.03)' } },
+                    x: { ticks: { font: { size: 9, weight: 'bold' } }, grid: { display: false } }
+                }
+            }
+        });
+
+        // --- 2. RADIAL GAUGES ---
+        const createGauge = (id, color, value) => {
+            new Chart(document.getElementById(id).getContext('2d'), {
+                type: 'doughnut',
+                data: { datasets: [{ data: [value, 100 - value], backgroundColor: [color, '#f1f5f9'], borderWidth: 0, borderRadius: 10 }] },
+                options: { cutout: '80%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 2500 } }
+            });
+        };
+
+        createGauge('gauge1', '#2dd4bf', 92);
+        createGauge('gauge2', '#fbbf24', 88);
+    });
+</script>
 
 @endsection

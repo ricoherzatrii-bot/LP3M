@@ -136,8 +136,11 @@
 
                 @if($dokumen->count() > 0)
 
-                {{-- Group by Tahun --}}
-                @foreach($dokumen->groupBy('tahun') as $tahun => $docs)
+                {{-- Group by Tahun (Ensure descending order is maintained) --}}
+                @php
+                    $groupedDocs = $dokumen->groupBy('tahun')->sortKeysDesc();
+                @endphp
+                @foreach($groupedDocs as $tahun => $docs)
                 <div class="mb-10">
                     {{-- Year Header --}}
                     <div class="flex items-center gap-4 mb-5">

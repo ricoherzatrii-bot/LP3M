@@ -13,6 +13,7 @@ use App\Models\Berita;
 use App\Models\Artikel;
 use App\Models\GaleriAlbum;
 use App\Models\GaleriVideo;
+use App\Models\DokumenSpmi;
 
 class DashboardController extends Controller
 {
@@ -138,22 +139,22 @@ class DashboardController extends Controller
         }
 
         // 5. Kuesioner
-        if ($title === 'Kuesioner Dosen & Karyawan') {
+        if ($title === 'Data Statistik Kuesioner') {
             return [
                 'type' => 'table',
                 'model' => \App\Models\KuesionerDosenKaryawan::class,
                 'query' => [],
-                'fields' => ['tahun_akademik', 'program', 'sangat_setuju', 'setuju', 'cukup_setuju', 'tidak_setuju', 'sangat_tidak_setuju'],
-                'defaults' => [],
+                'fields' => ['tahun_akademik', 'kategori', 'prodi', 'program', 'sangat_setuju', 'setuju', 'cukup_setuju', 'tidak_setuju', 'sangat_tidak_setuju'],
+                'defaults' => ['kategori' => 'Dosen & Karyawan'],
             ];
         }
 
-        if ($title === 'Kuisioner Mahasiswa' || $title === 'Kuesioner Mahasiswa') {
+        if ($title === 'Kuesioner' || $title === 'Konfigurasi Kuesioner' || $title === 'Kuesioner Mahasiswa') {
             return [
                 'type' => 'table',
                 'model' => Kuesioner::class,
-                'query' => ['kategori' => 'Mahasiswa'],
-                'fields' => ['judul', 'prodi', 'tahun_akademik', 'link_embed_grafik'],
+                'query' => ($title === 'Kuesioner Mahasiswa' ? ['kategori' => 'Mahasiswa'] : []),
+                'fields' => ['judul', 'kategori', 'tahun_akademik', 'link_google_form', 'link_embed_grafik'],
                 'defaults' => ['kategori' => 'Mahasiswa'],
             ];
         }

@@ -15,6 +15,7 @@ class Kuesioner extends Model
         'tahun_akademik',
         'isi_artikel',
         'link_embed_grafik',
+        'link_google_form',
         'slug',
         'hits'
     ];

@@ -14,50 +14,64 @@ class DokumenSpmiController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'judul'      => 'required|string|max:255',
-            'tahun'      => 'required|integer|min:2000|max:2099',
-            'deskripsi'  => 'nullable|string',
-            'kategori'   => 'nullable|string',
-            'file'       => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
-        ]);
+        try {
+            $request->validate([
+                'judul'      => 'required|string|max:255',
+                'tahun'      => 'required|integer|min:2000|max:2099',
+                'deskripsi'  => 'nullable|string',
+                'kategori'   => 'nullable|string',
+                'file'       => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
+            ]);
 
-        $file       = $request->file('file');
-        $namaAsli   = $file->getClientOriginalName();
-        $ekstensi   = strtolower($file->getClientOriginalExtension());
-        $namaFile   = Str::slug($request->judul) . '-' . $request->tahun . '-' . time() . '.' . $ekstensi;
-        $path       = $file->storeAs('dokumen_spmi', $namaFile, 'public');
-        $ukuran     = $this->formatBytes($file->getSize());
+            $file       = $request->file('file');
+            $namaAsli   = $file->getClientOriginalName();
+            $ekstensi   = strtolower($file->getClientOriginalExtension());
+            $namaFile   = Str::slug($request->judul) . '-' . $request->tahun . '-' . time() . '.' . $ekstensi;
+            $path       = $file->storeAs('dokumen_spmi', $namaFile, 'public');
+            $ukuran     = $this->formatBytes($file->getSize());
 
-        $dokumen = DokumenSpmi::create([
-            'judul'      => $request->judul,
-            'tahun'      => $request->tahun,
-            'deskripsi'  => $request->deskripsi,
-            'nama_file'  => $namaAsli,
-            'path_file'  => $path,
-            'ukuran_file'=> $ukuran,
-            'tipe_file'  => $ekstensi,
-            'kategori'   => $request->kategori ?? 'Dokumen SPMI',
-            'slug'       => Str::slug($request->judul),
-        ]);
+            $dokumen = DokumenSpmi::create([
+                'judul'      => $request->judul,
+                'tahun'      => $request->tahun,
+                'deskripsi'  => $request->deskripsi,
+                'nama_file'  => $namaAsli,
+                'path_file'  => $path,
+                'ukuran_file'=> $ukuran,
+                'tipe_file'  => $ekstensi,
+                'kategori'   => $request->kategori ?? 'Dokumen SPMI',
+                'slug'       => Str::slug($request->judul),
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Dokumen "' . $request->judul . '" berhasil diupload!',
-            'data'    => [
-                'id'          => $dokumen->id,
-                'judul'       => $dokumen->judul,
-                'tahun'       => $dokumen->tahun,
-                'deskripsi'   => $dokumen->deskripsi,
-                'nama_file'   => $dokumen->nama_file,
-                'ukuran_file' => $dokumen->ukuran_file,
-                'tipe_file'   => $dokumen->tipe_file,
-                'kategori'    => $dokumen->kategori,
-                'file_url'    => $dokumen->file_url,
-                'icon_class'  => $dokumen->icon_class,
-                'created_at'  => $dokumen->created_at->format('d M Y'),
-            ],
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Dokumen "' . $request->judul . '" berhasil diupload!',
+                'data'    => [
+                    'id'          => $dokumen->id,
+                    'judul'       => $dokumen->judul,
+                    'tahun'       => $dokumen->tahun,
+                    'deskripsi'   => $dokumen->deskripsi,
+                    'nama_file'   => $dokumen->nama_file,
+                    'ukuran_file' => $dokumen->ukuran_file,
+                    'tipe_file'   => $dokumen->tipe_file,
+                    'kategori'    => $dokumen->kategori,
+                    'file_url'    => $dokumen->file_url,
+                    'icon_class'  => $dokumen->icon_class,
+                    'created_at'  => $dokumen->created_at->format('d M Y'),
+                ],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal: ' . implode(', ', array_flatten($e->errors())),
+                'errors'  => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Upload Dokumen Gagal: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -65,63 +79,77 @@ class DokumenSpmiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $dokumen = DokumenSpmi::findOrFail($id);
+        try {
+            $dokumen = DokumenSpmi::findOrFail($id);
 
-        $request->validate([
-            'judul'     => 'required|string|max:255',
-            'tahun'     => 'required|integer|min:2000|max:2099',
-            'deskripsi' => 'nullable|string',
-            'kategori'  => 'nullable|string',
-            'file'      => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
-        ]);
+            $request->validate([
+                'judul'     => 'required|string|max:255',
+                'tahun'     => 'required|integer|min:2000|max:2099',
+                'deskripsi' => 'nullable|string',
+                'kategori'  => 'nullable|string',
+                'file'      => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
+            ]);
 
-        $updateData = [
-            'judul'    => $request->judul,
-            'tahun'    => $request->tahun,
-            'deskripsi'=> $request->deskripsi,
-            'kategori' => $request->kategori ?? $dokumen->kategori,
-            'slug'     => Str::slug($request->judul),
-        ];
+            $updateData = [
+                'judul'    => $request->judul,
+                'tahun'    => $request->tahun,
+                'deskripsi'=> $request->deskripsi,
+                'kategori' => $request->kategori ?? $dokumen->kategori,
+                'slug'     => Str::slug($request->judul),
+            ];
 
-        // Jika ada file baru diupload
-        if ($request->hasFile('file')) {
-            // Hapus file lama
-            if ($dokumen->path_file && Storage::disk('public')->exists($dokumen->path_file)) {
-                Storage::disk('public')->delete($dokumen->path_file);
+            // Jika ada file baru diupload
+            if ($request->hasFile('file')) {
+                // Hapus file lama
+                if ($dokumen->path_file && Storage::disk('public')->exists($dokumen->path_file)) {
+                    Storage::disk('public')->delete($dokumen->path_file);
+                }
+
+                $file      = $request->file('file');
+                $namaAsli  = $file->getClientOriginalName();
+                $ekstensi  = strtolower($file->getClientOriginalExtension());
+                $namaFile  = Str::slug($request->judul) . '-' . $request->tahun . '-' . time() . '.' . $ekstensi;
+                $path      = $file->storeAs('dokumen_spmi', $namaFile, 'public');
+                $ukuran    = $this->formatBytes($file->getSize());
+
+                $updateData['nama_file']   = $namaAsli;
+                $updateData['path_file']   = $path;
+                $updateData['ukuran_file'] = $ukuran;
+                $updateData['tipe_file']   = $ekstensi;
             }
 
-            $file      = $request->file('file');
-            $namaAsli  = $file->getClientOriginalName();
-            $ekstensi  = strtolower($file->getClientOriginalExtension());
-            $namaFile  = Str::slug($request->judul) . '-' . $request->tahun . '-' . time() . '.' . $ekstensi;
-            $path      = $file->storeAs('dokumen_spmi', $namaFile, 'public');
-            $ukuran    = $this->formatBytes($file->getSize());
+            $dokumen->update($updateData);
 
-            $updateData['nama_file']   = $namaAsli;
-            $updateData['path_file']   = $path;
-            $updateData['ukuran_file'] = $ukuran;
-            $updateData['tipe_file']   = $ekstensi;
+            return response()->json([
+                'success' => true,
+                'message' => 'Dokumen berhasil diperbarui!',
+                'data'    => [
+                    'id'          => $dokumen->id,
+                    'judul'       => $dokumen->judul,
+                    'tahun'       => $dokumen->tahun,
+                    'deskripsi'   => $dokumen->deskripsi,
+                    'nama_file'   => $dokumen->nama_file,
+                    'ukuran_file' => $dokumen->ukuran_file,
+                    'tipe_file'   => $dokumen->tipe_file,
+                    'kategori'    => $dokumen->kategori,
+                    'file_url'    => $dokumen->file_url,
+                    'icon_class'  => $dokumen->icon_class,
+                    'created_at'  => $dokumen->created_at->format('d M Y'),
+                ],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal: ' . implode(', ', array_flatten($e->errors())),
+                'errors'  => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Update Dokumen Gagal: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ], 500);
         }
-
-        $dokumen->update($updateData);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Dokumen berhasil diperbarui!',
-            'data'    => [
-                'id'          => $dokumen->id,
-                'judul'       => $dokumen->judul,
-                'tahun'       => $dokumen->tahun,
-                'deskripsi'   => $dokumen->deskripsi,
-                'nama_file'   => $dokumen->nama_file,
-                'ukuran_file' => $dokumen->ukuran_file,
-                'tipe_file'   => $dokumen->tipe_file,
-                'kategori'    => $dokumen->kategori,
-                'file_url'    => $dokumen->file_url,
-                'icon_class'  => $dokumen->icon_class,
-                'created_at'  => $dokumen->created_at->format('d M Y'),
-            ],
-        ]);
     }
 
     /**
