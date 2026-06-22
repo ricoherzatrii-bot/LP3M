@@ -96,7 +96,7 @@ class DashboardController extends Controller
                 'model' => Akreditasi::class,
                 'query' => ['kategori' => 'Akreditasi'],
                 'fields' => ['judul', 'peringkat', 'tanggal_kedaluwarsa'],
-                'defaults' => ['kategori' => 'Akreditasi'],
+                'defaults' => ['kategori' => 'Akreditasi', 'judul' => 'Data Akreditasi'],
             ];
         }
 
@@ -106,7 +106,7 @@ class DashboardController extends Controller
                 'model' => Akreditasi::class,
                 'query' => ['kategori' => 'Dokumen Akreditasi'],
                 'fields' => ['judul', 'file_dokumen'],
-                'defaults' => ['kategori' => 'Dokumen Akreditasi'],
+                'defaults' => ['kategori' => 'Dokumen Akreditasi', 'judul' => 'Dokumen Akreditasi Baru'],
             ];
         }
 
@@ -177,7 +177,7 @@ class DashboardController extends Controller
                 'model' => Artikel::class,
                 'query' => [],
                 'fields' => ['judul', 'kategori', 'isi_konten', 'gambar_fitur', 'penulis'],
-                'defaults' => [],
+                'defaults' => ['kategori' => 'Umum', 'judul' => 'Artikel Baru'],
             ];
         }
 
@@ -236,7 +236,8 @@ class DashboardController extends Controller
                 'success' => true,
                 'type' => 'single',
                 'data' => $record,
-                'fields' => $mapping['fields']
+                'fields' => $mapping['fields'],
+                'defaults' => $mapping['defaults'] ?? []
             ]);
         } else {
             // Tipe Tabel / List
@@ -246,7 +247,8 @@ class DashboardController extends Controller
                 'success' => true,
                 'type' => 'table',
                 'data' => $records,
-                'fields' => $mapping['fields']
+                'fields' => $mapping['fields'],
+                'defaults' => $mapping['defaults'] ?? []
             ]);
         }
     }
@@ -298,22 +300,33 @@ class DashboardController extends Controller
 
             // Handle file uploads for image fields
             foreach ($updateData as $key => $value) {
-            if ($this->isFileField($key)) {
-                if ($request->hasFile($key)) {
-                    // Check if document or image based on key
-                    $isDoc = str_contains(strtolower($key), 'path_file') || str_contains(strtolower($key), 'link_file');
-                    $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
-                    $request->validate([$key => $rules]);
-                    
-                    // Delete old file if exists
-                    if ($record->$key && \Storage::disk('public')->exists($record->$key)) {
-                        \Storage::disk('public')->delete($record->$key);
-                    }
-                    $updateData[$key] = $request->file($key)->store('uploads', 'public');
+                if ($this->isFileField($key)) {
+                    if ($request->hasFile($key)) {
+                        // Check if document or image based on key
+                        $isDoc = str_contains(strtolower($key), 'path_file') || str_contains(strtolower($key), 'link_file');
+                        $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
+                        $request->validate([$key => $rules]);
+                        
+                        // Delete old file if exists
+                        if ($record->$key && \Storage::disk('public')->exists($record->$key)) {
+                            \Storage::disk('public')->delete($record->$key);
+                        }
+                        $updateData[$key] = $request->file($key)->store('uploads', 'public');
                     } else {
                         // If it's an image field but no file uploaded, don't overwrite with empty
                         // Unless the field is explicitly sent as empty (not handled by FormData if not selected)
                         unset($updateData[$key]);
+                    }
+                }
+
+                // Detect date fields and format them correctly
+                if (str_contains(strtolower($key), 'tanggal') || str_contains(strtolower($key), 'date')) {
+                    if ($value) {
+                        try {
+                            $updateData[$key] = \Carbon\Carbon::parse($value)->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            // Fallback to original value if parsing fails
+                        }
                     }
                 }
             }
@@ -367,6 +380,17 @@ class DashboardController extends Controller
                     $insertData[$key] = $request->file($key)->store('uploads', 'public');
                 } else {
                     unset($insertData[$key]);
+                }
+            }
+
+            // Detect date fields and format them correctly
+            if (str_contains(strtolower($key), 'tanggal') || str_contains(strtolower($key), 'date')) {
+                if ($value) {
+                    try {
+                        $insertData[$key] = \Carbon\Carbon::parse($value)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        // Fallback to original value if parsing fails
+                    }
                 }
             }
         }

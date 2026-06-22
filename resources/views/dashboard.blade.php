@@ -826,6 +826,7 @@
 
         // Module Pages & Live AJAX Client
         let loadedFields = [];
+        let loadedDefaults = {};
         let currentEditId = null;
         let retrievedData = [];
 
@@ -982,6 +983,7 @@
                         }
 
                         loadedFields = res.fields;
+                        loadedDefaults = res.defaults || {};
 
                         if (res.type === 'single') {
                             content.innerHTML = `
@@ -1191,8 +1193,8 @@
         }
 
         function openTambah() {
-            // Generate form fields dynamically (empty)
-            generateFormFields('add-fields-container', loadedFields, {});
+            // Generate form fields dynamically (with defaults for certain modules)
+            generateFormFields('add-fields-container', loadedFields, loadedDefaults);
 
             showOverlay();
             const modal = document.getElementById('modalTambah');
@@ -1205,6 +1207,8 @@
 
 
 
+        const isImageField = (f) => f.toLowerCase().includes('gambar') || f.toLowerCase().includes('foto') || f.toLowerCase().includes('file');
+        
         function generateFormFields(containerId, fields, values = {}) {
             const container = document.getElementById(containerId);
             container.innerHTML = "";
@@ -1212,12 +1216,11 @@
                 const labelText = field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 const val = values[field] || "";
                 const isTextArea = ['isi_konten', 'deskripsi', 'konten'].includes(field);
-                const isImageField = field.toLowerCase().includes('gambar') || 
-                                   field.toLowerCase().includes('foto') || 
-                                   field.toLowerCase().includes('file');
+                const isDateField = field.toLowerCase().includes('tanggal') || 
+                                    field.toLowerCase().includes('date');
                 
                 let inputHtml = "";
-                if (isImageField) {
+                if (isImageField(field)) {
                     // Show current image preview if exists
                     const previewHtml = val ? `<div class="mb-3"><img src="/storage/${val}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">Gambar saat ini</p></div>` : '';
                     inputHtml = `
@@ -1227,6 +1230,16 @@
                     `;
                 } else if (isTextArea) {
                     inputHtml = `<textarea id="field-${containerId}-${field}" rows="5" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner leading-relaxed">${val}</textarea>`;
+                } else if (isDateField) {
+                    // Try to format value to YYYY-MM-DD for input type="date"
+                    let dateVal = val;
+                    if (val && !val.includes('-')) {
+                        // If it's something like "4 April 2026", Carbon on backend will handle it, 
+                        // but for input type="date" we might need a clean value.
+                        // However, if we are editing, it's safer to leave empty or try to parse.
+                        // For now, let's just make it a date input.
+                    }
+                    inputHtml = `<input type="date" id="field-${containerId}-${field}" value="${val}" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner">`;
                 } else {
                     inputHtml = `<input type="text" id="field-${containerId}-${field}" value="${val}" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner">`;
                 }
@@ -1251,7 +1264,7 @@
             fd.append('title', currentTitle);
             fd.append('id', currentEditId);
 
-            const isImageField = (f) => f.toLowerCase().includes('gambar') || f.toLowerCase().includes('foto') || f.toLowerCase().includes('file');
+            // isImageField is now defined globally
 
             loadedFields.forEach(field => {
                 const elId = `field-edit-fields-container-${field}`;
@@ -1301,7 +1314,7 @@
             fd.append('title', currentTitle);
 
             let hasEmpty = false;
-            const isImageField = (f) => f.toLowerCase().includes('gambar') || f.toLowerCase().includes('foto') || f.toLowerCase().includes('file');
+            // isImageField is now defined globally
 
             loadedFields.forEach(field => {
                 const elId = `field-add-fields-container-${field}`;
@@ -1316,8 +1329,12 @@
                     const editorId = el.dataset.editorId;
                     const val = (editorId && activeEditors[editorId]) ? activeEditors[editorId].getData() : el.value;
                     
+                    // Relax validation: allow empty if we have a default for it on the backend
+                    // Or if it's meant to be managed by the system
                     if (val.trim() === "" || val.trim() === "<p></p>") {
-                        hasEmpty = true;
+                        if (!loadedDefaults[field]) {
+                            hasEmpty = true;
+                        }
                     }
                     fd.append(field, val);
                 }

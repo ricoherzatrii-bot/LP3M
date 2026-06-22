@@ -17,44 +17,50 @@
 
                 <!-- Article List -->
                 <div class="space-y-10">
-                    @foreach($data['items'] as $item)
+                    @forelse($data['items'] as $item)
                     <article class="group bg-white dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-blue-500/30 transition-all duration-500 shadow-sm">
                         <!-- Article Image -->
-                        <div class="h-64 overflow-hidden">
-                            <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item['judul'] }}">
+                        <div class="h-64 overflow-hidden bg-slate-200 dark:bg-slate-700">
+                            @if($item->gambar)
+                                <img src="{{ asset('storage/' . $item->gambar) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" 
+                                     onerror="this.onerror=null; this.src='{{ asset('images/gedung-poljam.png') }}';">
+                            @else
+                                <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">
+                            @endif
                         </div>
                         <!-- Article Content -->
                         <div class="p-8">
-                            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-blue-400 transition leading-tight">{{ $item['judul'] }}</h2>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-blue-400 transition leading-tight">{{ $item->judul }}</h2>
                             <div class="flex flex-wrap items-center gap-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-4">
                                 <span>Admin</span> 
                                 <span class="text-white/20">/</span>
                                 <span>{{ $data['title'] }}</span> 
                                 <span class="text-white/20">/</span>
-                                <span>{{ $item['tanggal'] }}</span>
+                                <span>{{ $item->tanggal }}</span>
                                 <span class="text-white/20">/</span>
-                                <span>Hits: {{ number_format($item['hits']) }}</span>
+                                <span>Hits: {{ number_format($item->hits) }}</span>
                             </div>
-                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-5">{{ $item['deskripsi'] }}</p>
-                            <a href="#" class="text-blue-400 text-sm font-semibold hover:text-blue-300 transition">
-                                Read more ... {{ $item['judul'] }}
+                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-5">{{ $item->deskripsi }}</p>
+                            @php
+                                $route = $kategori === 'profil' ? route('profil.show', $item->slug) : route('berita.show', $item->slug);
+                            @endphp
+                            <a href="{{ $route }}" class="text-blue-400 text-sm font-semibold hover:text-blue-300 transition">
+                                Read more ... {{ \Illuminate\Support\Str::limit($item->judul, 40) }}
                             </a>
                         </div>
                     </article>
-                    @endforeach
+                    @empty
+                    <div class="bg-white dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 p-12 text-center">
+                        <i class="fas fa-newspaper text-5xl text-slate-300 dark:text-slate-600 mb-4 block"></i>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Belum Ada Artikel</h3>
+                        <p class="text-slate-500 dark:text-slate-400">Maaf, saat ini belum ada artikel untuk kategori {{ $data['title'] }}.</p>
+                    </div>
+                    @endforelse
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-12 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-500 text-sm cursor-pointer hover:border-blue-500/40 transition">&laquo;</span>
-                        <span class="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-500 text-sm cursor-pointer hover:border-blue-500/40 transition">&lsaquo;</span>
-                        <span class="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-600 text-white text-sm font-bold">1</span>
-                        <span class="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-400 text-sm cursor-pointer hover:border-blue-500/40 transition">2</span>
-                        <span class="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-500 text-sm cursor-pointer hover:border-blue-500/40 transition">&rsaquo;</span>
-                        <span class="w-9 h-9 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-500 text-sm cursor-pointer hover:border-blue-500/40 transition">&raquo;</span>
-                    </div>
-                    <span class="text-slate-500 text-sm">Page 1 of 2</span>
+                <div class="mt-12 pagination-container">
+                    {{ $data['items']->links() }}
                 </div>
             </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class ProfilController extends Controller
 {
@@ -29,9 +30,21 @@ class ProfilController extends Controller
         $allProfil = Profil::all();
         
         $kategoris = [
-            ['nama' => 'Berita', 'slug' => 'berita', 'count' => 6],
-            ['nama' => 'Kegiatan', 'slug' => 'kegiatan', 'count' => 4],
-            ['nama' => 'Profil', 'slug' => 'profil', 'count' => 27],
+            [
+                'nama' => 'Berita', 
+                'slug' => 'berita', 
+                'count' => \App\Models\Artikel::where('kategori', 'Berita')->count()
+            ],
+            [
+                'nama' => 'Kegiatan', 
+                'slug' => 'kegiatan', 
+                'count' => \App\Models\Artikel::where('kategori', 'Kegiatan')->count()
+            ],
+            [
+                'nama' => 'Profil', 
+                'slug' => 'profil', 
+                'count' => Profil::count()
+            ],
         ];
         
         return view('pages.artikel.index', compact('allProfil', 'kategoris'));
@@ -44,36 +57,45 @@ class ProfilController extends Controller
     {
         $allProfil = Profil::all();
         
-        // Data artikel demo per kategori
-        $artikelData = [
-            'berita' => [
-                'title' => 'Berita',
-                'items' => [
-                    ['judul' => 'PPM STIKES Baiturrahim Jambi melakukan Kegiatan Studi Banding ke LP3M Politeknik Jambi', 'tanggal' => '07 February 2023', 'hits' => 2453, 'deskripsi' => 'Pada Hari Selasa (14/12/2021) Pusat Penjaminan Mutu (PJM) STIKes Baiturrahim Jambi melakukan Kegiatan Studi Banding ke Lembaga Perencanaan Pengembangan dan Penjaminan Mutu Politeknik Jambi (LP3M POLJAM).'],
-                    ['judul' => 'Diskusi tentang SPMI Poljam dan STKIP Al Azhar Jambi', 'tanggal' => '07 February 2023', 'hits' => 1573, 'deskripsi' => 'STKIP Al Azhar Jambi melakukan Kegiatan Studi Banding ke Lembaga Perencanaan Pengembangan dan Penjaminan Mutu Politeknik Jambi.'],
-                    ['judul' => 'Lokakarya Audit Mutu Internal Politeknik Jambi', 'tanggal' => '07 February 2023', 'hits' => 1038, 'deskripsi' => 'Pada Jumat 13 Maret 2020 dan Sabtu 14 Maret 2020, Lembaga Penjaminan Mutu Politeknik Jambi mengadakan Lokakarya Audit Mutu Internal yang bertempat di Ruang Seminar.'],
-                    ['judul' => 'Rapat Koordinasi Pemilihan Ketua AMI 2019-2020 Genap', 'tanggal' => '03 February 2023', 'hits' => 1062, 'deskripsi' => 'Pada hari Kamis 16 Juli 2020 telah diadakan rapat koordinasi pemilihan ketua audit mutu internal periode 2019-2020 genap.'],
-                ],
-            ],
-            'kegiatan' => [
-                'title' => 'Kegiatan',
-                'items' => [
-                    ['judul' => 'Kegiatan Audit Mutu Internal Wakil Direktur I', 'tanggal' => '03 February 2023', 'hits' => 815, 'deskripsi' => 'Salah satu agenda Lembaga Penjaminan Mutu Politeknik Jambi pada bulan Juli dan Agustus 2020 ini adalah kegiatan Audit Mutu Internal.'],
-                    ['judul' => 'Kegiatan AMI Prodi Teknik Mesin', 'tanggal' => '03 February 2023', 'hits' => 642, 'deskripsi' => 'Pelaksanaan Audit Mutu Internal di Program Studi Teknik Mesin Politeknik Jambi.'],
-                    ['judul' => 'Workshop Penyusunan Standar Mutu Baru', 'tanggal' => '01 February 2023', 'hits' => 534, 'deskripsi' => 'Pelatihan intensif penyusunan dokumen standar mutu untuk seluruh unit kerja di Politeknik Jambi.'],
-                ],
-            ],
-            'profil' => [
-                'title' => 'Profil',
-                'items' => [
-                    ['judul' => 'Visi dan Misi LPM Politeknik Jambi', 'tanggal' => '01 January 2023', 'hits' => 3245, 'deskripsi' => 'Visi dan Misi Lembaga Penjaminan Mutu Politeknik Jambi dalam menjaga standar kualitas pendidikan tinggi.'],
-                    ['judul' => 'Struktur Organisasi LPM', 'tanggal' => '01 January 2023', 'hits' => 2876, 'deskripsi' => 'Susunan organisasi Lembaga Penjaminan Mutu Politeknik Jambi beserta tugas dan fungsi masing-masing.'],
-                    ['judul' => 'Tugas Pokok dan Fungsi', 'tanggal' => '01 January 2023', 'hits' => 1954, 'deskripsi' => 'Tugas pokok dan fungsi Lembaga Penjaminan Mutu dalam sistem penjaminan mutu internal Politeknik Jambi.'],
-                ],
-            ],
-        ];
+        $title = ucfirst($kategori);
+        $items = collect();
 
-        $data = $artikelData[$kategori] ?? ['title' => ucfirst($kategori), 'items' => []];
+        if ($kategori === 'berita' || $kategori === 'kegiatan') {
+            $articles = \App\Models\Artikel::where('kategori', $title)
+                ->latest('updated_at')
+                ->paginate(6);
+            
+            $articles->getCollection()->transform(function ($article) {
+                $dateObj = $article->updated_at ?? $article->created_at ?? now();
+                return (object)[
+                    'judul' => $article->judul,
+                    'tanggal' => $dateObj->translatedFormat('d F Y'),
+                    'hits' => 0,
+                    'deskripsi' => Str::limit(strip_tags($article->isi_konten), 150),
+                    'slug' => $article->slug,
+                    'gambar' => $article->gambar_fitur
+                ];
+            });
+            $items = $articles;
+        } elseif ($kategori === 'profil') {
+            $profils = Profil::latest('created_at')->paginate(6);
+            $profils->getCollection()->transform(function ($p) {
+                return (object)[
+                    'judul' => $p->judul,
+                    'tanggal' => $p->created_at ? $p->created_at->translatedFormat('d F Y') : now()->translatedFormat('d F Y'),
+                    'hits' => $p->hits ?? 0,
+                    'deskripsi' => Str::limit(strip_tags($p->isi_konten), 150),
+                    'slug' => $p->slug,
+                    'gambar' => null
+                ];
+            });
+            $items = $profils;
+        }
+
+        $data = [
+            'title' => $title,
+            'items' => $items
+        ];
         
         return view('pages.artikel.kategori', compact('allProfil', 'data', 'kategori'));
     }

@@ -21,22 +21,42 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @forelse($data as $item)
+            @php
+                // Mapping judul ke link portal resmi (LP3M Poljam)
+                $externalLinks = [
+                    'Pedoman Akreditasi PT' => 'https://www.banpt.or.id/?page_id=35',
+                    'Pedoman Akreditasi LAMTEKNIK' => 'https://lamteknik.or.id/akreditasi/instrumen-akreditasi/',
+                    'Pedoman Akreditasi LAMINFOKOM' => 'https://laminfokom.or.id/official/instrumen1.html',
+                    'Pedoman Akreditasi LAMEMBA' => 'https://lamemba.or.id/instrumen-akreditasi/',
+                ];
+                $externalUrl = $externalLinks[$item->judul] ?? null;
+            @endphp
             <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                 <div>
                     <div class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-file-pdf text-xl"></i>
                     </div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
-                        {{ $item->judul }}
-                    </h3>
+                    <a href="{{ $externalUrl ?? asset('documents/' . $item->file_dokumen) }}" 
+                       {{ $externalUrl ? 'target="_blank"' : 'download' }}
+                       class="block group-hover:text-blue-600 transition-colors">
+                        <h3 class="font-extrabold text-lg text-slate-900 mb-2 leading-snug">
+                            {{ $item->judul }}
+                        </h3>
+                    </a>
                     <p class="text-slate-400 text-xs uppercase tracking-widest font-bold mb-4">
                         Kategori: {{ $item->kategori }}
                     </p>
                 </div>
                 <div class="mt-6 pt-6 border-t border-slate-50 flex items-center justify-between">
                     <span class="text-xs text-slate-400 font-medium">Format: PDF Document</span>
-                    <a href="{{ asset('documents/' . $item->file_dokumen) }}" download class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition active:scale-95 shadow-md shadow-blue-100">
-                        <i class="fas fa-download"></i> Unduh File
+                    <a href="{{ $externalUrl ?? asset('documents/' . $item->file_dokumen) }}" 
+                       {{ $externalUrl ? 'target="_blank"' : 'download' }} 
+                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition active:scale-95 shadow-md shadow-blue-100">
+                        @if($externalUrl)
+                            <i class="fas fa-external-link-alt"></i> Kunjungi Website
+                        @else
+                            <i class="fas fa-download"></i> Unduh File
+                        @endif
                     </a>
                 </div>
             </div>

@@ -1,6 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $baikSekali = $data->filter(function($item) {
+        return str_contains(strtolower($item->peringkat), 'sekali');
+    })->count();
+    
+    $baik = $data->filter(function($item) {
+        $p = str_contains(strtolower($item->peringkat), 'baik') && !str_contains(strtolower($item->peringkat), 'sekali');
+        return $p;
+    })->count();
+    
+    $total = $baikSekali + $baik;
+    $percBaikSekali = $total > 0 ? round(($baikSekali / $total) * 100) : 0;
+    $percBaik = $total > 0 ? round(($baik / $total) * 100) : 0;
+@endphp
+
 <div class="min-h-screen bg-slate-50 dark:bg-slate-950 pt-32 pb-20 transition-colors duration-500">
     <div class="max-w-6xl mx-auto px-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-4">
@@ -18,6 +33,49 @@
                 <span class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Terintegrasi Sistem BAN-PT</span>
             </div>
         </div>
+
+        <!-- Comparison Chart Area -->
+        @if($total > 0)
+        <div class="mb-12">
+            <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-xl p-10 flex flex-col md:flex-row items-center gap-10">
+                <div class="relative w-48 h-48 flex-shrink-0">
+                    <canvas id="accreditationChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span class="text-3xl font-black text-slate-800 dark:text-white leading-none">{{ $total }}</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Prodi</span>
+                    </div>
+                </div>
+                <div class="flex-grow space-y-6">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-800 dark:text-white tracking-tight mb-2">Perbandingan Akreditasi</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium">Visualisasi persentase distribusi peringkat akreditasi "Baik" dan "Baik Sekali" pada seluruh program studi Politeknik Jambi.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-5 rounded-2xl bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 transition-all hover:shadow-lg hover:shadow-blue-500/5 group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-blue-500 transition-colors">Baik Sekali</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-2xl font-black text-blue-600 dark:text-blue-400 tracking-tighter">{{ $percBaikSekali }}%</span>
+                                <span class="text-[10px] font-bold text-slate-400">({{ $baikSekali }} <span class="hidden sm:inline">Prodi</span>)</span>
+                            </div>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30 transition-all hover:shadow-lg hover:shadow-emerald-500/5 group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-emerald-500 transition-colors">Baik</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter">{{ $percBaik }}%</span>
+                                <span class="text-[10px] font-bold text-slate-400">({{ $baik }} <span class="hidden sm:inline">Prodi</span>)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-white/10 shadow-xl overflow-hidden">
             <div class="overflow-x-auto">
@@ -80,3 +138,57 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('accreditationChart');
+        if (!ctx) return;
+
+        new Chart(ctx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Baik Sekali', 'Baik'],
+                datasets: [{
+                    data: [{{ $baikSekali }}, {{ $baik }}],
+                    backgroundColor: [
+                        '#2563eb', // blue-600
+                        '#10b981'  // emerald-500
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 15,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                cutout: '78%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 13, weight: '900' },
+                        bodyFont: { size: 12, weight: '600' },
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': ' + context.parsed + ' Prodi';
+                            }
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    });
+</script>
+@endpush

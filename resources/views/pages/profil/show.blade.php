@@ -144,11 +144,22 @@
 
     /* Styling List Bullets */
     .custom-prose ul {
-        @apply space-y-2 my-4 list-disc pl-5;
+        list-style-type: disc !important;
+        padding-left: 2rem !important;
+        margin-top: 1rem !important;
+        margin-bottom: 1rem !important;
     }
     
     .custom-prose ol {
-        @apply space-y-2 my-4 list-decimal pl-5;
+        list-style-type: decimal !important;
+        padding-left: 2rem !important;
+        margin-top: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .custom-prose ul li,
+    .custom-prose ol li {
+        margin-bottom: 0.5rem;
     }
 
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
