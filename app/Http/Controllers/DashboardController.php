@@ -139,13 +139,14 @@ class DashboardController extends Controller
         }
 
         // 5. Kuesioner
-        if ($title === 'Data Statistik Kuesioner') {
+        if ($title === 'Data Statistik Kuesioner' || $title === 'Kuesioner Dosen & Karyawan' || $title === 'Kuesioner Mahasiswa') {
+            $category = $title === 'Kuesioner Mahasiswa' ? 'Mahasiswa' : 'Dosen & Karyawan';
             return [
                 'type' => 'table',
                 'model' => \App\Models\KuesionerDosenKaryawan::class,
-                'query' => [],
+                'query' => ['kategori' => $category],
                 'fields' => ['tahun_akademik', 'kategori', 'prodi', 'program', 'sangat_setuju', 'setuju', 'cukup_setuju', 'tidak_setuju', 'sangat_tidak_setuju'],
-                'defaults' => ['kategori' => 'Dosen & Karyawan'],
+                'defaults' => ['kategori' => $category],
             ];
         }
 

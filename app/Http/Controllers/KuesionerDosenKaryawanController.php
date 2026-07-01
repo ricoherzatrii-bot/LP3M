@@ -102,66 +102,52 @@ class KuesionerDosenKaryawanController extends Controller
         $prodi = $request->input('prodi', '');
 
         try {
-            if ($xlsx = SimpleXLSX::parse($request->file('file')->path())) {
+            $extension = $request->file('file')->getClientOriginalExtension();
+            $xlsx = null;
+
+            if (strtolower($extension) === 'xlsx') {
+                $xlsx = \App\Shuchkin\SimpleXLSX::parse($request->file('file')->path());
+            } else {
+                $xlsx = \App\Shuchkin\SimpleXLS::parse($request->file('file')->path());
+            }
+
+            if ($xlsx) {
                 $rows = $xlsx->rows();
                 
+                if (count($rows) < 1) {
+                    return response()->json(['success' => false, 'message' => 'File Excel kosong.'], 400);
+                }
+
                 if ($kategori === 'Mahasiswa') {
-                    // Optimized Pivot Format: [Tahun, Kriteria, Aspect1, Aspect2, Aspect3, ...]
-                    // Step 1: Detect Aspects from Header (Row 1)
-                    $header = $rows[0] ?? [];
-                    $aspects = [];
-                    for ($i = 2; $i < count($header); $i++) {
-                        if (!empty(trim($header[$i]))) {
-                            $aspects[$i] = trim($header[$i]);
-                        }
-                    }
-
-                    if (empty($aspects)) {
-                        return response()->json(['success' => false, 'message' => 'Format Excel tidak valid: Nama aspek tidak ditemukan di baris pertama.'], 400);
-                    }
-
-                    // Step 2: Skip header and process rows in groups of 4 (SB, B, K, SK)
-                    unset($rows[0]);
-                    $dataMap = []; // [aspectName => [criteria => value]]
-
+                    unset($rows[0]); // Skip header
                     foreach ($rows as $row) {
-                        if (empty($row[0])) continue; // Skip empty rows
-                        $kriteria = trim($row[1] ?? '');
+                        if (empty($row[0])) continue;
+                        $aspectName = trim($row[0]);
                         
-                        // Map user criteria names to db fields
-                        $fieldMap = [
-                            'Sangat Baik' => 'sangat_setuju',
-                            'Baik' => 'setuju',
-                            'Kurang' => 'tidak_setuju',
-                            'Sangat Kurang' => 'sangat_tidak_setuju'
-                        ];
-                        
-                        $field = $fieldMap[$kriteria] ?? null;
-                        if (!$field) continue;
+                        // Parse values from columns B, C, D, E (1, 2, 3, 4)
+                        $baik         = (double) str_replace(['%', ','], ['', '.'], $row[1] ?? 0);
+                        $sangat_baik  = (double) str_replace(['%', ','], ['', '.'], $row[2] ?? 0);
+                        $kurang       = (double) str_replace(['%', ','], ['', '.'], $row[3] ?? 0);
+                        $sangat_kurang = (double) str_replace(['%', ','], ['', '.'], $row[4] ?? 0);
 
-                        foreach ($aspects as $colIndex => $aspectName) {
-                            $val = (double) str_replace(['%', ','], ['', '.'], $row[$colIndex] ?? 0);
-                            $dataMap[$aspectName][$field] = $val;
+                        if ($baik > 0 || $sangat_baik > 0 || $kurang > 0 || $sangat_kurang > 0) {
+                            KuesionerDosenKaryawan::updateOrCreate(
+                                ['tahun_akademik' => $tahun, 'kategori' => $kategori, 'prodi' => $prodi, 'program' => $aspectName],
+                                [
+                                    'sangat_setuju' => $baik,           // Map to Sangat Setuju for DB storage
+                                    'setuju'        => $sangat_baik,    // Map to Setuju for DB storage
+                                    'tidak_setuju'  => $kurang,
+                                    'sangat_tidak_setuju' => $sangat_kurang,
+                                    'cukup_setuju'  => 0
+                                ]
+                            );
                         }
-                    }
-
-                    // Step 3: Save to database
-                    foreach ($dataMap as $aspectName => $values) {
-                        KuesionerDosenKaryawan::updateOrCreate(
-                            [
-                                'tahun_akademik' => $tahun,
-                                'kategori' => $kategori,
-                                'prodi' => $prodi,
-                                'program' => $aspectName
-                            ],
-                            array_merge($values, ['cukup_setuju' => 0])
-                        );
                     }
                 } else {
-                    // Dosen/Staff Formats (as before)
-                    unset($rows[0]);
+                    // Dosen/Staff Formats
+                    unset($rows[0]); // Skip header
                     foreach ($rows as $row) {
-                        $program = ''; $ss = 0; $s = 0; $cs = 0; $ts = 0; $sts = 0;
+                        $program = ''; $ss = 0; $s = 0; $cs = 0; $ts = 0; $sts = 0; $desc = ''; $order = 0;
                         if (count($row) >= 8) {
                             $program = trim($row[2] ?? '');
                             $ss      = (double) str_replace(['%', ','], ['', '.'], $row[3] ?? 0);
@@ -169,6 +155,8 @@ class KuesionerDosenKaryawanController extends Controller
                             $cs      = (double) str_replace(['%', ','], ['', '.'], $row[5] ?? 0);
                             $ts      = (double) str_replace(['%', ','], ['', '.'], $row[6] ?? 0);
                             $sts     = (double) str_replace(['%', ','], ['', '.'], $row[7] ?? 0);
+                            $desc    = trim($row[8] ?? ''); // Optional: Column I
+                            $order   = (int) ($row[9] ?? 0); // Optional: Column J
                         } else {
                             $program = trim($row[0] ?? '');
                             $ss      = (double) str_replace(['%', ','], ['', '.'], $row[1] ?? 0);
@@ -176,21 +164,30 @@ class KuesionerDosenKaryawanController extends Controller
                             $cs      = (double) str_replace(['%', ','], ['', '.'], $row[3] ?? 0);
                             $ts      = (double) str_replace(['%', ','], ['', '.'], $row[4] ?? 0);
                             $sts     = (double) str_replace(['%', ','], ['', '.'], $row[5] ?? 0);
+                            $desc    = trim($row[6] ?? ''); // Optional
+                            $order   = (int) ($row[7] ?? 0); // Optional
                         }
 
                         if (empty($program)) continue;
 
-                        KuesionerDosenKaryawan::create([
-                            'tahun_akademik' => $tahun,
-                            'kategori'      => $kategori,
-                            'prodi'         => $prodi,
-                            'program'       => $program,
-                            'sangat_setuju' => $ss,
-                            'setuju'        => $s,
-                            'cukup_setuju'  => $cs,
-                            'tidak_setuju'  => $ts,
-                            'sangat_tidak_setuju' => $sts,
-                        ]);
+                        // Use updateOrCreate to prevent unique constraint failures and allow updates
+                        KuesionerDosenKaryawan::updateOrCreate(
+                            [
+                                'tahun_akademik' => $tahun,
+                                'kategori'      => $kategori,
+                                'program'       => $program,
+                            ],
+                            [
+                                'prodi'         => $prodi,
+                                'sangat_setuju' => $ss,
+                                'setuju'        => $s,
+                                'cukup_setuju'  => $cs,
+                                'tidak_setuju'  => $ts,
+                                'sangat_tidak_setuju' => $sts,
+                                'keterangan'    => $desc,
+                                'urutan'        => $order
+                            ]
+                        );
                     }
                 }
 
@@ -199,7 +196,8 @@ class KuesionerDosenKaryawanController extends Controller
                     'message' => "Data Kuesioner $kategori berhasil diimpor untuk T.A $tahun"
                 ]);
             } else {
-                return response()->json(['success' => false, 'message' => 'Gagal membaca: ' . SimpleXLSX::parseError()], 400);
+                $error = (strtolower($extension) === 'xlsx') ? \App\Shuchkin\SimpleXLSX::parseError() : \App\Shuchkin\SimpleXLS::parseError();
+                return response()->json(['success' => false, 'message' => 'Gagal membaca: ' . $error], 400);
             }
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
@@ -232,17 +230,21 @@ class KuesionerDosenKaryawanController extends Controller
 
     public function truncate(Request $request)
     {
-        $tahun = $request->query('tahun_akademik');
-        $kategori = $request->query('kategori', 'Dosen & Karyawan');
+        try {
+            $tahun = $request->query('tahun_akademik');
+            $kategori = $request->query('kategori', 'Dosen & Karyawan');
 
-        $query = KuesionerDosenKaryawan::where('kategori', $kategori);
+            $query = KuesionerDosenKaryawan::where('kategori', $kategori);
 
-        if ($tahun) {
-            $query->where('tahun_akademik', $tahun)->delete();
-            return response()->json(['success' => true, 'message' => "Data $kategori tahun $tahun berhasil dihapus."]);
+            if ($tahun) {
+                $count = $query->where('tahun_akademik', $tahun)->delete();
+                return response()->json(['success' => true, 'message' => "Data $kategori tahun $tahun ($count entri) berhasil dihapus."]);
+            }
+            
+            $count = $query->delete();
+            return response()->json(['success' => true, 'message' => "Semua data kuesioner $kategori ($count entri) berhasil dikosongkan."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
         }
-        
-        $query->delete();
-        return response()->json(['success' => true, 'message' => "Semua data kuesioner $kategori berhasil dikosongkan."]);
     }
 }

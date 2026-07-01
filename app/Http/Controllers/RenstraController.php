@@ -84,7 +84,16 @@ class RenstraController extends Controller
         ]);
 
         try {
-            if ($xlsx = SimpleXLSX::parse($request->file('file')->path())) {
+            $extension = $request->file('file')->getClientOriginalExtension();
+            $xlsx = null;
+
+            if (strtolower($extension) === 'xlsx') {
+                $xlsx = \App\Shuchkin\SimpleXLSX::parse($request->file('file')->path());
+            } else {
+                $xlsx = \App\Shuchkin\SimpleXLS::parse($request->file('file')->path());
+            }
+
+            if ($xlsx) {
                 $rows = $xlsx->rows();
                 
                 if (count($rows) < 2) {
@@ -143,9 +152,10 @@ class RenstraController extends Controller
                     'message' => "Data Matrix Renstra ($importedCount entri) berhasil disinkronisasi."
                 ]);
             } else {
+                $error = (strtolower($extension) === 'xlsx') ? \App\Shuchkin\SimpleXLSX::parseError() : \App\Shuchkin\SimpleXLS::parseError();
                 return response()->json([
                     'success' => false,
-                    'message' => 'Gagal membaca file Excel: ' . SimpleXLSX::parseError()
+                    'message' => 'Gagal membaca file Excel: ' . $error
                 ], 400);
             }
         } catch (\Exception $e) {

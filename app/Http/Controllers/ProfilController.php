@@ -201,7 +201,7 @@ class ProfilController extends Controller
                 ->get();
         }
         
-        $tahunList = \App\Models\Kuesioner::where('kategori', 'Dosen & Karyawan')
+        $tahunList = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Dosen & Karyawan')
                                         ->select('tahun_akademik')
                                         ->whereNotNull('tahun_akademik')
                                         ->distinct()
@@ -210,22 +210,32 @@ class ProfilController extends Controller
 
         // Ambil data untuk grafik
         $chartData = collect();
+        $respondenCount = 0;
         try {
             if (Schema::hasTable('kuesioner_dosen_karyawans')) {
                 $chartDataQuery = \App\Models\KuesionerDosenKaryawan::query();
                 $chartDataQuery->where('kategori', 'Dosen & Karyawan');
+                
                 if ($request->has('tahun_akademik') && $request->tahun_akademik != '') {
                     $chartDataQuery->where('tahun_akademik', $request->tahun_akademik);
                 } elseif ($tahunList->count() > 0) {
+                    // Default to latest year if no filter applied
                     $chartDataQuery->where('tahun_akademik', $tahunList->first());
                 }
+                
                 $chartData = $chartDataQuery->get();
+
+                // Calculate respondent count
+                if ($kuesioner) {
+                    $countFromRespon = \App\Models\KuesionerResponse::where('kuesioner_id', $kuesioner->id)->distinct('session_id')->count();
+                    $respondenCount = $countFromRespon > 0 ? $countFromRespon : ($kuesioner->hits ?? 37);
+                }
             }
         } catch (\Exception $e) {
             \Log::warning('Table kuesioner_dosen_karyawans is missing or error: ' . $e->getMessage());
         }
 
-        return view('pages.kuesioner.dosen', compact('allProfil', 'kuesioner', 'tahunList', 'pertanyaans', 'chartData'));
+        return view('pages.kuesioner.dosen', compact('allProfil', 'kuesioner', 'tahunList', 'pertanyaans', 'chartData', 'respondenCount'));
     }
 
     public function kuesionerMahasiswa(Request $request) {
@@ -251,13 +261,19 @@ class ProfilController extends Controller
                 ->get();
         }
         
-        $prodiList = \App\Models\Kuesioner::where('kategori', 'Mahasiswa')
+        $prodiList = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Mahasiswa')
                                         ->select('prodi')
                                         ->whereNotNull('prodi')
                                         ->distinct()
                                         ->orderBy('prodi', 'asc')
                                         ->pluck('prodi');
-        $tahunList = \App\Models\Kuesioner::where('kategori', 'Mahasiswa')
+        $aspekList = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Mahasiswa')
+                                        ->select('program')
+                                        ->whereNotNull('program')
+                                        ->distinct()
+                                        ->orderBy('program', 'asc')
+                                        ->pluck('program');
+        $tahunList = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Mahasiswa')
                                         ->select('tahun_akademik')
                                         ->whereNotNull('tahun_akademik')
                                         ->distinct()
@@ -271,8 +287,9 @@ class ProfilController extends Controller
                 $chartDataQuery = \App\Models\KuesionerDosenKaryawan::query();
                 $chartDataQuery->where('kategori', 'Mahasiswa');
                 
-                if ($request->has('prodi') && $request->prodi != '') {
-                    $chartDataQuery->where('prodi', $request->prodi);
+                $selectedProdi = $request->prodi;
+                if ($selectedProdi && $selectedProdi !== 'all') {
+                    $chartDataQuery->where('prodi', $selectedProdi);
                 }
                 
                 if ($request->has('tahun_akademik') && $request->tahun_akademik != '') {
@@ -280,13 +297,24 @@ class ProfilController extends Controller
                 } elseif ($tahunList->count() > 0) {
                     $chartDataQuery->where('tahun_akademik', $tahunList->first());
                 }
-                $chartData = $chartDataQuery->get();
+
+                if ($request->has('aspek') && $request->aspek != '') {
+                    $chartDataQuery->where('program', $request->aspek);
+                }
+
+                $chartDataRaw = $chartDataQuery->get();
+                
+                if (!$selectedProdi || $selectedProdi === 'all') {
+                    $chartData = $chartDataRaw->groupBy('prodi');
+                } else {
+                    $chartData = [$selectedProdi => $chartDataRaw];
+                }
             }
         } catch (\Exception $e) {
             \Log::warning('Table kuesioner_dosen_karyawans is missing or error: ' . $e->getMessage());
         }
                                         
-        return view('pages.kuesioner.mahasiswa', compact('allProfil', 'kuesioner', 'prodiList', 'tahunList', 'pertanyaans', 'chartData'));
+        return view('pages.kuesioner.mahasiswa', compact('allProfil', 'kuesioner', 'prodiList', 'tahunList', 'aspekList', 'pertanyaans', 'chartData'));
     }
 
     /**

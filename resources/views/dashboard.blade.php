@@ -634,6 +634,35 @@
             </div>
         </div>
 
+        <!-- IMPORT KUESIONER MODAL -->
+        <div id="modalImportKuesioner" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 transition-transform duration-300 hidden flex-col">
+            <div class="px-10 py-8 border-b border-slate-100 bg-emerald-50/50 flex justify-between items-center">
+                <div>
+                    <h3 class="font-black text-slate-800 text-2xl font-display tracking-tight mb-1">Impor Data Kuesioner</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Excel Synchronizer</p>
+                </div>
+                <button onclick="closeModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div class="p-10">
+                <form id="formImportKuesioner" onsubmit="event.preventDefault(); submitImportKuesioner();" class="space-y-6">
+                    <div class="p-6 rounded-2xl bg-blue-50/50 border border-blue-100/30 space-y-4">
+                        <div>
+                            <label class="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-3">Tahun Akademik <span class="text-rose-500">*</span></label>
+                            <input type="text" id="ik_tahun" placeholder="Contoh: 2024/2025 Genap" required class="w-full p-4 border border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 outline-none text-sm font-semibold text-slate-700 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-3">File Excel (.xlsx / .xls) <span class="text-rose-500">*</span></label>
+                            <input type="file" id="ik_file" accept=".xlsx,.xls" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
+                        </div>
+                    </div>
+                    <div class="mt-8 flex justify-end space-x-4 border-t border-slate-100 pt-6">
+                        <button type="button" onclick="closeModal()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase">Batal</button>
+                        <button type="submit" id="ik_submit_btn" class="px-8 py-4 bg-emerald-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:bg-emerald-700 transition-all hover:-translate-y-1 tracking-widest uppercase">Mulai Impor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
@@ -1081,10 +1110,18 @@
                                         </div>
                                         <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter font-display leading-none">${title}</h2>
                                     </div>
-                                    <button onclick="openTambah()" class="relative z-10 bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center gap-3 text-xs font-bold transition-all shadow-[0_15px_30px_rgba(15,23,42,0.2)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(15,23,42,0.3)] hover:bg-slate-800">
-                                        <i class="fas fa-plus"></i>
-                                        <span class="tracking-widest uppercase">Tambah Entri</span>
-                                    </button>
+                                    <div class="flex gap-4 items-center relative z-10">
+                                        ${(title === 'Kuesioner Dosen & Karyawan') ? `
+                                            <button onclick="openImportKuesioner()" class="bg-emerald-600 text-white px-8 py-4 rounded-2xl flex items-center gap-3 text-xs font-bold transition-all shadow-[0_15px_30px_rgba(16,185,129,0.2)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(16,185,129,0.3)] hover:bg-emerald-700">
+                                                <i class="fas fa-file-excel"></i>
+                                                <span class="tracking-widest uppercase text-[10px]">Impor Excel</span>
+                                            </button>
+                                        ` : ''}
+                                        <button onclick="openTambah()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center gap-3 text-xs font-bold transition-all shadow-[0_15px_30px_rgba(15,23,42,0.2)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(15,23,42,0.3)] hover:bg-slate-800">
+                                            <i class="fas fa-plus"></i>
+                                            <span class="tracking-widest uppercase text-[10px]">Tambah Entri</span>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <!-- Table Area -->
@@ -1364,6 +1401,56 @@
             })
             .catch(err => {
                 showToast('Gagal menambahkan data baru.', 'warning');
+            });
+        }
+
+        // Kuesioner Import Logic
+        function openImportKuesioner() {
+            showOverlay();
+            const modal = document.getElementById('modalImportKuesioner');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('scale-95'), 10);
+        }
+
+        function submitImportKuesioner() {
+            const tahun = document.getElementById('ik_tahun').value;
+            const file = document.getElementById('ik_file').files[0];
+            const btn = document.getElementById('ik_submit_btn');
+            
+            if (!tahun || !file) {
+                showToast('Tahun dan File wajib diisi.', 'warning');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('tahun_akademik', tahun);
+            fd.append('file', file);
+            fd.append('_token', '{{ csrf_token() }}');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengimpor...';
+
+            fetch('/admin/kuesioner-dosen/import', {
+                method: 'POST',
+                body: fd
+            })
+            .then(r => r.json())
+            .then(res => {
+                btn.disabled = false;
+                btn.innerHTML = 'Mulai Impor';
+                if (res.success) {
+                    showToast(res.message, 'success');
+                    closeModal();
+                    loadPage(currentTitle);
+                } else {
+                    showToast(res.message || 'Gagal mengimpor data.', 'warning');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = 'Mulai Impor';
+                console.error(err);
+                showToast('Terjadi kesalahan saat mengimpor.', 'warning');
             });
         }
 
@@ -2567,6 +2654,7 @@
                 const years = res.years;
                 const selector = document.getElementById('kdFilterTahun');
                 if (selector) {
+                    selector.innerHTML = '<option value="">Semua Tahun</option>';
                     years.forEach(y => {
                         const opt = document.createElement('option');
                         opt.value = y; opt.textContent = y;
@@ -2813,8 +2901,8 @@
                     document.getElementById('importKuesionerForm').reset();
                     // Refresh table and re-populate year filter
                     const selector = document.getElementById('kdFilterTahun');
-                    selector.innerHTML = '<option value="">Semua Tahun</option>';
-                    initKuesionerPanel();
+                    if (selector) selector.innerHTML = '<option value="">Semua Tahun</option>';
+                    loadKuesionerTable('');
                 } else {
                     showToast(res.message || 'Gagal mengimpor.', 'warning');
                 }
@@ -2826,24 +2914,33 @@
         }
 
         async function truncateKuesionerDosen() {
-            const tahun = document.getElementById('kdFilterTahun').value;
+            const tahun = document.getElementById('kdFilterTahun')?.value || '';
             const msg = tahun ? `Hapus semua data kuesioner untuk tahun ${tahun}?` : "Hapus SEMUA data kuesioner dosen & karyawan?";
             if (!confirm(msg)) return;
 
             try {
-                const r = await fetch(`/admin/kuesioner-dosen/truncate?kategori=Dosen & Karyawan${tahun ? '&tahun_akademik='+tahun : ''}`, {
-                    method: 'DELETE',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                const queryParams = new URLSearchParams({
+                    kategori: 'Dosen & Karyawan'
                 });
+                if (tahun) queryParams.append('tahun_akademik', tahun);
+
+                const r = await fetch(`/admin/kuesioner-dosen/truncate?${queryParams.toString()}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                });
+                
                 const res = await r.json();
                 if (res.success) {
                     showToast(res.message, 'success');
                     const selector = document.getElementById('kdFilterTahun');
-                    if (selector) selector.innerHTML = '<option value="">Semua Tahun</option>';
-                    initKuesionerPanel();
+                    if (selector) selector.value = '';
+                    loadKuesionerTable('');
+                } else {
+                    showToast(res.message || 'Gagal menghapus data.', 'warning');
                 }
             } catch (e) {
-                showToast('Gagal mengosongkan data.', 'warning');
+                console.error(e);
+                showToast('Gagal mengosongkan data (Terjadi kesalahan sistem).', 'warning');
             }
         }
 
@@ -3273,7 +3370,7 @@
                 if (res.success) {
                     showToast(res.message, 'success');
                     toggleImportKM();
-                    initKuesionerMahasiswaPanel();
+                    loadKMTable('');
                 } else showToast(res.message, 'warning');
             } catch (e) { showToast('Terjadi kesalahan import.', 'warning'); }
             finally {
@@ -3283,20 +3380,32 @@
         }
 
         async function truncateKM() {
-            const tahun = document.getElementById('kmFilterTahun').value;
+            const tahun = document.getElementById('kmFilterTahun')?.value || '';
             const msg = tahun ? `Hapus data mahasiswa tahun ${tahun}?` : "Hapus SEMUA data kuesioner mahasiswa?";
             if (!confirm(msg)) return;
             try {
-                const r = await fetch(`/admin/kuesioner-dosen/truncate?kategori=Mahasiswa${tahun ? '&tahun_akademik='+tahun : ''}`, {
+                const queryParams = new URLSearchParams({
+                    kategori: 'Mahasiswa'
+                });
+                if (tahun) queryParams.append('tahun_akademik', tahun);
+
+                const r = await fetch(`/admin/kuesioner-dosen/truncate?${queryParams.toString()}`, {
                     method: 'DELETE',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
                 });
                 const res = await r.json();
                 if (res.success) {
                     showToast(res.message, 'success');
-                    initKuesionerMahasiswaPanel();
+                    const selector = document.getElementById('kmFilterTahun');
+                    if (selector) selector.value = '';
+                    loadKMTable('');
+                } else {
+                    showToast(res.message || 'Gagal mengosongkan.', 'warning');
                 }
-            } catch (e) { showToast('Gagal mengosongkan.', 'warning'); }
+            } catch (e) {
+                console.error(e);
+                showToast('Gagal mengosongkan data (Terjadi kesalahan sistem).', 'warning');
+            }
         }
 
         // Keep backward compat for old sidebar calls
