@@ -73,24 +73,24 @@
                     <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Artikel Lainnya</h3>
                     <div class="grid md:grid-cols-3 gap-6">
                         <!-- Card 1 -->
-                        <div class="bg-slate-800/40 border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
-                            <h4 class="text-white font-bold mb-4 line-clamp-2 hover:text-blue-400 cursor-pointer transition">Sasaran Mutu Politeknik Jambi</h4>
+                        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
+                            <h4 class="text-slate-900 dark:text-white font-bold mb-4 line-clamp-2 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition">Sasaran Mutu Politeknik Jambi</h4>
                             <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                Admin <span class="text-white/20 mx-1">•</span> 03 February 2023
+                                Admin <span class="text-slate-300 dark:text-white/20 mx-1">•</span> 03 February 2023
                             </div>
                         </div>
                         <!-- Card 2 -->
-                        <div class="bg-slate-800/40 border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
-                            <h4 class="text-white font-bold mb-4 line-clamp-2 hover:text-blue-400 cursor-pointer transition">Kebijakan Mutu Politeknik Jambi</h4>
+                        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
+                            <h4 class="text-slate-900 dark:text-white font-bold mb-4 line-clamp-2 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition">Kebijakan Mutu Politeknik Jambi</h4>
                             <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                Admin <span class="text-white/20 mx-1">•</span> 03 February 2023
+                                Admin <span class="text-slate-300 dark:text-white/20 mx-1">•</span> 03 February 2023
                             </div>
                         </div>
                         <!-- Card 3 -->
-                        <div class="bg-slate-800/40 border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
-                            <h4 class="text-white font-bold mb-4 line-clamp-2 hover:text-blue-400 cursor-pointer transition">Moto Dan Janji Layanan</h4>
+                        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
+                            <h4 class="text-slate-900 dark:text-white font-bold mb-4 line-clamp-2 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition">Moto Dan Janji Layanan</h4>
                             <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                Admin <span class="text-white/20 mx-1">•</span> 03 February 2023
+                                Admin <span class="text-slate-300 dark:text-white/20 mx-1">•</span> 03 February 2023
                             </div>
                         </div>
                     </div>
@@ -101,24 +101,24 @@
             <!-- SIDEBAR (1/3) -->
             <div class="space-y-8">
                 <!-- Search -->
-                <div class="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/10 p-6">
+                <div class="bg-slate-50 dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 p-6 shadow-sm">
                     <form action="{{ route('artikel.index') }}" method="GET" class="relative">
-                        <input type="text" name="search" placeholder="Search ..." class="w-full bg-slate-700/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition">
+                        <input type="text" name="search" placeholder="Search ..." class="w-full bg-white dark:bg-slate-700/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition">
                             <i class="fas fa-search text-sm"></i>
                         </button>
                     </form>
                 </div>
 
                 <!-- Sering Dibaca -->
-                <div class="bg-slate-800/40 backdrop-blur-md rounded-3xl border border-white/10 p-6">
-                    <h4 class="text-white font-bold text-lg mb-6 pb-4 border-b border-white/10">Sering Dibaca</h4>
+                <div class="bg-slate-50 dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 p-6 shadow-sm">
+                    <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-6 pb-4 border-b border-slate-200 dark:border-white/10">Sering Dibaca</h4>
                     <div class="space-y-4">
-                        <a href="{{ route('kuesioner.mahasiswa') }}" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">Kuisioner Mahasiswa</a>
-                        <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">Visi Dan Misi</a>
-                        <a href="#" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">PPM STIKES Baiturrahim Jambi melakukan Kegiatan Studi Banding</a>
-                        <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="block text-slate-400 hover:text-blue-400 transition text-sm pb-4 border-b border-white/5">e-spmiPoljam</a>
-                        <a href="{{ route('spmi.show', 'rtm') }}" class="block text-slate-400 hover:text-blue-400 transition text-sm">RTM</a>
+                        <a href="{{ route('kuesioner.mahasiswa') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">Kuisioner Mahasiswa</a>
+                        <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">Visi Dan Misi</a>
+                        <a href="#" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">PPM STIKES Baiturrahim Jambi melakukan Kegiatan Studi Banding</a>
+                        <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">e-spmiPoljam</a>
+                        <a href="{{ route('spmi.show', 'rtm') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm">RTM</a>
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@
 
     .custom-prose strong, 
     .custom-prose b {
-        @apply font-bold text-white;
+        @apply font-bold text-slate-900 dark:text-white;
     }
 
     /* Styling List Bullets */

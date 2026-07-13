@@ -92,7 +92,7 @@ class KuesionerDosenKaryawanController extends Controller
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
-            'tahun_akademik' => 'required|string',
+            'tahun_akademik' => $request->input('kategori') === 'Mahasiswa' ? 'nullable|string' : 'required|string',
             'kategori' => 'nullable|string',
             'prodi' => 'nullable|string'
         ]);
@@ -120,22 +120,40 @@ class KuesionerDosenKaryawanController extends Controller
 
                 if ($kategori === 'Mahasiswa') {
                     unset($rows[0]); // Skip header
+                    
+                    // Helper: parse percentage cells — SimpleXLSX reads "74.99%" as 0.7499
+                    $parsePercent = function($val) {
+                        if (is_null($val) || $val === '') return 0.0;
+                        $valStr = (string)$val;
+                        $hasPercent = (strpos($valStr, '%') !== false);
+                        $num = (double) str_replace(['%', ','], ['', '.'], $valStr);
+                        // If SimpleXLSX returned a raw fraction (e.g. 0.7499 for 74.99%), scale it up
+                        if (!$hasPercent && is_numeric($val) && $num >= 0 && $num <= 1.0) {
+                            $num = round($num * 100, 2);
+                        }
+                        return $num;
+                    };
+
                     foreach ($rows as $row) {
                         if (empty($row[0])) continue;
-                        $aspectName = trim($row[0]);
-                        
-                        // Parse values from columns B, C, D, E (1, 2, 3, 4)
-                        $baik         = (double) str_replace(['%', ','], ['', '.'], $row[1] ?? 0);
-                        $sangat_baik  = (double) str_replace(['%', ','], ['', '.'], $row[2] ?? 0);
-                        $kurang       = (double) str_replace(['%', ','], ['', '.'], $row[3] ?? 0);
-                        $sangat_kurang = (double) str_replace(['%', ','], ['', '.'], $row[4] ?? 0);
+                        $rowTahun = trim($row[0]);
+                        if (strtolower($rowTahun) === 'tahun akademik') continue;
 
-                        if ($baik > 0 || $sangat_baik > 0 || $kurang > 0 || $sangat_kurang > 0) {
+                        $aspectName = isset($row[1]) ? trim($row[1]) : '';
+                        if (empty($aspectName)) continue;
+                        
+                        // Parse values from columns C, D, E, F (2, 3, 4, 5)
+                        $sangat_baik   = $parsePercent($row[2] ?? 0);
+                        $baik          = $parsePercent($row[3] ?? 0);
+                        $kurang        = $parsePercent($row[4] ?? 0);
+                        $sangat_kurang = $parsePercent($row[5] ?? 0);
+
+                        if ($sangat_baik > 0 || $baik > 0 || $kurang > 0 || $sangat_kurang > 0) {
                             KuesionerDosenKaryawan::updateOrCreate(
-                                ['tahun_akademik' => $tahun, 'kategori' => $kategori, 'prodi' => $prodi, 'program' => $aspectName],
+                                ['tahun_akademik' => $rowTahun, 'kategori' => $kategori, 'prodi' => $prodi, 'program' => $aspectName],
                                 [
-                                    'sangat_setuju' => $baik,           // Map to Sangat Setuju for DB storage
-                                    'setuju'        => $sangat_baik,    // Map to Setuju for DB storage
+                                    'sangat_setuju' => $sangat_baik,    // Excel "Sangat Baik" → DB sangat_setuju
+                                    'setuju'        => $baik,           // Excel "Baik" → DB setuju
                                     'tidak_setuju'  => $kurang,
                                     'sangat_tidak_setuju' => $sangat_kurang,
                                     'cukup_setuju'  => 0
@@ -191,9 +209,10 @@ class KuesionerDosenKaryawanController extends Controller
                     }
                 }
 
+                $msg = $tahun ? "Data Kuesioner $kategori berhasil diimpor untuk T.A $tahun" : "Data Kuesioner $kategori berhasil diimpor";
                 return response()->json([
                     'success' => true,
-                    'message' => "Data Kuesioner $kategori berhasil diimpor untuk T.A $tahun"
+                    'message' => $msg
                 ]);
             } else {
                 $error = (strtolower($extension) === 'xlsx') ? \App\Shuchkin\SimpleXLSX::parseError() : \App\Shuchkin\SimpleXLS::parseError();
@@ -233,16 +252,27 @@ class KuesionerDosenKaryawanController extends Controller
         try {
             $tahun = $request->query('tahun_akademik');
             $kategori = $request->query('kategori', 'Dosen & Karyawan');
+            $prodi = $request->query('prodi');
 
             $query = KuesionerDosenKaryawan::where('kategori', $kategori);
 
+            if ($prodi && $prodi !== 'all' && $prodi !== '') {
+                $query->where('prodi', $prodi);
+            }
+
             if ($tahun) {
-                $count = $query->where('tahun_akademik', $tahun)->delete();
-                return response()->json(['success' => true, 'message' => "Data $kategori tahun $tahun ($count entri) berhasil dihapus."]);
+                $query->where('tahun_akademik', $tahun);
             }
             
             $count = $query->delete();
-            return response()->json(['success' => true, 'message' => "Semua data kuesioner $kategori ($count entri) berhasil dikosongkan."]);
+            
+            $prodiMsg = ($prodi && $prodi !== 'all' && $prodi !== '') ? " prodi $prodi" : "";
+            $tahunMsg = $tahun ? " tahun $tahun" : "";
+
+            return response()->json([
+                'success' => true, 
+                'message' => "Data $kategori$prodiMsg$tahunMsg ($count entri) berhasil dihapus."
+            ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
         }

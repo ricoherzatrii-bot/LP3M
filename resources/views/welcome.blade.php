@@ -329,33 +329,6 @@
     </div>
 </section>
 
-<!-- KONTAK SECTION -->
-<section class="py-24 bg-white dark:bg-slate-900 relative overflow-hidden border-t border-slate-100 dark:border-white/5 transition-colors duration-500">
-    <div class="relative z-10 w-full px-6 lg:px-16">
-        <div class="text-center mb-16">
-            <span class="text-[#0056b3] font-black tracking-[0.4em] text-[10px] uppercase block mb-4">Get in Touch</span>
-            <h2 class="font-serif-luxury text-5xl text-slate-900 dark:text-white">Hubungi <span class="text-[#0056b3] italic">Kami</span></h2>
-        </div>
-        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <a href="https://maps.google.com/?q=Politeknik+Jambi" target="_blank" class="group block p-8 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200 dark:border-white/10 text-center shadow-sm hover:border-[#0056b3] transition-all cursor-pointer">
-                <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0056b3] transition"><i class="fas fa-map-marker-alt text-[#0056b3] group-hover:text-white text-xl transition"></i></div>
-                <h4 class="text-slate-800 dark:text-white font-bold mb-2 group-hover:text-[#0056b3] transition">Alamat</h4>
-                <p class="text-slate-600 dark:text-slate-400 text-sm">Jalan Lingkar Barat II, Lorong Veteran, Kelurahan Kenali Asam Atas, Kecamatan Kotabaru, Kota Jambi</p>
-            </a>
-            <a href="mailto:info@politeknikjambi.ac.id" class="group block p-8 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200 dark:border-white/10 text-center shadow-sm hover:border-[#0056b3] transition-all cursor-pointer">
-                <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0056b3] transition"><i class="fas fa-envelope text-[#0056b3] group-hover:text-white text-xl transition"></i></div>
-                <h4 class="text-slate-800 dark:text-white font-bold mb-2 group-hover:text-[#0056b3] transition">Email</h4>
-                <p class="text-slate-600 dark:text-slate-400 text-sm">info@politeknikjambi.ac.id</p>
-            </a>
-            <a href="tel:+62741123456" class="group block p-8 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200 dark:border-white/10 text-center shadow-sm hover:border-[#0056b3] transition-all cursor-pointer">
-                <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0056b3] transition"><i class="fas fa-phone text-[#0056b3] group-hover:text-white text-xl transition"></i></div>
-                <h4 class="text-slate-800 dark:text-white font-bold mb-2 group-hover:text-[#0056b3] transition">Telepon</h4>
-                <p class="text-slate-600 dark:text-slate-400 text-sm">+62 741 123 456</p>
-            </a>
-        </div>
-    </div>
-</section>
-
 
     <footer class="bg-[#004494] pt-32 pb-12 border-t border-[#003377]">
         <div class="container mx-auto px-8">
@@ -368,9 +341,9 @@
                         Lembaga Penjamin Mutu Politeknik Jambi berkomitmen menjaga standar kualitas pendidikan tinggi nasional.
                     </p>
                     <div class="flex gap-4 relative z-50">
-                        <a href="https://www.instagram.com/politeknikjambi?igsh=MTJ0bmZzamZyaThz" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-96VS6wE9FWq" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://youtube.com/@poltekjambi?si=vHzgQPg277MlnDlO" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 

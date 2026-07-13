@@ -3011,7 +3011,7 @@
                         <form id="importKMForm" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                             <div>
                                 <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Tahun Akademik</label>
-                                <input type="text" id="km_import_tahun" placeholder="Contoh: 2023/2024" required
+                                <input type="text" id="km_import_tahun" placeholder="Contoh: 2023/2024 (Otomatis jika dari Excel)"
                                     class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
                             </div>
                             <div>
@@ -3351,7 +3351,7 @@
             const tahun = document.getElementById('km_import_tahun').value;
             const prodi = document.getElementById('km_import_prodi').value;
             const file = document.getElementById('km_import_file').files[0];
-            if (!tahun || !prodi || !file) return showToast('Lengkapi form import (Tahun, Prodi, File).', 'warning');
+            if (!prodi || !file) return showToast('Lengkapi form import (Prodi, File).', 'warning');
 
             const btn = document.getElementById('importKMBtn');
             btn.disabled = true;
@@ -3380,14 +3380,70 @@
         }
 
         async function truncateKM() {
-            const tahun = document.getElementById('kmFilterTahun')?.value || '';
-            const msg = tahun ? `Hapus data mahasiswa tahun ${tahun}?` : "Hapus SEMUA data kuesioner mahasiswa?";
-            if (!confirm(msg)) return;
+            const currentData = (typeof kuesionerDataStudent !== 'undefined') ? kuesionerDataStudent : [];
+            const uniqueProdis = [...new Set(currentData.map(item => item.prodi).filter(Boolean))].sort();
+            const uniqueYears = [...new Set(currentData.map(item => item.tahun_akademik).filter(Boolean))].sort();
+
+            let prodiOptionsHtml = '<option value="all">Semua Program Studi</option>';
+            uniqueProdis.forEach(p => {
+                prodiOptionsHtml += `<option value="${p}">${p}</option>`;
+            });
+
+            let tahunOptionsHtml = '<option value="">Semua Tahun</option>';
+            uniqueYears.forEach(y => {
+                const isSelected = document.getElementById('kmFilterTahun')?.value === y ? 'selected' : '';
+                tahunOptionsHtml += `<option value="${y}" ${isSelected}>${y}</option>`;
+            });
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Kosongkan Data Mahasiswa',
+                html: `
+                    <div class="mb-4">
+                        <label class="block text-left font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2">Pilih Program Studi:</label>
+                        <select id="swal-prodi" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                            ${prodiOptionsHtml}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-left font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2">Pilih Tahun Akademik:</label>
+                        <select id="swal-tahun" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                            ${tahunOptionsHtml}
+                        </select>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'KOSONGKAN',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#ef4444',
+                customClass: {
+                    popup: 'rounded-[2.5rem] p-10',
+                    confirmButton: 'rounded-xl font-bold uppercase tracking-wider text-xs px-6 py-4 mr-2',
+                    cancelButton: 'rounded-xl font-bold uppercase tracking-wider text-xs px-6 py-4'
+                },
+                preConfirm: () => {
+                    return {
+                        prodi: document.getElementById('swal-prodi').value,
+                        tahun: document.getElementById('swal-tahun').value
+                    }
+                }
+            });
+
+            if (!formValues) return;
+
+            const { prodi, tahun } = formValues;
+            const prodiText = prodi !== 'all' ? `prodi "${prodi}"` : 'SEMUA prodi';
+            const tahunText = tahun ? `tahun akademik "${tahun}"` : 'SEMUA tahun akademik';
+            const msgConfirm = `Apakah Anda yakin ingin menghapus data kuesioner Mahasiswa untuk ${prodiText} di ${tahunText}?`;
+
+            if (!confirm(msgConfirm)) return;
+
             try {
                 const queryParams = new URLSearchParams({
                     kategori: 'Mahasiswa'
                 });
                 if (tahun) queryParams.append('tahun_akademik', tahun);
+                if (prodi && prodi !== 'all') queryParams.append('prodi', prodi);
 
                 const r = await fetch(`/admin/kuesioner-dosen/truncate?${queryParams.toString()}`, {
                     method: 'DELETE',

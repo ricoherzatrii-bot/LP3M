@@ -16,19 +16,19 @@
 
             <!-- Right: Social & Language -->
             <div class="flex items-center gap-8">
-                <div class="flex items-center gap-5 text-white/60 text-xs">
-                    <a href="#" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-tiktok"></i></a>
-                    <a href="#" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-youtube"></i></a>
+                <div class="flex items-center gap-5 text-white/60 text-xs shadow-sm">
+                    <a href="https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-youtube"></i></a>
                 </div>
                 
                 <div class="h-4 w-[1px] bg-white/20"></div>
 
                 <div class="flex items-center gap-6 text-[9px] font-black tracking-[0.2em] text-white">
-                    <a href="#" class="flex items-center gap-2 hover:text-yellow-400 transition-all group">
+                    <a href="javascript:void(0);" onclick="changeLanguage('id')" class="flex items-center gap-2 hover:text-yellow-400 transition-all group">
                         ID <img src="https://flagcdn.com/w20/id.png" class="w-4 h-auto rounded-sm shadow-sm group-hover:scale-110 transition-transform" alt="ID">
                     </a>
-                    <a href="#" class="flex items-center gap-2 opacity-50 hover:opacity-100 hover:text-yellow-400 transition-all group">
+                    <a href="javascript:void(0);" onclick="changeLanguage('en')" class="flex items-center gap-2 opacity-50 hover:opacity-100 hover:text-yellow-400 transition-all group">
                         EN <img src="https://flagcdn.com/w16/us.png" class="w-3.5 h-auto rounded-sm group-hover:scale-110 transition-transform" alt="EN">
                     </a>
                 </div>
@@ -246,6 +246,26 @@
                         });
                     });
                 </script>
+
+                <!-- Google Translate Integration -->
+                <script type="text/javascript">
+                    if (typeof googleTranslateElementInit === 'undefined') {
+                        function googleTranslateElementInit() {
+                            new google.translate.TranslateElement({pageLanguage: 'id', includedLanguages: 'en,id', autoDisplay: false}, 'google_translate_element');
+                        }
+                    }
+                    if (typeof changeLanguage === 'undefined') {
+                        function changeLanguage(lang) {
+                            var selectField = document.querySelector(".goog-te-combo");
+                            if(selectField) {
+                                selectField.value = lang;
+                                selectField.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    }
+                </script>
+                <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+                <div id="google_translate_element" style="display:none;"></div>
 
             </div>
         </div>

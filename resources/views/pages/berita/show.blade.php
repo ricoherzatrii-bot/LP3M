@@ -77,9 +77,9 @@
             </div>
             <div class="flex gap-6 items-center">
                 <div class="flex gap-3">
-                    <a href="https://www.instagram.com/politeknikjambi" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@politeknikjambi" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://youtube.com/@poltekjambi" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
         </div>

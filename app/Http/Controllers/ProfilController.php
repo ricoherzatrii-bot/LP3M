@@ -292,15 +292,35 @@ class ProfilController extends Controller
                     $chartDataQuery->where('prodi', $selectedProdi);
                 }
                 
-                if ($request->has('tahun_akademik') && $request->tahun_akademik != '') {
-                    $chartDataQuery->where('tahun_akademik', $request->tahun_akademik);
-                } elseif ($tahunList->count() > 0) {
-                    $chartDataQuery->where('tahun_akademik', $tahunList->first());
+                $tahunAkademik = $request->tahun_akademik;
+                if ($tahunAkademik) {
+                    if (is_array($tahunAkademik)) {
+                        if (!in_array('all', $tahunAkademik)) {
+                            $chartDataQuery->whereIn('tahun_akademik', $tahunAkademik);
+                        }
+                    } else {
+                        if ($tahunAkademik !== 'all' && $tahunAkademik !== '') {
+                            $chartDataQuery->where('tahun_akademik', $tahunAkademik);
+                        }
+                    }
+                } else {
+                    if (!$request->has('tahun_akademik') && $tahunList->count() > 0) {
+                        $chartDataQuery->where('tahun_akademik', $tahunList->first());
+                    }
                 }
 
                 if ($request->has('aspek') && $request->aspek != '') {
                     $chartDataQuery->where('program', $request->aspek);
                 }
+
+                $chartDataQuery->select(
+                    'prodi',
+                    'program',
+                    \DB::raw('ROUND(AVG(sangat_setuju), 2) as sangat_setuju'),
+                    \DB::raw('ROUND(AVG(setuju), 2) as setuju'),
+                    \DB::raw('ROUND(AVG(tidak_setuju), 2) as tidak_setuju'),
+                    \DB::raw('ROUND(AVG(sangat_tidak_setuju), 2) as sangat_tidak_setuju')
+                )->groupBy('prodi', 'program');
 
                 $chartDataRaw = $chartDataQuery->get();
                 
