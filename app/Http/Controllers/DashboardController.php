@@ -304,19 +304,22 @@ class DashboardController extends Controller
                 if ($this->isFileField($key)) {
                     if ($request->hasFile($key)) {
                         // Check if document or image based on key
-                        $isDoc = str_contains(strtolower($key), 'path_file') || str_contains(strtolower($key), 'link_file');
+                        $isDoc = str_contains(strtolower($key), 'file') || str_contains(strtolower($key), 'dokumen');
                         $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
                         $request->validate([$key => $rules]);
                         
                         // Delete old file if exists
-                        if ($record->$key && \Storage::disk('public')->exists($record->$key)) {
+                        if ($record->$key && \Storage::disk('public')->exists($record->$key) && !str_starts_with($record->$key, 'http://') && !str_starts_with($record->$key, 'https://')) {
                             \Storage::disk('public')->delete($record->$key);
                         }
                         $updateData[$key] = $request->file($key)->store('uploads', 'public');
                     } else {
-                        // If it's an image field but no file uploaded, don't overwrite with empty
-                        // Unless the field is explicitly sent as empty (not handled by FormData if not selected)
-                        unset($updateData[$key]);
+                        // If it's an image/file field but no file uploaded, check if a text input (such as a URL) was sent
+                        if ($request->has($key) && !empty($value)) {
+                            $updateData[$key] = $value;
+                        } else {
+                            unset($updateData[$key]);
+                        }
                     }
                 }
 
@@ -375,12 +378,16 @@ class DashboardController extends Controller
             if ($this->isFileField($key)) {
                 if ($request->hasFile($key)) {
                     // Check if document or image based on key
-                    $isDoc = str_contains(strtolower($key), 'path_file') || str_contains(strtolower($key), 'link_file');
+                    $isDoc = str_contains(strtolower($key), 'file') || str_contains(strtolower($key), 'dokumen');
                     $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
                     $request->validate([$key => $rules]);
                     $insertData[$key] = $request->file($key)->store('uploads', 'public');
                 } else {
-                    unset($insertData[$key]);
+                    if ($request->has($key) && !empty($value)) {
+                        $insertData[$key] = $value;
+                    } else {
+                        unset($insertData[$key]);
+                    }
                 }
             }
 

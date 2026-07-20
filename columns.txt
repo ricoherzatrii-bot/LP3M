@@ -1,1 +1,0 @@
-["id","kategori","judul","isi_konten","slug","hits","penulis","tanggal_arsip","created_at"]

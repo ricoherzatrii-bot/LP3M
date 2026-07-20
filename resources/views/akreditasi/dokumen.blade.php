@@ -29,7 +29,9 @@
                     'Pedoman Akreditasi LAMINFOKOM' => 'https://laminfokom.or.id/official/instrumen1.html',
                     'Pedoman Akreditasi LAMEMBA' => 'https://lamemba.or.id/instrumen-akreditasi/',
                 ];
-                $externalUrl = $externalLinks[$item->judul] ?? null;
+                // Cek jika field file_dokumen berisi URL website eksternal
+                $isFileUrl = str_starts_with($item->file_dokumen, 'http://') || str_starts_with($item->file_dokumen, 'https://');
+                $externalUrl = $externalLinks[$item->judul] ?? ($isFileUrl ? $item->file_dokumen : null);
             @endphp
             <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                 <div>

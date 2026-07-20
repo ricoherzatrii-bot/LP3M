@@ -1259,11 +1259,33 @@
                 let inputHtml = "";
                 if (isImageField(field)) {
                     // Show current image preview if exists
-                    const previewHtml = val ? `<div class="mb-3"><img src="/storage/${val}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">Gambar saat ini</p></div>` : '';
+                    const isURL = val && (val.startsWith('http://') || val.startsWith('https://'));
+                    let previewHtml = '';
+                    if (val && !isURL) {
+                        previewHtml = `<div class="mb-3"><img src="/storage/${val}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">File/Gambar saat ini: ${val}</p></div>`;
+                    }
+                    
+                    const isDocField = field.toLowerCase().includes('file') || field.toLowerCase().includes('dokumen');
+                    let urlInputHtml = "";
+                    let acceptAttr = "image/*";
+                    let formatText = "Format: JPG, PNG, WEBP. Max: 2MB";
+                    
+                    if (isDocField) {
+                        acceptAttr = ".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,image/*";
+                        formatText = "Format: PDF, DOC, DOCX, XLS, XLSX, ZIP, RAR, Gambar. Max: 10MB";
+                        urlInputHtml = `
+                            <div class="mt-2">
+                                <label class="block text-[9px] font-black text-slate-400 mb-1 uppercase tracking-[0.2em]">Atau Hubungkan ke URL Website (misal: https://example.com)</label>
+                                <input type="text" id="field-${containerId}-${field}-url" value="${isURL ? val : ''}" placeholder="https://example.com" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner">
+                            </div>
+                        `;
+                    }
+                    
                     inputHtml = `
                         ${previewHtml}
-                        <input type="file" id="field-${containerId}-${field}" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:tracking-widest file:shadow-lg transition-all cursor-pointer">
-                        <p class="text-[10px] text-slate-400 mt-2 font-medium">Format: JPG, PNG, WEBP. Max: 2MB</p>
+                        <input type="file" id="field-${containerId}-${field}" accept="${acceptAttr}" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:tracking-widest file:shadow-lg transition-all cursor-pointer">
+                        <p class="text-[10px] text-slate-400 mt-2 font-medium">${formatText}</p>
+                        ${urlInputHtml}
                     `;
                 } else if (isTextArea) {
                     inputHtml = `<textarea id="field-${containerId}-${field}" rows="5" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner leading-relaxed">${val}</textarea>`;
@@ -1307,8 +1329,11 @@
                 const elId = `field-edit-fields-container-${field}`;
                 const el = document.getElementById(elId);
                 if (isImageField(field)) {
+                    const urlEl = document.getElementById(`${elId}-url`);
                     if (el.files && el.files[0]) {
                         fd.append(field, el.files[0]);
+                    } else if (urlEl && urlEl.value.trim() !== "") {
+                        fd.append(field, urlEl.value.trim());
                     }
                 } else {
                     // Check if Editor is active for this field
@@ -1357,8 +1382,11 @@
                 const elId = `field-add-fields-container-${field}`;
                 const el = document.getElementById(elId);
                 if (isImageField(field)) {
+                    const urlEl = document.getElementById(`${elId}-url`);
                     if (el.files && el.files[0]) {
                         fd.append(field, el.files[0]);
+                    } else if (urlEl && urlEl.value.trim() !== "") {
+                        fd.append(field, urlEl.value.trim());
                     }
                     // Image fields are optional — don't flag as empty
                 } else {
