@@ -11,6 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (!Schema::hasTable('artikels')) {
+            Schema::create('artikels', function (Blueprint $table) {
+                $table->id();
+                $table->string('judul');
+                $table->text('isi_konten')->nullable();
+                $table->string('kategori')->nullable();
+                $table->string('penulis')->nullable();
+                $table->timestamps();
+            });
+        }
+
         Schema::table('artikels', function (Blueprint $table) {
             if (!Schema::hasColumn('artikels', 'slug')) {
                 $table->string('slug')->after('judul')->nullable();

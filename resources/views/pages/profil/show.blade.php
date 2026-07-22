@@ -58,6 +58,26 @@
                     @endif
                 </article>
 
+                {{-- LINK FILE / TAUTAN (dari admin Renop) --}}
+                @if(!empty($profil->link_file))
+                    @php
+                        $rawLink = trim($profil->link_file);
+                        if (\Illuminate\Support\Str::startsWith($rawLink, ['http://', 'https://'])) {
+                            $href = $rawLink;
+                        } elseif (\Illuminate\Support\Str::startsWith($rawLink, 'www.')) {
+                            $href = 'https://' . $rawLink;
+                        } else {
+                            $href = asset('storage/' . ltrim($rawLink, '/'));
+                        }
+                    @endphp
+
+                    <div class="mt-6">
+                        <a href="{{ $href }}" target="_blank" rel="noopener noreferrer" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-lg shadow transition">
+                            <i class="fas fa-external-link-alt mr-2"></i> Buka Tautan / Dokumen
+                        </a>
+                    </div>
+                @endif
+
                 <!-- PREV / NEXT BUTTONS -->
                 <div class="flex gap-2 mb-12 border-b border-white/10 pb-12">
                     <button class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
@@ -72,20 +92,6 @@
                 <div>
                     <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Artikel Lainnya</h3>
                     <div class="grid md:grid-cols-3 gap-6">
-                        <!-- Card 1 -->
-                        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
-                            <h4 class="text-slate-900 dark:text-white font-bold mb-4 line-clamp-2 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition">Sasaran Mutu Politeknik Jambi</h4>
-                            <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                Admin <span class="text-slate-300 dark:text-white/20 mx-1">•</span> 03 February 2023
-                            </div>
-                        </div>
-                        <!-- Card 2 -->
-                        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
-                            <h4 class="text-slate-900 dark:text-white font-bold mb-4 line-clamp-2 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition">Kebijakan Mutu Politeknik Jambi</h4>
-                            <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                Admin <span class="text-slate-300 dark:text-white/20 mx-1">•</span> 03 February 2023
-                            </div>
-                        </div>
                         <!-- Card 3 -->
                         <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
                             <h4 class="text-slate-900 dark:text-white font-bold mb-4 line-clamp-2 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition">Moto Dan Janji Layanan</h4>
@@ -162,9 +168,5 @@
         margin-bottom: 0.5rem;
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
-    .font-serif-luxury {
-        font-family: 'Playfair Display', serif;
-    }
 </style>
 @endsection

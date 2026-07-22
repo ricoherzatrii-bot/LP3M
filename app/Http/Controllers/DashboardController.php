@@ -9,11 +9,14 @@ use App\Models\Spmi;
 use App\Models\Akreditasi;
 use App\Models\Capaian;
 use App\Models\Kuesioner;
-use App\Models\Berita;
+
 use App\Models\Artikel;
 use App\Models\GaleriAlbum;
 use App\Models\GaleriVideo;
 use App\Models\DokumenSpmi;
+use App\Models\CapaianRenstra;
+use App\Models\LaporanAmi;
+use App\Models\Rtm;
 
 class DashboardController extends Controller
 {
@@ -22,11 +25,52 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $totalMutuDocs = Spmi::count() + Akreditasi::where('kategori', 'Dokumen Akreditasi')->count() + Capaian::count();
-        $avgIku = round(Capaian::whereNotNull('persentase_capaian')->avg('persentase_capaian') ?? 94.5, 1);
-        $totalProdi = Akreditasi::where('kategori', 'Akreditasi')->count();
+        $totalMutuDocs = 0;
+        
+        // Sum Dokumen Mutu counts safely from the available tables
+        try {
+            $totalMutuDocs += DokumenSpmi::count();
+        } catch (\Exception $e) {}
+
+        try {
+            $totalMutuDocs += LaporanAmi::count();
+        } catch (\Exception $e) {}
+
+        try {
+            $totalMutuDocs += Rtm::count();
+        } catch (\Exception $e) {}
+
+        try {
+            $totalMutuDocs += Akreditasi::where('kategori', 'Dokumen Akreditasi')->count();
+        } catch (\Exception $e) {}
+
+        try {
+            if (\Schema::hasTable((new CapaianRenstra)->getTable())) {
+                $totalMutuDocs += CapaianRenstra::count();
+            } else if (\Schema::hasTable((new Capaian)->getTable())) {
+                $totalMutuDocs += Capaian::count();
+            }
+        } catch (\Exception $e) {}
+
+        $avgIku = 94.5;
+        try {
+            if (\Schema::hasTable((new CapaianRenstra)->getTable())) {
+                $avgIku = round(CapaianRenstra::whereNotNull('realisasi')->avg('realisasi') ?? 94.5, 1);
+            } else if (\Schema::hasTable((new Capaian)->getTable())) {
+                $avgIku = round(Capaian::whereNotNull('persentase_capaian')->avg('persentase_capaian') ?? 94.5, 1);
+            }
+        } catch (\Exception $e) {}
+
+        $totalProdi = 0;
+        try {
+            $totalProdi = Akreditasi::where('kategori', 'Akreditasi')->count();
+        } catch (\Exception $e) {}
         if ($totalProdi === 0) $totalProdi = 8; // fallback
-        $totalResponden = Kuesioner::sum('hits');
+
+        $totalResponden = 0;
+        try {
+            $totalResponden = Kuesioner::sum('hits');
+        } catch (\Exception $e) {}
         if ($totalResponden === 0) $totalResponden = 3673; // fallback
 
         return view('dashboard', compact('totalMutuDocs', 'avgIku', 'totalProdi', 'totalResponden'));
@@ -41,10 +85,6 @@ class DashboardController extends Controller
         $profilSlugs = [
             'Visi Dan Misi' => 'visi-dan-misi',
             'Moto Dan Janji Layanan' => 'moto-dan-janji-layanan',
-            'Kebijakan Mutu POLJAM' => 'kebijakan-mutu-poljam',
-            'Sasaran Mutu POLJAM' => 'sasaran-mutu-poljam',
-            'Standar Mutu POLJAM' => 'standar-mutu-poljam',
-            'Sasaran Mutu LPM' => 'sasaran-mutu-lpm',
             'Struktur Organisasi' => 'struktur-organisasi',
             'Job Deskripsi' => 'job-deskripsi',
             'Standar Waktu Pelayanan' => 'standar-waktu-pelayanan',
@@ -62,9 +102,7 @@ class DashboardController extends Controller
 
         // 2. SPMI Items
         $spmiKategori = [
-            'Dokumen SPMI' => 'Dokumen SPMI',
             'Unit' => 'Unit',
-            'RTM' => 'RTM',
             'Dokumen Mutu SPMI' => 'Dokumen Mutu SPMI',
             'e-spmiPoljam' => 'e-spmiPoljam',
         ];
@@ -83,6 +121,26 @@ class DashboardController extends Controller
             return [
                 'type' => 'table',
                 'model' => DokumenSpmi::class,
+                'query' => [],
+                'fields' => ['judul', 'kategori', 'tahun', 'path_file'],
+                'defaults' => [],
+            ];
+        }
+
+        if ($title === 'Laporan AMI') {
+            return [
+                'type' => 'table',
+                'model' => LaporanAmi::class,
+                'query' => [],
+                'fields' => ['judul', 'kategori', 'tahun', 'path_file'],
+                'defaults' => [],
+            ];
+        }
+
+        if ($title === 'RTM') {
+            return [
+                'type' => 'table',
+                'model' => Rtm::class,
                 'query' => [],
                 'fields' => ['judul', 'kategori', 'tahun', 'path_file'],
                 'defaults' => [],
@@ -160,16 +218,6 @@ class DashboardController extends Controller
             ];
         }
 
-        // 6. Portal Berita
-        if ($title === 'Daftar Berita' || $title === 'Portal Berita' || $title === 'Berita') {
-            return [
-                'type' => 'table',
-                'model' => Berita::class,
-                'query' => [],
-                'fields' => ['judul', 'konten', 'gambar_fitur'],
-                'defaults' => [],
-            ];
-        }
 
         // 7. Artikel Ilmiah
         if ($title === 'Artikel Ilmiah' || $title === 'Artikel') {
@@ -179,6 +227,17 @@ class DashboardController extends Controller
                 'query' => [],
                 'fields' => ['judul', 'kategori', 'isi_konten', 'gambar_fitur', 'penulis'],
                 'defaults' => ['kategori' => 'Umum', 'judul' => 'Artikel Baru'],
+            ];
+        }
+
+        // 7B. Pengumuman
+        if ($title === 'Pengumuman') {
+            return [
+                'type' => 'table',
+                'model' => \App\Models\Pengumuman::class,
+                'query' => [],
+                'fields' => ['judul', 'isi_konten', 'gambar', 'status'],
+                'defaults' => ['status' => 'aktif', 'judul' => 'Pengumuman Baru'],
             ];
         }
 

@@ -13,7 +13,7 @@
     {{-- ===== HERO HEADER ===== --}}
     <div class="relative z-10 pt-20 pb-16 text-center">
         <div class="max-w-7xl mx-auto px-6 lg:px-16">
-            <h1 class="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter" style="font-family: 'Space Grotesk', sans-serif;">
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter" style="font-family: 'Arial', sans-serif;">
                 GALERI <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">AKTIVITAS</span>
             </h1>
             <p class="text-slate-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
@@ -90,7 +90,7 @@
 <div id="lightbox" class="fixed inset-0 z-[100] bg-slate-950/98 backdrop-blur-2xl hidden flex-col transition-all duration-500 opacity-0 translate-y-10">
     <div class="p-8 flex justify-between items-center relative z-10 border-b border-white/5">
         <div>
-            <h4 id="lightboxTitle" class="text-white font-black text-2xl tracking-tighter" style="font-family: 'Space Grotesk', sans-serif;">Album Title</h4>
+            <h4 id="lightboxTitle" class="text-white font-black text-2xl tracking-tighter" style="font-family: 'Arial', sans-serif;">Album Title</h4>
             <div class="flex items-center gap-3 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
                 <span class="text-blue-500">Galeri Foto</span>
                 <span class="w-1.5 h-1.5 rounded-full bg-slate-800"></span>
@@ -177,7 +177,6 @@
 </script>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap');
     
     @keyframes emerge {
         from { opacity: 0; transform: scale(0.7) translateY(40px) rotate(-5deg); }

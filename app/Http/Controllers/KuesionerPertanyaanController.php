@@ -20,7 +20,7 @@ class KuesionerPertanyaanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kuesioner_id' => 'required|exists:kuesioners,id',
+            'kuesioner_id' => 'required|exists:kuesioner,id',
             'pertanyaan'   => 'required|string',
             'tipe_jawaban' => 'required|in:skala_likert,teks,pilihan_ganda',
             'opsi_jawaban' => 'nullable|string',
@@ -72,7 +72,7 @@ class KuesionerPertanyaanController extends Controller
     public function submitResponse(Request $request)
     {
         $request->validate([
-            'kuesioner_id' => 'required|exists:kuesioners,id',
+            'kuesioner_id' => 'required|exists:kuesioner,id',
             'jawaban'      => 'required|array',
         ]);
 

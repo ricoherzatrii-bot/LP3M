@@ -75,6 +75,14 @@ Route::get('/akreditasi/dokumen', [ProfilController::class, 'akreditasiDokumen']
 
 // --- RUTE CAPAIAN ---
 Route::get('/capaian-renstra', [\App\Http\Controllers\RenstraController::class, 'publicIndex'])->name('renstra.publicIndex');
+Route::get('/capaian/laporan-ami', [\App\Http\Controllers\ProfilController::class, 'laporanAmiPublic'])->name('capaian.laporan_ami');
+Route::get('/capaian/rtm', [\App\Http\Controllers\ProfilController::class, 'rtmPublic'])->name('capaian.rtm');
+// Dedicated Renop listing (maps to category 'Renop')
+Route::get('/capaian/renop', [ProfilController::class, 'renopIndex'])->name('capaian.renop');
+
+// Download helper for Capaian entries (will redirect for external links or stream local files)
+Route::get('/capaian/download/{id}', [ProfilController::class, 'downloadCapaian'])->name('capaian.download');
+
 Route::get('/capaian/{slug}', [ProfilController::class, 'showCapaian'])->name('capaian.show');
 
 // --- RUTE KUESIONER ---
@@ -85,6 +93,10 @@ Route::get('/kuesioner/mahasiswa', [ProfilController::class, 'kuesionerMahasiswa
 // --- RUTE LAINNYA ---
 Route::get('/galeri', [ProfilController::class, 'galleryIndex'])->name('gallery.index');
 Route::get('/galeri/video', [ProfilController::class, 'galleryVideo'])->name('gallery.video');
+
+// --- RUTE PENGUMUMAN ---
+Route::get('/pengumuman', [\App\Http\Controllers\PengumumanController::class, 'index'])->name('pengumuman.index');
+Route::get('/pengumuman/{slug}', [\App\Http\Controllers\PengumumanController::class, 'show'])->name('pengumuman.show');
 
 
 // ==========================================
@@ -126,14 +138,31 @@ Route::get('/admin/dokumen-spmi', [\App\Http\Controllers\DokumenSpmiController::
 Route::post('/admin/dokumen-spmi/upload', [\App\Http\Controllers\DokumenSpmiController::class, 'store'])->name('admin.dokumen_spmi.store');
 Route::post('/admin/dokumen-spmi/{id}/update', [\App\Http\Controllers\DokumenSpmiController::class, 'update'])->name('admin.dokumen_spmi.update');
 Route::delete('/admin/dokumen-spmi/{id}', [\App\Http\Controllers\DokumenSpmiController::class, 'destroy'])->name('admin.dokumen_spmi.destroy');
+Route::get('/dokumen-spmi/{id}/download', [\App\Http\Controllers\DokumenSpmiController::class, 'download'])->name('dokumen_spmi.download');
+
+// ============================================
+// --- SISTEM MANAJEMEN LAPORAN AMI ---
+// ============================================
+Route::get('/admin/laporan-ami', [\App\Http\Controllers\LaporanAmiController::class, 'index'])->name('admin.laporan_ami.index');
+Route::post('/admin/laporan-ami/upload', [\App\Http\Controllers\LaporanAmiController::class, 'store'])->name('admin.laporan_ami.store');
+Route::post('/admin/laporan-ami/{id}/update', [\App\Http\Controllers\LaporanAmiController::class, 'update'])->name('admin.laporan_ami.update');
+Route::delete('/admin/laporan-ami/{id}', [\App\Http\Controllers\LaporanAmiController::class, 'destroy'])->name('admin.laporan_ami.destroy');
+Route::get('/laporan-ami/{id}/download', [\App\Http\Controllers\LaporanAmiController::class, 'download'])->name('laporan_ami.download');
+
+// ============================================
+// --- SISTEM MANAJEMEN RTM ---
+// ============================================
+Route::get('/admin/rtm', [\App\Http\Controllers\RtmController::class, 'index'])->name('admin.rtm.index');
+Route::post('/admin/rtm/upload', [\App\Http\Controllers\RtmController::class, 'store'])->name('admin.rtm.store');
+Route::post('/admin/rtm/{id}/update', [\App\Http\Controllers\RtmController::class, 'update'])->name('admin.rtm.update');
+Route::delete('/admin/rtm/{id}', [\App\Http\Controllers\RtmController::class, 'destroy'])->name('admin.rtm.destroy');
+Route::get('/rtm/{id}/download', [\App\Http\Controllers\RtmController::class, 'download'])->name('rtm.download');
 
 // --- SISTEM MANAJEMEN SLIDER HOMEPAGE ---
 Route::get('/admin/slider', [\App\Http\Controllers\SliderController::class, 'index'])->name('admin.slider.index');
 Route::post('/admin/slider', [\App\Http\Controllers\SliderController::class, 'store'])->name('admin.slider.store');
 Route::post('/admin/slider/{id}/update', [\App\Http\Controllers\SliderController::class, 'update'])->name('admin.slider.update');
 Route::delete('/admin/slider/{id}', [\App\Http\Controllers\SliderController::class, 'destroy'])->name('admin.slider.destroy');
-Route::delete('/admin/dokumen-spmi/{id}', [\App\Http\Controllers\DokumenSpmiController::class, 'destroy'])->name('admin.dokumen_spmi.destroy');
-Route::get('/dokumen-spmi/{id}/download', [\App\Http\Controllers\DokumenSpmiController::class, 'download'])->name('dokumen_spmi.download');
 
 // (Rute publik dokumen SPMI sudah dipindah ke bagian RUTE SPMI di atas)
 
@@ -186,4 +215,23 @@ Route::post('/admin/kuesioner-dosen/{id}/update', [\App\Http\Controllers\Kuesion
 Route::delete('/admin/kuesioner-dosen/truncate', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'truncate'])->name('admin.kuesioner_dosen.truncate');
 Route::delete('/admin/kuesioner-dosen/{id}', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'destroy'])->name('admin.kuesioner_dosen.destroy');
 Route::post('/admin/kuesioner-dosen/import', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'import'])->name('admin.kuesioner_dosen.import');
+
+// ============================================
+// --- SISTEM MANAJEMEN PENGUMUMAN (API) ---
+// ============================================
+Route::get('/api/pengumuman/all', [\App\Http\Controllers\PengumumanController::class, 'getAll'])->name('api.pengumuman.all');
+Route::post('/api/pengumuman/store', [\App\Http\Controllers\PengumumanController::class, 'store'])->name('api.pengumuman.store');
+Route::post('/api/pengumuman/{id}/update', [\App\Http\Controllers\PengumumanController::class, 'update'])->name('api.pengumuman.update');
+Route::delete('/api/pengumuman/{id}', [\App\Http\Controllers\PengumumanController::class, 'destroy'])->name('api.pengumuman.destroy');
+
+// ============================================
+// --- SISTEM MANAJEMEN PENGUMUMAN (Legacy) ---
+// ============================================
+Route::get('/admin/pengumuman', [\App\Http\Controllers\PengumumanController::class, 'adminIndex'])->name('admin.pengumuman.index');
+Route::get('/admin/pengumuman/create', [\App\Http\Controllers\PengumumanController::class, 'create'])->name('admin.pengumuman.create');
+Route::post('/admin/pengumuman', [\App\Http\Controllers\PengumumanController::class, 'store'])->name('admin.pengumuman.store');
+Route::get('/admin/pengumuman/{pengumuman}/edit', [\App\Http\Controllers\PengumumanController::class, 'edit'])->name('admin.pengumuman.edit');
+Route::post('/admin/pengumuman/{pengumuman}/update', [\App\Http\Controllers\PengumumanController::class, 'update'])->name('admin.pengumuman.update');
+Route::delete('/admin/pengumuman/{pengumuman}', [\App\Http\Controllers\PengumumanController::class, 'destroy'])->name('admin.pengumuman.destroy');
+
 Route::get('/admin/kuesioner-dosen/stats', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'getStats'])->name('admin.kuesioner_dosen.stats');

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class GaleriAlbum extends Model
 {
+    protected $table = 'galeri_album';
+
     protected $fillable = [
         'nama_album',
         'slug',

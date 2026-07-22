@@ -2,7 +2,7 @@
 <div class="p-6 flex items-center space-x-4 border-b border-blue-800">
     <div class="bg-white p-1 rounded-full shadow-lg flex items-center justify-center w-12 h-12 flex-shrink-0 overflow-hidden">
         <!-- Logo dipanggil dari folder public -->
-        <img src="{{ asset('image_c31a1d.png') }}" alt="Logo Poljam" class="w-full h-full object-contain scale-90">
+        <img src="/images/logo.png" alt="Logo Poljam" class="w-full h-full object-contain scale-90">
     </div>
     
     <div class="flex flex-col">

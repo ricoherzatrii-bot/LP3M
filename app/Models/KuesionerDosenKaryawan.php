@@ -9,5 +9,7 @@ class KuesionerDosenKaryawan extends Model
 {
     use HasFactory;
 
+    protected $table = 'kuesioner_dosen_karyawan';
+
     protected $guarded = [];
 }

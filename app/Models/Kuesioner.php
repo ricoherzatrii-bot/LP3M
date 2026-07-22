@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kuesioner extends Model
 {
-    protected $table = 'kuesioners';
+    protected $table = 'kuesioner';
     
     protected $fillable = [
         'judul',

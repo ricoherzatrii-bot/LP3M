@@ -136,8 +136,15 @@ class ProfilController extends Controller
         $profil = Profil::where('slug', $slug)->first();
         
         if (!$profil) {
-            // Jika tidak ada, cari di tabel Spmi
-            $spmi = \App\Models\Spmi::where('slug', $slug)->first();
+            // Jika tidak ada, cari di tabel Spmi (dengan penanganan jika tabel tidak ada)
+            $spmi = null;
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('spmis') || \Illuminate\Support\Facades\Schema::hasTable('spmi')) {
+                    $spmi = \App\Models\Spmi::where('slug', $slug)->first();
+                }
+            } catch (\Exception $e) {
+                // Tabel spmis tidak ada, lanjut ke fallback
+            }
             
             if ($spmi) {
                 $profil = (object)[
@@ -195,7 +202,7 @@ class ProfilController extends Controller
         
         // Eager-load pertanyaan for dynamic form
         $pertanyaans = collect();
-        if ($kuesioner && Schema::hasTable('kuesioner_pertanyaans')) {
+        if ($kuesioner && Schema::hasTable('kuesioner_pertanyaan')) {
             $pertanyaans = \App\Models\KuesionerPertanyaan::where('kuesioner_id', $kuesioner->id)
                 ->orderBy('urutan', 'asc')
                 ->get();
@@ -212,7 +219,7 @@ class ProfilController extends Controller
         $chartData = collect();
         $respondenCount = 0;
         try {
-            if (Schema::hasTable('kuesioner_dosen_karyawans')) {
+            if (Schema::hasTable('kuesioner_dosen_karyawan')) {
                 $chartDataQuery = \App\Models\KuesionerDosenKaryawan::query();
                 $chartDataQuery->where('kategori', 'Dosen & Karyawan');
                 
@@ -232,7 +239,7 @@ class ProfilController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::warning('Table kuesioner_dosen_karyawans is missing or error: ' . $e->getMessage());
+            \Log::warning('Table kuesioner_dosen_karyawan is missing or error: ' . $e->getMessage());
         }
 
         return view('pages.kuesioner.dosen', compact('allProfil', 'kuesioner', 'tahunList', 'pertanyaans', 'chartData', 'respondenCount'));
@@ -255,7 +262,7 @@ class ProfilController extends Controller
         
         // Eager-load pertanyaan for dynamic form
         $pertanyaans = collect();
-        if ($kuesioner && Schema::hasTable('kuesioner_pertanyaans')) {
+        if ($kuesioner && Schema::hasTable('kuesioner_pertanyaan')) {
             $pertanyaans = \App\Models\KuesionerPertanyaan::where('kuesioner_id', $kuesioner->id)
                 ->orderBy('urutan', 'asc')
                 ->get();
@@ -283,7 +290,7 @@ class ProfilController extends Controller
         // Ambil data untuk grafik
         $chartData = collect();
         try {
-            if (Schema::hasTable('kuesioner_dosen_karyawans')) {
+            if (Schema::hasTable('kuesioner_dosen_karyawan')) {
                 $chartDataQuery = \App\Models\KuesionerDosenKaryawan::query();
                 $chartDataQuery->where('kategori', 'Mahasiswa');
                 
@@ -331,7 +338,7 @@ class ProfilController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::warning('Table kuesioner_dosen_karyawans is missing or error: ' . $e->getMessage());
+            \Log::warning('Table kuesioner_dosen_karyawan is missing or error: ' . $e->getMessage());
         }
                                         
         return view('pages.kuesioner.mahasiswa', compact('allProfil', 'kuesioner', 'prodiList', 'tahunList', 'aspekList', 'pertanyaans', 'chartData'));
@@ -343,15 +350,36 @@ class ProfilController extends Controller
     public function showCapaian($slug) {
         $allProfil = Profil::all();
         
-        // Coba cari di tabel Capaian
-        $capaian = \App\Models\Capaian::where('slug', $slug)->first();
-        
+        // Coba cari di tabel Capaian (dengan penanganan jika tabel tidak ada)
+        $capaian = null;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('capaians') || \Illuminate\Support\Facades\Schema::hasTable('capaian')) {
+                $capaian = \App\Models\Capaian::where('slug', $slug)->first();
+            }
+        } catch (\Exception $e) {
+            // Tabel capaians tidak ada, lanjut ke fallback
+        }
+        // Jika tidak ditemukan berdasarkan slug, beberapa kasus seperti "renop"
+        // seharusnya merujuk ke kategori 'Renop' (listing). Untuk kompatibilitas
+        // dengan data admin yang mungkin menyimpan banyak entri Renop dengan
+        // slug tersendiri, coba fallback ke entri pertama dengan kategori 'Renop'.
+        if (!$capaian) {
+            try {
+                if (strtolower($slug) === 'renop' && (\Illuminate\Support\Facades\Schema::hasTable('capaians') || \Illuminate\Support\Facades\Schema::hasTable('capaian'))) {
+                    $capaian = \App\Models\Capaian::where('kategori', 'Renop')->orderBy('id','asc')->first();
+                }
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
+
         if ($capaian) {
             $profil = (object)[
                 'judul' => $capaian->judul,
                 'created_at' => $capaian->created_at,
                 'hits' => $capaian->hits ?? 0,
                 'isi_konten' => $capaian->deskripsi ?? '<p>Konten capaian ini belum memiliki deskripsi rinci.</p>',
+                'link_file' => $capaian->link_file ?? null,
             ];
         } else {
             // Fallback jika belum ada di database
@@ -361,10 +389,63 @@ class ProfilController extends Controller
                 'created_at' => now(),
                 'hits' => 0,
                 'isi_konten' => '<p>Content sedang diproses, silahkan kunjungi beberapa saat lagi...</p>',
+                'link_file' => null,
             ];
         }
         
         return view('pages.profil.show', compact('profil', 'allProfil'));
+    }
+
+    /**
+     * Listing khusus untuk Renop (category = 'Renop')
+     */
+    public function renopIndex()
+    {
+        $allProfil = Profil::all();
+        $items = [];
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('capaians')) {
+                $items = \App\Models\Capaian::where('kategori', 'Renop')->orderBy('id','asc')->get();
+            }
+        } catch (\Exception $e) {
+            $items = collect();
+        }
+
+        return view('pages.capaian.renop', compact('allProfil', 'items'));
+    }
+
+    /**
+     * Download or redirect to the actual link for a Capaian entry
+     */
+    public function downloadCapaian($id)
+    {
+        try {
+            $c = \App\Models\Capaian::findOrFail($id);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'File tidak ditemukan');
+        }
+
+        $link = $c->link_file ?? null;
+        if (!$link) return redirect()->back();
+
+        // If storage local path (no http scheme) -> stream download
+        if (!\Illuminate\Support\Str::startsWith($link, ['http://', 'https://'])) {
+            $path = ltrim($link, '/');
+            if (\Storage::disk('public')->exists($path)) {
+                return \Storage::disk('public')->download($path);
+            }
+            return redirect()->away(asset('storage/' . $path));
+        }
+
+        // Handle Google Drive links by converting to direct download when possible
+        if (preg_match('#drive\.google\.com/file/d/([a-zA-Z0-9_-]+)#', $link, $m)) {
+            $fileId = $m[1];
+            $dl = "https://drive.google.com/uc?export=download&id={$fileId}";
+            return redirect()->away($dl);
+        }
+
+        // Fallback: just redirect to external URL
+        return redirect()->away($link);
     }
 
     /**
@@ -403,6 +484,82 @@ class ProfilController extends Controller
                         ->pluck('kategori');
 
         return view('pages.spmi.dokumen', compact('allProfil', 'dokumen', 'tahunList', 'kategoriList'));
+    }
+
+    /**
+     * Halaman publik Laporan AMI
+     */
+    public function laporanAmiPublic(\Illuminate\Http\Request $request)
+    {
+        $allProfil = Profil::all();
+
+        $query = \App\Models\LaporanAmi::query();
+
+        // Filter per tahun
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->where('tahun', $request->tahun);
+        }
+
+        // Filter per kategori
+        if ($request->has('kategori') && $request->kategori != '') {
+            $query->where('kategori', $request->kategori);
+        }
+
+        $dokumen = $query->orderBy('tahun', 'desc')
+                         ->orderBy('created_at', 'desc')
+                         ->get();
+
+        // Ambil daftar tahun untuk filter
+        $tahunList = \App\Models\LaporanAmi::select('tahun')
+                        ->distinct()
+                        ->orderBy('tahun', 'desc')
+                        ->pluck('tahun');
+
+        // Ambil daftar kategori untuk filter
+        $kategoriList = \App\Models\LaporanAmi::select('kategori')
+                        ->distinct()
+                        ->orderBy('kategori')
+                        ->pluck('kategori');
+
+        return view('pages.capaian.laporan-ami', compact('allProfil', 'dokumen', 'tahunList', 'kategoriList'));
+    }
+
+    /**
+     * Halaman publik RTM
+     */
+    public function rtmPublic(\Illuminate\Http\Request $request)
+    {
+        $allProfil = Profil::all();
+
+        $query = \App\Models\Rtm::query();
+
+        // Filter per tahun
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->where('tahun', $request->tahun);
+        }
+
+        // Filter per kategori
+        if ($request->has('kategori') && $request->kategori != '') {
+            $query->where('kategori', $request->kategori);
+        }
+
+        $dokumen = $query->orderBy('tahun', 'desc')
+                         ->orderBy('created_at', 'desc')
+                         ->get();
+
+        // Ambil daftar tahun untuk filter
+        $tahunList = \App\Models\Rtm::select('tahun')
+                        ->distinct()
+                        ->orderBy('tahun', 'desc')
+                        ->pluck('tahun');
+
+        // Ambil daftar kategori untuk filter
+        $kategoriList = \App\Models\Rtm::select('kategori')
+                        ->distinct()
+                        ->orderBy('kategori')
+                        ->pluck('kategori');
+
+        return view('pages.capaian.rtm', compact('allProfil', 'dokumen', 'tahunList', 'kategoriList'));
     }
 
     /**
@@ -472,7 +629,7 @@ class ProfilController extends Controller
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string|max:100',
             'isi_konten' => 'required|string',
-            'slug' => 'nullable|string|unique:profils,slug',
+            'slug' => 'nullable|string|unique:profil,slug',
             'penulis' => 'nullable|string|max:100',
         ]);
 
@@ -493,7 +650,7 @@ class ProfilController extends Controller
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string|max:100',
             'isi_konten' => 'required|string',
-            'slug' => 'nullable|string|unique:profils,slug,' . $id,
+            'slug' => 'nullable|string|unique:profil,slug,' . $id,
             'penulis' => 'nullable|string|max:100',
         ]);
 

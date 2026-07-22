@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Masuk |Politeknik Jambi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+            font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; 
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
         }
         .glass-effect {
@@ -25,7 +24,7 @@
         <!-- Logo & Header -->
         <div class="text-center mb-10">
             <div class="inline-block bg-white p-3 rounded-2xl shadow-2xl mb-6">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo Poljam" class="h-16 w-auto">
+                <img src="/images/logo.png" alt="Logo Poljam" class="h-16 w-auto">
             </div>
             <h1 class="text-white text-2xl font-extrabold tracking-tight">PORTAL LOGIN</h1>
             <p class="text-blue-300/60 text-sm font-semibold uppercase tracking-[0.2em] mt-2">Politeknik Jambi</p>

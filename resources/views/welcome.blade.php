@@ -11,7 +11,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        'serif-luxury': ['Playfair Display', 'serif'],
+                        'serif-luxury': ['Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif'],
                     }
                 }
             }
@@ -24,7 +24,6 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -34,8 +33,8 @@
             --accent-gold: #fbbf24;
         }
         
-        body { font-family: 'Outfit', sans-serif; background-color: #ffffff; color: #0f172a; scroll-behavior: smooth; }
-        .font-serif-luxury { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; background-color: #ffffff; color: #0f172a; scroll-behavior: smooth; }
+        .font-serif-luxury { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
         
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -94,7 +93,7 @@
     <!-- SPLASH SCREEN -->
     <div id="splash-screen" class="active bg-white dark:bg-slate-950 transition-colors duration-500">
         <div class="text-center">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="splash-logo mb-4">
+            <img src="/images/logo.png" alt="Logo" class="splash-logo mb-4">
             <div class="w-48 h-1 bg-slate-100 dark:bg-slate-800 mx-auto rounded-full overflow-hidden">
                 <div class="h-full bg-blue-700 animate-[loading_2s_ease-in-out_infinite]"></div>
             </div>
@@ -128,9 +127,9 @@
                         <a href="{{ $item->url }}" class="slider-item absolute inset-0 opacity-0 transition-all duration-1000 z-0 {{ $index == 0 ? 'opacity-100 z-10' : '' }}" data-index="{{ $index }}">
                             <div class="relative h-full w-full overflow-hidden">
                                 @if($item->gambar)
-                                    <img src="{{ asset('storage/' . $item->gambar) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                    <img src="/storage/{{ $item->gambar }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                                 @else
-                                    <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">
+                                    <img src="/images/gedung-poljam.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">
                                 @endif
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>
                                 <div class="absolute bottom-0 left-0 right-0 p-8 pb-14 md:p-12 md:pb-20">
@@ -184,9 +183,9 @@
                             <div class="md:flex">
                                 <div class="md:w-1/2 h-64 md:h-auto overflow-hidden relative">
                                     @if($berita->gambar_fitur)
-                                        <img src="{{ asset('storage/' . $berita->gambar_fitur) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                        <img src="/storage/{{ $berita->gambar_fitur }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                                     @else
-                                        <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}">
+                                        <img src="/images/gedung-poljam.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}">
                                     @endif
                                     <div class="absolute top-4 left-4">
                                         <span class="inline-block px-3 py-1 bg-[#0056b3] text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">Terbaru</span>
@@ -209,9 +208,9 @@
                         <a href="{{ route('berita.show', $berita->slug) }}" class="group flex gap-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-[#0056b3] transition-all duration-500 shadow-sm hover:shadow-lg p-4">
                             <div class="w-40 h-32 md:w-48 md:h-36 flex-shrink-0 rounded-xl overflow-hidden relative">
                                 @if($berita->gambar_fitur)
-                                    <img src="{{ asset('storage/' . $berita->gambar_fitur) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                    <img src="/storage/{{ $berita->gambar_fitur }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                                 @else
-                                    <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}">
+                                    <img src="/images/gedung-poljam.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}">
                                 @endif
                             </div>
                             <div class="flex-1 flex flex-col justify-center py-1">
@@ -335,7 +334,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start gap-20 mb-24">
                 <div class="max-w-xs">
                     <div class="bg-white p-2 rounded-xl inline-block mb-8">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 transition-all cursor-pointer">
+                        <img src="/images/logo.png" alt="Logo" class="h-10 transition-all cursor-pointer">
                     </div>
                     <p class="text-blue-100 text-sm font-light leading-relaxed mb-8">
                         Lembaga Penjamin Mutu Politeknik Jambi berkomitmen menjaga standar kualitas pendidikan tinggi nasional.

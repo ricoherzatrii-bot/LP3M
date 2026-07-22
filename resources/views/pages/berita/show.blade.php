@@ -11,7 +11,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        'serif-luxury': ['Playfair Display', 'serif'],
+                        'serif-luxury': ['Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif'],
                     }
                 }
             }
@@ -24,7 +24,6 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -33,8 +32,8 @@
             --poljam-light: #3b82f6;
             --accent-gold: #fbbf24;
         }
-        body { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
-        .font-serif-luxury { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; scroll-behavior: smooth; }
+        .font-serif-luxury { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--poljam-blue); border-radius: 10px; }
@@ -113,7 +112,7 @@
                     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
                         @if($berita->gambar_fitur)
                         <div class="h-72 md:h-96 overflow-hidden">
-                            <img src="{{ asset('storage/' . $berita->gambar_fitur) }}" class="w-full h-full object-cover" alt="{{ $berita->judul }}" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                            <img src="/storage/{{ $berita->gambar_fitur }}" class="w-full h-full object-cover" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                         </div>
                         @endif
 
@@ -147,9 +146,9 @@
                                 <div class="flex gap-4">
                                     <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
                                         @if($recent->gambar_fitur)
-                                            <img src="{{ asset('storage/' . $recent->gambar_fitur) }}" class="w-full h-full object-cover" alt="" onerror="this.src='{{ asset('images/gedung-poljam.png') }}'">
+                                            <img src="/storage/{{ $recent->gambar_fitur }}" class="w-full h-full object-cover" alt="" onerror="this.src='/images/gedung-poljam.png'">
                                         @else
-                                            <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover" alt="">
+                                            <img src="/images/gedung-poljam.png" class="w-full h-full object-cover" alt="">
                                         @endif
                                     </div>
                                     <div class="flex-1">
@@ -200,7 +199,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start gap-16 mb-16">
                 <div class="max-w-xs">
                     <div class="bg-white p-2 rounded-xl inline-block mb-6">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10">
+                        <img src="/images/logo.png" alt="Logo" class="h-10">
                     </div>
                     <p class="text-blue-100 text-sm font-light leading-relaxed">
                         Lembaga Penjamin Mutu Politeknik Jambi berkomitmen menjaga standar kualitas pendidikan tinggi nasional.

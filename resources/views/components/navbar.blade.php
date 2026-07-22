@@ -40,17 +40,23 @@
     <nav class="bg-[#0056b3] shadow-md border-b border-[#004494]">
         <div class="w-full px-6 lg:px-16 py-4 flex justify-between items-center">
             
-            <a href="{{ url('/') }}" class="flex items-center gap-4 group cursor-pointer">
-                <div class="relative overflow-hidden rounded-xl bg-white p-1.5 shadow-lg">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto group-hover:scale-110 transition-transform duration-500">
-                </div>
-                <div class="flex flex-col">
-                    <span class="block text-xl font-black tracking-tighter text-white leading-none uppercase">LPM POLJAM</span>
-                    <span class="text-[9px] font-bold text-yellow-400 uppercase tracking-[0.2em] leading-none mt-1">Internal Quality Assurance</span>
+            <a href="{{ url('/') }}" class="flex items-center gap-3.5 group cursor-pointer">
+                <img src="/images/logo-emblem.png" alt="Logo" class="h-14 w-auto group-hover:scale-110 transition-transform duration-500">
+                <div class="flex flex-col justify-center text-left">
+                    <span class="text-white font-extrabold text-xl leading-[1.1] tracking-wide select-none group-hover:scale-105 transition-transform duration-500 origin-left">
+                        Politeknik Jambi
+                    </span>
+                    <div class="h-[1.5px] bg-white/40 my-0.5 w-full opacity-80"></div>
+                    <span class="text-white/90 text-[9.3px] font-bold italic leading-none uppercase tracking-wider select-none">
+                        Lembaga Perencanaan Pengembangan
+                    </span>
+                    <span class="text-white/90 text-[9.3px] font-bold italic leading-[1.3] uppercase tracking-wider select-none">
+                        & Penjaminan Mutu
+                    </span>
                 </div>
             </a>
 
-            <div class="hidden xl:flex items-center gap-10 text-[11px] font-extrabold uppercase tracking-[0.15em] text-white">
+            <div class="hidden xl:flex items-center justify-end flex-1 gap-10 text-[11px] font-extrabold uppercase tracking-[0.15em] text-white">
                 
                 <a href="{{ url('/') }}" class="{{ Request::is('/') ? 'text-yellow-400' : '' }} hover:text-yellow-400 transition-all duration-300">HOME</a>
                 
@@ -75,6 +81,10 @@
                                     @endif
                                 @endforeach
                             @endif
+                            <a href="{{ route('pengumuman.index') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case flex items-center justify-between {{ Request::is('pengumuman*') ? 'bg-blue-50 text-blue-700' : '' }}">
+                                <span>📢 Pengumuman</span>
+                                <i class="fas fa-chevron-right text-[8px] opacity-0 group-hover/item:opacity-100 transition-all"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -103,27 +113,27 @@
                     </span>
                     <div class="absolute top-full left-1/2 -translate-x-1/2 w-72 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] rounded-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 transform translate-y-4 z-50 overflow-hidden">
                         <div class="p-3 flex flex-col">
-                            <a href="{{ url('/spmi/dokumen-spmi') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case">Dokumen SPMI</a>
-                            <a href="{{ url('/capaian/renop') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case">Renop</a>
-                            <a href="{{ route('renstra.publicIndex') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case">Capaian Renstra</a>
-                            
-                            <div class="relative group/sub">
-                                <a href="{{ url('/capaian/kepuasan-mahasiswa') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-blue-600 font-bold transition-all duration-300 flex justify-between items-center">
-                                    <span class="normal-case">Kepuasan Mahasiswa</span>
-                                    <i class="fas fa-chevron-right text-[8px] opacity-40"></i>
-                                </a>
-                                <div class="absolute top-0 left-full ml-1 w-64 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] rounded-2xl border border-slate-100 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-500 z-50 overflow-hidden">
-                                    <div class="p-3 flex flex-col">
-                                        <a href="{{ url('/capaian/kepuasan-mahasiswa-poljam-2020-2021') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case">Poljam 2020/2021</a>
-                                        <a href="{{ url('/capaian/kepuasan-mahasiswa-prodi-2020-2021') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case">Prodi 2020/2021</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <a href="{{ url('/capaian/kepuasan-dosen-dan-tendik') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case">Kepuasan Dosen Dan Tendik</a>
+                            <a href="{{ url('/capaian/renop') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case flex justify-between items-center group/item">
+                                <span>Renop</span>
+                                <i class="fas fa-chevron-right text-[8px] opacity-30 group-hover/item:translate-x-1 transition-transform"></i>
+                            </a>
+                            <a href="{{ route('renstra.publicIndex') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case flex justify-between items-center group/item">
+                                <span>Capaian Renstra</span>
+                                <i class="fas fa-chevron-right text-[8px] opacity-30 group-hover/item:translate-x-1 transition-transform"></i>
+                            </a>
+                            <a href="{{ route('capaian.laporan_ami') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case flex justify-between items-center group/item">
+                                <span>Laporan AMI</span>
+                                <i class="fas fa-chevron-right text-[8px] opacity-30 group-hover/item:translate-x-1 transition-transform"></i>
+                            </a>
+                            <a href="{{ route('capaian.rtm') }}" class="px-5 py-3 hover:bg-blue-50 hover:text-blue-700 rounded-xl text-slate-700 font-bold transition-all duration-300 normal-case flex justify-between items-center group/item">
+                                <span>RTM</span>
+                                <i class="fas fa-chevron-right text-[8px] opacity-30 group-hover/item:translate-x-1 transition-transform"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
+
+                <a href="{{ url('/spmi/dokumen-spmi') }}" class="{{ Request::is('spmi/dokumen-spmi*') ? 'text-yellow-400' : '' }} hover:text-yellow-400 transition-all duration-300">DOKUMEN SPMI</a>
 
                 <div class="relative group py-2">
                     <span class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer {{ Request::is('kuesioner*') ? 'text-yellow-400' : '' }}">
@@ -174,10 +184,7 @@
                         </button>
                     </form>
 
-                    <!-- SETTINGS COG -->
-                    <button class="w-10 h-10 text-white hover:text-yellow-400 transition-all flex items-center justify-center active:scale-95 group" title="Pengaturan">
-                        <i class="fas fa-cog text-base transition-transform group-hover:rotate-90"></i>
-                    </button>
+
 
                     <!-- THEME TOGGLE -->
                     <button id="theme-toggle" class="w-12 h-12 text-white hover:text-yellow-400 transition-all flex items-center justify-center active:scale-95 group" title="Toggle Mode">
@@ -185,10 +192,7 @@
                         <i id="theme-toggle-light-icon" class="hidden fas fa-sun text-lg transition-transform group-hover:rotate-45"></i>
                     </button>
 
-                    <!-- PROFILE PORTAL -->
-                    <a href="{{ url('/login') }}" title="Login Portal" class="w-12 h-12 bg-yellow-400 text-[#0056b3] rounded-full flex items-center justify-center hover:bg-yellow-300 hover:scale-110 transition-all shadow-lg shadow-black/20 active:scale-95 group">
-                        <i class="fas fa-user-shield text-xl transition-transform group-hover:rotate-12"></i>
-                    </a>
+                    <!-- LOGIN: tersembunyi, akses via /login langsung -->
                 </div>
 
                 <script>

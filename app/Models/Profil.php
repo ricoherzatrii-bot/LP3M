@@ -9,7 +9,7 @@ class Profil extends Model
 {
     use HasFactory;
 
-    protected $table = 'profils';
+    protected $table = 'profil';
 
     public $timestamps = false;
 

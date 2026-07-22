@@ -12,7 +12,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        'serif-luxury': ['Playfair Display', 'serif'],
+                        'serif-luxury': ['Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif'],
                     }
                 }
             }
@@ -26,13 +26,12 @@
             document.documentElement.classList.remove('dark')
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        body { font-family: 'Outfit', sans-serif; }
-        .font-playfair { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
+        .font-playfair { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
         .glass-nav { 
             background: rgba(255, 255, 255, 0.8); 
             backdrop-filter: blur(10px); 
@@ -76,7 +75,7 @@
     <footer class="bg-white dark:bg-slate-900 py-12 text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-white/5 transition-colors duration-500">
         <div class="max-w-6xl mx-auto px-6 text-center">
             <div class="mb-6">
-                <img src="{{ asset('images/logo-poljam.png') }}" class="h-10 mx-auto dark:grayscale dark:opacity-50" alt="Logo">
+                <img src="/images/logo-poljam.png" class="h-10 mx-auto dark:grayscale dark:opacity-50" alt="Logo">
             </div>
             <p class="text-sm tracking-widest uppercase">&copy; 2026 LPM Politeknik Jambi</p>
             <p class="text-xs mt-2 opacity-50 dark:opacity-50 font-light text-slate-400">Internal Quality Assurance System (IQAS)</p>

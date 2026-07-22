@@ -10,7 +10,7 @@ class Artikel extends Model
 {
     use HasFactory;
 
-    protected $table = 'artikels';
+    protected $table = 'artikel';
     protected $guarded = [];
 
     protected $casts = [

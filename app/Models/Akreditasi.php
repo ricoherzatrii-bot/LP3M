@@ -10,7 +10,7 @@ class Akreditasi extends Model
     use HasFactory;
 
     // Tentukan nama tabel secara spesifik sesuai di database SQL kamu
-    protected $table = 'akreditasis';
+    protected $table = 'akreditasi';
 
     // Izinkan semua kolom untuk diisi (mass assignment)
     protected $guarded = [];

@@ -26,9 +26,9 @@
         <div class="flex flex-col lg:flex-row gap-10">
             {{-- Left Sidebar: Logo, Filter, and Chart --}}
             <div class="w-full lg:w-1/3 space-y-8 animate-in slide-in-from-left duration-700">
-                <div class="bg-white dark:bg-slate-800 rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-white/5 relative z-[60] backdrop-blur-xl">
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-white/5 relative z-10 overflow-visible backdrop-blur-xl">
                     <div class="flex items-center gap-4 relative z-10 px-2">
-                        <img src="{{ asset('images/logo.png') }}" class="w-14 h-14 object-contain" alt="Poljam Logo">
+                        <img src="/images/logo.png" class="w-14 h-14 object-contain" alt="Poljam Logo">
                         <div class="flex-1">
                             <h3 class="text-lg font-black text-[#e67e22] leading-none mb-1 border-b-2 border-slate-900 dark:border-white/20 pb-1">Politeknik Jambi</h3>
                             <p class="text-[9px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-tight leading-tight">Lembaga Perencanaan Pengembangan<br>& Penjaminan Mutu</p>
@@ -50,7 +50,7 @@
                                 <i class="fas fa-calendar-alt text-blue-500 text-[10px]"></i>
                             </div>
                             
-                            <div id="yearDropdown" class="hidden absolute top-full left-0 right-0 z-[9999] mt-2 bg-slate-100 dark:bg-[#0f172a] border border-slate-300 dark:border-white/20 rounded-xl p-5 shadow-[0_25px_60px_-12px_rgba(0,0,0,0.9)] space-y-4 animate-in fade-in slide-in-from-top-1 duration-200" style="background-color: #0f172a !important; opacity: 1 !important; visibility: visible !important;">
+                            <div id="yearDropdown" class="hidden relative mt-2 bg-slate-100 dark:bg-[#0f172a] border border-slate-300 dark:border-white/20 rounded-xl p-5 shadow-[0_25px_60px_-12px_rgba(0,0,0,0.9)] space-y-4 animate-in fade-in duration-200" style="background-color: #0f172a !important; opacity: 1 !important; visibility: visible !important;">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pilih Tahun</span>
                                     <button type="button" onclick="selectAllYears()" class="text-[10px] font-black text-blue-500 uppercase hover:underline">Semua</button>
@@ -59,7 +59,7 @@
                                     @foreach($availableYears as $year)
                                     <label class="flex items-center p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer transition-all group">
                                         <input type="checkbox" value="{{ $year }}" class="year-checkbox w-4 h-4 rounded border-slate-300 text-blue-600 mr-4 cursor-pointer" {{ $selectedYears->contains($year) ? 'checked' : '' }}>
-                                        <span class="text-xs font-black text-slate-700 dark:text-slate-200 group-hover:text-blue-500 transition-colors flex-1" onclick="selectSingleYear(event, '{{ $year }}')">{{ $year }}</span>
+                                        <span class="text-xs font-black text-slate-700 dark:text-slate-200 group-hover:text-blue-500 transition-colors flex-1">{{ $year }}</span>
                                     </label>
                                     @endforeach
                                 </div>
@@ -115,9 +115,10 @@
                         <div class="{{ $pillar['bg'] }} text-white p-4 rounded-[2rem] shadow-2xl min-h-[150px] flex flex-col justify-between transform transition-all hover:scale-[1.03] hover:-translate-y-2 cursor-pointer border border-white/20 group relative overflow-hidden backdrop-filter">
                             <div class="absolute -right-8 -top-8 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/15 transition-all duration-700"></div>
                             <div class="relative z-10">
-                                <h4 class="text-[12px] font-black uppercase leading-relaxed mb-6 tracking-widest drop-shadow-sm">
-                                    <span class="bg-white/20 text-[10px] px-3 py-1.5 rounded-xl mr-3 border border-white/20">{{ $pillar['id'] }}</span> {{ $pillar['title'] }}
-                                </h4>
+                                <div class="flex items-start gap-3 mb-6">
+                                    <span class="bg-white/20 text-[10px] px-3 py-1.5 rounded-xl border border-white/20 font-black shrink-0 mt-0.5">{{ $pillar['id'] }}</span>
+                                    <h4 class="text-[12px] font-black uppercase leading-relaxed tracking-widest drop-shadow-sm">{{ $pillar['title'] }}</h4>
+                                </div>
                             </div>
                             <div class="text-right relative z-10">
                                 @php
@@ -489,15 +490,6 @@ document.addEventListener('DOMContentLoaded', function () {
         checkboxes.forEach(c => c.checked = !allChecked);
     }
 
-    window.selectSingleYear = function(event, year) {
-        event.preventDefault();
-        event.stopPropagation();
-        
-        const url = new URL(window.location.href);
-        url.searchParams.set('tahun', year);
-        window.location.href = url.toString();
-    }
-
     window.applyYearFilter = function() {
         const checkboxes = document.querySelectorAll('.year-checkbox:checked');
         const selectedYears = Array.from(checkboxes).map(c => c.value);
@@ -529,9 +521,8 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;700;800;900&display=swap');
 body { 
-    font-family: 'Inter', sans-serif; 
+    font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; 
 }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 select {
