@@ -1,786 +1,18 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPMI Executive Dashboard - Politeknik Jambi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
-    <style>
-        body { 
-            font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; 
-            /* Ultra-Premium Light Mesh Background */
-            background-color: #f8fafc;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(224, 242, 254, 0.6) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(209, 250, 229, 0.4) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(238, 242, 255, 0.6) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, rgba(254, 226, 226, 0.3) 0px, transparent 50%);
-            background-attachment: fixed;
-        }
-
-        .font-display { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
-        
-        /* Hidden Scrollbar but functional */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.4); }
-
-        /* Floating Content Area */
-        .app-container {
-            height: 100vh;
-            padding: 1rem;
-            display: flex;
-            gap: 1.5rem;
-            box-sizing: border-box;
-        }
-
-        @media (min-width: 1024px) {
-            .app-container { padding: 1.5rem; gap: 2rem; }
-        }
-
-        /* Glassmorphism Classes */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        .dark-glass {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
-        }
-
-        /* Fluid Animations */
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .stagger-1 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; opacity: 0; }
-        .stagger-2 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; }
-        .stagger-3 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; opacity: 0; }
-        .stagger-4 { animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; opacity: 0; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(2deg); }
-        }
-        .animate-float { animation: float 8s ease-in-out infinite; }
-
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.1); }
-        }
-        .animate-pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
-
-        /* Sidebar Item Hover Effect */
-        .sidebar-item { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; z-index: 1; }
-        .sidebar-item::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-            transition: all 0.4s ease; z-index: -1;
-        }
-        .sidebar-item:hover::before { left: 100%; transition: all 0.6s ease; }
-        .sidebar-item:hover { transform: translateX(4px); }
-        .sidebar-item, .submenu-item { pointer-events: auto; }
-
-        .submenu-item { transition: all 0.3s ease; border-radius: 8px; color: #ffffff; font-weight: 500; }
-        .submenu-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #ffffff !important;
-            padding-left: 1rem;
-        }
-
-        /* Card Hover Effects */
-        .stat-card { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .stat-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 30px 60px -15px rgba(59, 130, 246, 0.15); }
-        .stat-card:hover .icon-wrapper { transform: scale(1.1) rotate(-5deg); }
-        
-        /* CKEditor Height & Scroll Fix */
-        .ck-editor__editable_inline {
-            min-height: 200px;
-            max-height: 400px;
-            overflow-y: auto !important;
-        }
-        
-        .modal-body-scroll {
-            max-height: calc(90vh - 200px);
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .modal-body-scroll::-webkit-scrollbar { width: 4px; }
-        .modal-body-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-
-
-    </style>
-</head>
-<body class="text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
-
-    <div class="app-container">
-        
-        <!-- SIDEBAR (FLOATING) -->
-        <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-[70] flex w-[85vw] max-w-[320px] -translate-x-full flex-col overflow-hidden border border-white/10 bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 shadow-2xl transition-transform duration-300 ease-in-out md:static md:w-[280px] md:translate-x-0 md:rounded-3xl md:flex-shrink-0 lg:w-[320px]">
-            
-            <!-- Abstract Sidebar Background Glows -->
-            <div class="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-blue-600/20 to-transparent pointer-events-none"></div>
-            <div class="absolute -left-20 top-20 w-40 h-40 bg-blue-500/20 rounded-full blur-[50px] pointer-events-none"></div>
-
-            <!-- Brand -->
-            <div class="px-8 py-8 flex items-center gap-3 border-b border-white/5 relative z-10">
-                <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)] border border-blue-400/30 p-2 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-white/20 backdrop-blur-sm pointer-events-none"></div>
-                    <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="LPM" class="h-full w-full object-contain relative z-10 drop-shadow-md" onerror="this.src='https://ui-avatars.com/api/?name=PJ&background=transparent&color=fff&bold=true'">
-                </div>
-                <div class="flex-1">
-                    <h1 class="text-xl font-black tracking-tighter text-white leading-none font-display">Politeknik Jambi</h1>
-                    <div class="mt-2">
-                        <span class="text-[9px] font-bold text-white/90 uppercase tracking-[0.12em]">LP3M / Sistem Online</span>
-                    </div>
-                </div>
-                <button onclick="closeMobileSidebar()" class="md:hidden flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white transition hover:bg-white/20">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <nav class="flex-1 overflow-y-auto px-5 py-6 space-y-1 relative z-10">
-                
-                <!-- Main Dashboard Btn -->
-                <a href="javascript:void(0)" onclick="showHome()" class="flex items-center justify-between py-4 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_10px_20px_rgba(59,130,246,0.2)] hover:shadow-[0_15px_30px_rgba(59,130,246,0.4)] transition-all duration-300 mb-8 border border-white/10 group">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-border-all text-lg opacity-90 group-hover:rotate-12 transition-transform"></i>
-                        <span class="text-[13px] font-bold uppercase tracking-widest">Dashboard</span>
-                    </div>
-                    <div class="w-2 h-2 bg-white rounded-full opacity-50 group-hover:opacity-100 group-hover:scale-150 transition-all"></div>
-                </a>
-
-                <div class="text-[10px] font-black text-white uppercase tracking-[0.2em] px-4 mb-4 mt-4 opacity-90">Menu Utama</div>
-
-                <!-- Modul Profil -->
-                <div class="mb-1">
-                    <button type="button" data-toggle-target="menuProfil" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-university text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Profil Kampus</span>
-                        </div>
-                        <i id="icon-menuProfil" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
-                    </button>
-                    <div id="menuProfil" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <button type="button" data-page="Visi Dan Misi" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-bullseye opacity-40 text-[10px] w-3"></i> <span>Visi Dan Misi</span></button>
-                        <button type="button" data-page="Moto Dan Janji Layanan" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-handshake opacity-40 text-[10px] w-3"></i> <span>Moto Dan Janji Layanan</span></button>
-                        <button type="button" data-page="Struktur Organisasi" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-sitemap opacity-40 text-[10px] w-3"></i> <span>Struktur Organisasi</span></button>
-                        <button type="button" data-page="Job Deskripsi" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-user-tag opacity-40 text-[10px] w-3"></i> <span>Job Deskripsi</span></button>
-                        <button type="button" data-page="Standar Waktu Pelayanan" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-clock opacity-40 text-[10px] w-3"></i> <span>Standar Waktu Pelayanan</span></button>
-                        <button type="button" data-page="Artikel Ilmiah" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-newspaper opacity-40 text-[10px] w-3"></i> <span>Artikel / Berita</span></button>
-                        <button type="button" data-page="Pengumuman" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-bullhorn opacity-40 text-[10px] w-3"></i> <span>📢 Pengumuman</span></button>
-                    </div>
-                </div>
-
-
-
-                <!-- Modul Akreditasi -->
-                <div class="mb-1">
-                    <button type="button" data-toggle-target="menuAkreditasi" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-award text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Akreditasi</span>
-                        </div>
-                        <i id="icon-menuAkreditasi" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
-                    </button>
-                    <div id="menuAkreditasi" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <button type="button" data-page="Akreditasi" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-graduation-cap opacity-40 text-[10px] w-3 text-center"></i> <span>Akreditasi</span></button>
-                        <button type="button" data-page="Dokumen Akreditasi" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-file-pdf opacity-40 text-[10px] w-3 text-center"></i> <span>Dokumen Akreditasi</span></button>
-                    </div>
-                </div>
-
-                <!-- Modul Capaian -->
-                <div class="mb-1">
-                    <button type="button" data-toggle-target="menuCapaian" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-chart-line text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Capaian Kinerja</span>
-                        </div>
-                        <i id="icon-menuCapaian" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
-                    </button>
-                    <div id="menuCapaian" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <button type="button" data-page="Dokumen SPMI" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-folder opacity-40 text-[10px] w-3 text-center"></i> <span>Dokumen SPMI</span></button>
-                        <button type="button" data-page="Renop" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-file-alt opacity-40 text-[10px] w-3"></i> <span>Renop</span></button>
-                        <button type="button" onclick="loadRenstraPanel()" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-chart-bar opacity-40 text-[10px] w-3"></i> <span>Capaian Renstra</span></button>
-                        <button type="button" data-page="Laporan AMI" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-file-invoice opacity-40 text-[10px] w-3 text-center"></i> <span>Laporan AMI</span></button>
-                        <button type="button" data-page="RTM" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-handshake opacity-40 text-[10px] w-3 text-center"></i> <span>RTM</span></button>
-                    </div>
-                </div>
-
-                <!-- Modul Slider -->
-                <div class="mb-1">
-                    <button type="button" onclick="loadSliderPanel()" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-images text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Slider Homepage</span>
-                        </div>
-                        <div class="w-1.5 h-1.5 rounded-full bg-yellow-400 opacity-0 group-hover:opacity-100 shadow-[0_0_8px_rgba(250,204,21,0.6)]"></div>
-                    </button>
-                </div>
-
-                <div class="text-[10px] font-black text-white uppercase tracking-[0.2em] px-4 mb-4 mt-6 opacity-90">Publikasi & Survei</div>
-
-                <!-- Modul Kuesioner -->
-                <div class="mb-1">
-                    <button type="button" data-toggle-target="menuKuesioner" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-clipboard-question text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Kuesioner</span>
-                        </div>
-                        <i id="icon-menuKuesioner" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
-                    </button>
-                    <div id="menuKuesioner" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <button type="button" data-page="Kuesioner Dosen & Karyawan" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-user-tie opacity-40 text-[10px] w-3 text-center"></i> <span>Kuesioner Dosen & Karyawan</span></button>
-                        <button type="button" data-page="Kuesioner Mahasiswa" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-user-graduate opacity-40 text-[10px] w-3 text-center"></i> <span>Kuesioner Mahasiswa</span></button>
-                    </div>
-                </div>
-
-                <!-- Modul Galeri -->
-                <div class="mb-1">
-                    <button type="button" data-toggle-target="menuGaleri" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-images text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Galeri Kampus</span>
-                        </div>
-                        <i id="icon-menuGaleri" class="fas fa-chevron-right text-[10px] opacity-40 group-hover:opacity-100 transition-all duration-300"></i>
-                    </button>
-                    <div id="menuGaleri" class="hidden overflow-hidden pl-4 pr-4 py-2 space-y-0.5 text-[12px] text-white border-l-2 border-white/40 ml-8 mt-1 mb-3">
-                        <button type="button" data-page="Dokumentasi Foto" onclick="loadGaleriFotoPanel()" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-image opacity-40 text-[10px] w-3"></i> <span>Dokumentasi Foto</span></button>
-                        <button type="button" data-page="Galeri Video" onclick="loadGaleriVideoPanel()" class="submenu-item w-full text-left py-2.5 px-3 flex items-center space-x-3 cursor-pointer"><i class="fas fa-video opacity-40 text-[10px] w-3"></i> <span>Galeri Video</span></button>
-                    </div>
-                </div>
-
-                <div class="mb-1">
-                    <button type="button" data-page="Media Sosial" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-hashtag text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Media Sosial</span>
-                        </div>
-                    </button>
-                </div>
-
-                <div class="mb-1">
-                    <button type="button" data-page="Logo Poljam" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
-                                <i class="fas fa-image text-sm"></i>
-                            </div>
-                            <span class="text-[13px] font-semibold tracking-wide">Logo Poljam</span>
-                        </div>
-                    </button>
-                </div>
-
-            </nav>
-
-            <!-- User Profile Bottom -->
-            <div id="userProfileArea" class="p-6 mt-auto border-t border-white/5 bg-slate-900/50 backdrop-blur-md relative z-20">
-                <div onclick="toggleProfileDropdown()" class="flex items-center gap-4 bg-white/5 p-3 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Admin') }}&background=2563eb&color=fff&bold=true" class="w-10 h-10 rounded-xl shadow-lg" alt="{{ auth()->user()->name ?? 'Admin' }}">
-                        <div class="flex-1">
-                            <h2 class="text-sm font-bold text-white leading-tight">{{ auth()->user()->name ?? 'Super Admin' }}</h2>
-                    <i class="fas fa-ellipsis-v text-slate-500 group-hover:text-white transition-colors p-2"></i>
-                </div>
-                
-                <!-- Profile Dropdown -->
-                <div id="profileDropdown" class="hidden absolute bottom-[90px] left-6 right-6 bg-slate-800 border border-white/10 rounded-2xl p-2 shadow-2xl animate-fade-in origin-bottom">
-                    @if (auth()->user()->is_admin)
-                        <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors">
-                            <i class="fas fa-users w-4"></i> Manajemen Pengguna
-                        </a>
-                        <div class="h-px bg-white/10 my-1 mx-2"></div>
-                    @endif
-                    <form method="POST" action="{{ route('logout') }}" class="m-0">
-                        @csrf
-                        <button type="submit" class="w-full text-left flex items-center gap-3 px-4 py-3 text-sm font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-colors">
-                            <i class="fas fa-sign-out-alt w-4"></i> Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </aside>
-
-        <div id="mobileSidebarOverlay" class="fixed inset-0 z-[60] hidden bg-slate-950/50 backdrop-blur-sm md:hidden" onclick="closeMobileSidebar()"></div>
-
-        <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 glass-panel rounded-3xl flex flex-col overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.05)] border border-white/60">
-            
-            <!-- HEADER FLOATING -->
-            <header class="px-8 py-6 flex justify-between items-center border-b border-blue-500/30 bg-blue-600 shadow-md z-30 sticky top-0 relative overflow-hidden">
-                <!-- Header Background Glow -->
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-600 pointer-events-none"></div>
-                <div class="absolute top-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div class="flex items-center gap-4 relative z-10">
-                    <!-- Mobile Menu Toggle -->
-                    <button onclick="toggleMobileSidebar()" class="md:hidden w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shadow-sm hover:bg-white/20 transition-colors">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div>
-                        <h2 class="text-2xl font-black text-white tracking-tight font-display drop-shadow-sm">Overview</h2>
-                        <p class="text-xs font-bold text-blue-200 uppercase tracking-widest mt-0.5">Control Panel Mutu</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-4 relative z-10">
-                    <!-- Notification removed per request -->
-
-                    <!-- Date/Clock Panel -->
-                    <div class="hidden lg:flex items-center bg-white/10 text-white rounded-2xl px-5 py-2.5 shadow-sm border border-white/20 backdrop-blur-md">
-                        <i class="far fa-clock text-blue-200 mr-3 text-lg"></i>
-                        <div class="flex flex-col">
-                            <span id="date-display" class="text-[10px] uppercase font-bold text-blue-200 tracking-widest leading-none mb-1">Senin, 18 Mei 2026</span>
-                            <span id="clock" class="text-sm font-black tracking-widest leading-none font-display text-white">00:00:00</span>
-                        </div>
-                    </div>
-
-                    <!-- Import Excel button removed per request -->
-                </div>
-            </header>
-
-            <!-- DYNAMIC CONTENT SCROLL AREA -->
-            <div id="dynamic-content" class="flex-1 overflow-y-auto p-6 lg:p-10 relative scroll-smooth">
-                
-                <div class="max-w-7xl mx-auto">
-                    
-                    <!-- DASHBOARD OVERVIEW PANELS -->
-                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-12">
-                        <div class="stagger-1 stat-card bg-white/75 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden h-full">
-                            <div class="absolute top-0 right-0 w-28 h-28 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex items-center gap-4 relative z-10">
-                                <div class="w-16 h-16 rounded-[1.8rem] bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner border border-blue-100">
-                                    <i class="fas fa-university"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Total Program Studi</p>
-                                    <h3 class="mt-3 text-4xl font-black text-slate-900 font-display">{{ $totalProdi ?? 8 }}</h3>
-                                </div>
-                            </div>
-                            <p class="mt-8 text-sm text-slate-500">Jumlah prodi yang terdata dalam sistem SPMI saat ini.</p>
-                        </div>
-
-                        <div class="stagger-2 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden h-full">
-                            <div class="absolute -left-8 -top-10 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex justify-between items-start relative z-10 mb-6">
-                                <div>
-                                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Akreditasi</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Perbandingan Status</h3>
-                                </div>
-                                <div class="w-12 h-12 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner border border-blue-100">
-                                    <i class="fas fa-chart-pie"></i>
-                                </div>
-                            </div>
-                            <div class="relative w-full h-[280px]"><canvas id="accreditationDonutChart"></canvas></div>
-                        </div>
-
-                        <div class="stagger-3 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden h-full">
-                            <div class="absolute -right-8 -top-10 w-44 h-44 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex justify-between items-start relative z-10 mb-6">
-                                <div>
-                                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Renstra</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Tren Capaian</h3>
-                                </div>
-                                <div class="w-12 h-12 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-inner border border-indigo-100">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                            </div>
-                            <div class="relative w-full h-[280px]"><canvas id="mainChart"></canvas></div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-                        <div class="stagger-4 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden">
-                            <div class="absolute -right-10 -top-10 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex justify-between items-start relative z-10 mb-6">
-                                <div>
-                                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Kuesioner</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Grafik Kepuasan</h3>
-                                </div>
-                                <div class="w-12 h-12 rounded-3xl bg-slate-50 text-slate-600 flex items-center justify-center shadow-inner border border-slate-200">
-                                    <i class="fas fa-smile"></i>
-                                </div>
-                            </div>
-                            <div class="relative w-full h-[380px]"><canvas id="kuesionerChart"></canvas></div>
-                        </div>
-
-                        <div class="stagger-4 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden">
-                            <div class="absolute -left-10 -top-10 w-36 h-36 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex justify-between items-start relative z-10 mb-6">
-                                <div>
-                                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Ringkasan</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Status Program Studi</h3>
-                                </div>
-                                <div class="w-12 h-12 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner border border-emerald-100">
-                                    <i class="fas fa-layer-group"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-slate-500">Lihat ringkasan kuesioner dan renstra untuk membantu memonitor kualitas program studi.</p>
-                            <div class="mt-8 grid grid-cols-1 gap-4 text-slate-700">
-                                <div class="rounded-3xl bg-slate-50 p-5 border border-slate-100 shadow-sm">
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Program Studi Terakreditasi Unggul</p>
-                                    <p class="mt-3 text-3xl font-black text-slate-900">{{ $akreditasiUnggul ?? 5 }}</p>
-                                </div>
-                                <div class="rounded-3xl bg-slate-50 p-5 border border-slate-100 shadow-sm">
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Program Studi Terakreditasi Baik</p>
-                                    <p class="mt-3 text-3xl font-black text-slate-900">{{ $akreditasiBaik ?? 7 }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            
-        </main>
-    </div>
-
-    <!-- UNIVERSAL MODALS FOR CRUD -->
-    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-all opacity-0 pointer-events-none" style="transition: opacity 0.3s ease;">
-        
-        <!-- EDIT MODAL -->
-        <div id="modalEdit" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 transition-transform duration-300 hidden flex-col">
-            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                <div>
-                    <h3 class="font-black text-slate-800 text-2xl font-display tracking-tight mb-1">Edit Konfigurasi</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Modifikasi Parameter Sistem</p>
-                </div>
-                <button onclick="closeModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
-            </div>
-            <div class="p-10">
-                <div class="modal-body-scroll">
-                    <div id="edit-fields-container" class="space-y-4"></div>
-                </div>
-                <div class="mt-8 flex justify-end space-x-4 border-t border-slate-100 pt-6">
-                    <button onclick="closeModal()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase">Batal</button>
-                    <button onclick="saveData()" class="px-8 py-4 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:bg-blue-700 transition-all hover:-translate-y-1 tracking-widest uppercase">Simpan Perubahan</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAMBAH MODAL -->
-        <div id="modalTambah" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 transition-transform duration-300 hidden flex-col">
-            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                <div>
-                    <h3 class="font-black text-slate-800 text-2xl font-display tracking-tight mb-1">Tambah Data Baru</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Registrasi Parameter Sistem</p>
-                </div>
-                <button onclick="closeModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
-            </div>
-            <div class="p-10">
-                <div class="modal-body-scroll">
-                    <div id="add-fields-container" class="space-y-4"></div>
-                </div>
-                <div class="mt-8 flex justify-end space-x-4 border-t border-slate-100 pt-6">
-                    <button onclick="closeModal()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase">Batal</button>
-                    <button onclick="addNewData()" class="px-8 py-4 bg-emerald-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:bg-emerald-700 transition-all hover:-translate-y-1 tracking-widest uppercase">Tambahkan Data</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- IMPORT KUESIONER MODAL -->
-        <div id="modalImportKuesioner" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 transition-transform duration-300 hidden flex-col">
-            <div class="px-10 py-8 border-b border-slate-100 bg-emerald-50/50 flex justify-between items-center">
-                <div>
-                    <h3 class="font-black text-slate-800 text-2xl font-display tracking-tight mb-1">Impor Data Kuesioner</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Excel Synchronizer</p>
-                </div>
-                <button onclick="closeModal()" class="w-12 h-12 rounded-2xl bg-white hover:bg-slate-100 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90"><i class="fas fa-times text-lg"></i></button>
-            </div>
-            <div class="p-10">
-                <form id="formImportKuesioner" onsubmit="event.preventDefault(); submitImportKuesioner();" class="space-y-6">
-                    <div class="p-6 rounded-2xl bg-blue-50/50 border border-blue-100/30 space-y-4">
-                        <div>
-                            <label class="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-3">Tahun Akademik <span class="text-rose-500">*</span></label>
-                            <input type="text" id="ik_tahun" placeholder="Contoh: 2024/2025 Genap" required class="w-full p-4 border border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 outline-none text-sm font-semibold text-slate-700 bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-3">File Excel (.xlsx / .xls) <span class="text-rose-500">*</span></label>
-                            <input type="file" id="ik_file" accept=".xlsx,.xls" required class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition-all cursor-pointer">
-                        </div>
-                    </div>
-                    <div class="mt-8 flex justify-end space-x-4 border-t border-slate-100 pt-6">
-                        <button type="button" onclick="closeModal()" class="px-8 py-4 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors tracking-widest uppercase">Batal</button>
-                        <button type="submit" id="ik_submit_btn" class="px-8 py-4 bg-emerald-600 text-white font-bold text-xs rounded-2xl shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:bg-emerald-700 transition-all hover:-translate-y-1 tracking-widest uppercase">Mulai Impor</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toastContainer" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
-
-
-
-    <!-- SCRIPTS -->
-    <script>
-        window.dashboardConfig = {
-            uploadImageRoute: '{{ route('admin.upload_content_image') }}',
-            csrfToken: '{{ csrf_token() }}'
-        };
-
-        let currentTitle = ""; 
+﻿        let currentTitle = ""; 
         let defaultDashboardContent = "";
-        let mainChart = null;
-        let kuesionerChart = null;
-        let accreditationDonutChart = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            defaultDashboardContent = document.getElementById('dynamic-content').innerHTML;
-            renderDashboardRenstraChart();
-            renderDashboardKuesionerChart();
-            renderAccreditationDonutChart();
-            initializeSidebarInteractions();
-        });
-
-        function initializeSidebarInteractions() {
-            // Use event delegation on the sidebar nav for robust click handling
-            const sidebarNav = document.querySelector('aside nav') || document.querySelector('nav');
-            if (!sidebarNav) return;
-
-            sidebarNav.addEventListener('click', function(event) {
-                const btn = event.target.closest('button.sidebar-item, button.submenu-item');
-                if (!btn) return;
-
-                // Sidebar group toggles (has data-toggle-target)
-                if (btn.classList.contains('sidebar-item')) {
-                    const target = btn.dataset.toggleTarget;
-                    if (target) {
-                        toggleMenu(target);
-                        return;
-                    }
-                    // Sidebar items with data-page but no submenu (e.g., Media Sosial, Logo Poljam)
-                    const page = btn.dataset.page;
-                    if (page && typeof loadPage === 'function') {
-                        loadPage(page);
-                        return;
-                    }
-                    // Sidebar items with only onclick (e.g., Slider) — let native onclick handle it
-                    return;
-                }
-
-                // Submenu page loads via data-page (e.g., Visi Dan Misi, Dokumen SPMI)
-                if (btn.classList.contains('submenu-item')) {
-                    // If the button has an onclick attribute, let the native handler run
-                    if (btn.getAttribute('onclick')) return;
-
-                    const page = btn.dataset.page;
-                    if (page && typeof loadPage === 'function') {
-                        loadPage(page);
-                    }
-                }
-            }, false);
-        }
-
-        function createGradient(ctx, color) {
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            const parts = color.match(/[\d.]+/g);
-            if (parts && parts.length >= 3) {
-                gradient.addColorStop(0, `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, 0.35)`);
-                gradient.addColorStop(1, `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, 0.05)`);
-            } else {
-                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
-                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
+        function generateYearOptions(startYear, endYear, emptyLabel = '') {
+            let html = '';
+            if (emptyLabel) {
+                html += `<option value="">${emptyLabel}</option>`;
             }
-            return gradient;
+            for (let year = startYear; year <= endYear; year++) {
+                html += `<option value="${year}">${year}</option>`;
+            }
+            return html;
         }
 
-        const renstraLabels = @json($renstraLabels ?? []);
-        const renstraRealisasi = @json($renstraRealisasi ?? []);
-        const renstraTarget = @json($renstraTarget ?? []);
-        const kuesionerCategories = @json($kuesionerCategories ?? []);
-        const kuesionerHits = @json($kuesionerHits ?? []);
-
-        function renderDashboardRenstraChart() {
-            const canvas = document.getElementById('mainChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            if (mainChart) mainChart.destroy();
-            mainChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: renstraLabels.length ? renstraLabels : ['Tahun'],
-                    datasets: [
-                        {
-                            label: 'Realisasi Renstra',
-                            data: renstraRealisasi.length ? renstraRealisasi : [0],
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: createGradient(ctx, 'rgba(16, 185, 129, 1)'),
-                            borderWidth: 4,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#10b981',
-                            pointBorderWidth: 3,
-                            pointRadius: 6,
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Target Renstra',
-                            data: renstraTarget.length ? renstraTarget : [0],
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            borderDash: [6, 4],
-                            borderWidth: 3,
-                            pointRadius: 0,
-                            pointHoverRadius: 0,
-                            fill: false,
-                            tension: 0.4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#334155' } },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { family: 'Arial', size: 13 },
-                            bodyFont: { family: 'Arial', size: 14, weight: 'bold' },
-                            padding: 12,
-                            cornerRadius: 12,
-                            displayColors: true
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            suggestedMax: 100,
-                            grid: { color: 'rgba(15, 23, 42, 0.06)', drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
-                        },
-                        x: {
-                            grid: { display: false, drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
-                        }
-                    },
-                    interaction: { mode: 'index', intersect: false },
-                    animation: { duration: 1600, easing: 'easeOutQuad' }
-                }
-            });
-        }
-
-        function renderDashboardKuesionerChart() {
-            const canvas = document.getElementById('kuesionerChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            if (kuesionerChart) kuesionerChart.destroy();
-            kuesionerChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: kuesionerCategories.length ? kuesionerCategories : ['Dosen & Karyawan', 'Mahasiswa'],
-                    datasets: [
-                        {
-                            label: 'Total Hits',
-                            data: kuesionerHits.length ? kuesionerHits : [0, 0],
-                            backgroundColor: ['#3b82f6', '#10b981', '#6366f1'].slice(0, Math.max(2, kuesionerCategories.length)),
-                            borderRadius: 16,
-                            barThickness: 30
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { family: 'Arial', size: 13 },
-                            bodyFont: { family: 'Arial', size: 14, weight: 'bold' },
-                            padding: 12,
-                            cornerRadius: 12,
-                            displayColors: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            suggestedMax: Math.max(100, ...kuesionerHits, 0),
-                            grid: { color: 'rgba(15, 23, 42, 0.05)', drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
-                        },
-                        x: {
-                            grid: { display: false, drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
-                        }
-                    },
-                    animation: { duration: 1400, easing: 'easeOutQuad' }
-                }
-            });
-        }
-
-        function renderAccreditationDonutChart() {
-            const canvas = document.getElementById('accreditationDonutChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            if (accreditationDonutChart) accreditationDonutChart.destroy();
-            accreditationDonutChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Unggul', 'Baik', 'Cukup'],
-                    datasets: [
-                        {
-                            data: [{{ $akreditasiUnggul ?? 5 }}, {{ $akreditasiBaik ?? 7 }}, {{ $akreditasiCukup ?? 3 }}],
-                            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
-                            hoverOffset: 12,
-                            borderWidth: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '65%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { boxWidth: 12, boxHeight: 12, color: '#475569', font: { family: 'Arial', size: 12, weight: 'bold' } }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { family: 'Arial', size: 13 },
-                            bodyFont: { family: 'Arial', size: 14, weight: 'bold' },
-                            padding: 12,
-                            cornerRadius: 12,
-                            displayColors: true
-                        }
-                    },
-                    animation: { duration: 1400, easing: 'easeOutQuad' }
-                }
-            });
-        }
-
+        defaultDashboardContent = document.getElementById('dynamic-content')?.innerHTML || '';
 
         // Toast Notification Logic
         function showToast(message, type = 'success') {
@@ -823,46 +55,12 @@
             dropdown.classList.toggle('hidden');
         }
 
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('mobileSidebarOverlay');
-            if (!sidebar || !overlay) return;
-
-            const isOpen = sidebar.classList.contains('translate-x-0');
-            if (isOpen) {
-                closeMobileSidebar();
-                return;
-            }
-
-            sidebar.classList.remove('-translate-x-full');
-            sidebar.classList.add('translate-x-0');
-            overlay.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-        }
-
-        function closeMobileSidebar() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('mobileSidebarOverlay');
-            if (sidebar) {
-                sidebar.classList.add('-translate-x-full');
-                sidebar.classList.remove('translate-x-0');
-            }
-            if (overlay) overlay.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const profileArea = document.getElementById('userProfileArea');
             const dropdown = document.getElementById('profileDropdown');
             if (profileArea && !profileArea.contains(event.target) && !dropdown.classList.contains('hidden')) {
                 dropdown.classList.add('hidden');
-            }
-        });
-
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 768) {
-                closeMobileSidebar();
             }
         });
 
@@ -911,11 +109,6 @@
             setTimeout(() => {
                 content.innerHTML = defaultDashboardContent;
                 content.style.opacity = 1;
-                setTimeout(() => {
-                    renderDashboardRenstraChart();
-                    renderDashboardKuesionerChart();
-                    renderAccreditationDonutChart();
-                }, 50); // Small delay to ensure DOM is ready
             }, 300);
         }
 
@@ -956,9 +149,7 @@
                 }));
             }
 
-            abort() {
-                // No special abort handling needed
-            }
+            abort() {}
         }
 
         async function initRichEditor(selector) {
@@ -1023,7 +214,7 @@
             setTimeout(() => {
 
                 // ============================================================
-                // DOKUMEN SPMI — Panel Upload Khusus
+                // DOKUMEN SPMI â€” Panel Upload Khusus
                 // ============================================================
                 if (title === 'Dokumen SPMI') {
                     loadDokumenSpmiPanel();
@@ -1032,7 +223,7 @@
                 }
 
                 // ============================================================
-                // LAPORAN AMI — Panel Upload Khusus
+                // LAPORAN AMI â€” Panel Upload Khusus
                 // ============================================================
                 if (title === 'Laporan AMI') {
                     loadLaporanAmiPanel();
@@ -1041,7 +232,7 @@
                 }
 
                 // ============================================================
-                // RTM — Panel Upload Khusus
+                // RTM â€” Panel Upload Khusus
                 // ============================================================
                 if (title === 'RTM') {
                     loadRtmPanel();
@@ -1049,22 +240,31 @@
                     return;
                 }
 
+                if (title === 'Media Sosial') {
+                    loadSocialMediaPage();
+                    return;
+                }
+
                 if (title === 'Pengaturan Sistem') {
                     content.innerHTML = `
                     <div class="max-w-5xl mx-auto pb-12">
-                        <!-- Brand (matching frontend) -->
-                        <div class="px-8 py-8 flex items-center space-x-4 border-b border-white/5 relative z-10">
-                            <div class="w-12 h-12 rounded-[1rem] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)] border border-blue-400/30 p-2 relative overflow-hidden">
-                                <div class="absolute inset-0 bg-white/20 backdrop-blur-sm pointer-events-none"></div>
-                                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-full w-full object-contain relative z-10 drop-shadow-md" onerror="this.src='https://ui-avatars.com/api/?name=PJ&background=transparent&color=fff&bold=true'">
+                        <!-- Header -->
+                        <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 relative overflow-hidden flex justify-between items-center">
+                            <div class="relative z-10">
+                                <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display mb-2">Pengaturan Sistem</h2>
+                                <p class="text-slate-500 font-medium">Konfigurasi profil admin, identitas kampus, dan keamanan akun.</p>
                             </div>
-                            <div class="flex-1">
-                                <h1 class="text-xl font-black tracking-tighter text-white leading-none font-display">Politeknik Jambi</h1>
-                                    <div class="mt-2">
-                                        <span class="text-[9px] font-bold text-white/90 uppercase tracking-[0.12em]">LP3M / Sistem Online</span>
-                                    </div>
+                            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl shadow-inner border border-blue-100 relative z-10">
+                                <i class="fas fa-cog animate-[spin_10s_linear_infinite]"></i>
+                            </div>
+                            <div class="absolute -right-10 -top-10 text-[200px] text-slate-100 opacity-50 pointer-events-none transform -rotate-12">
+                                <i class="fas fa-sliders-h"></i>
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <!-- Card 1: Profil Admin -->
+                            <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)] flex flex-col items-center text-center">
                                 <h3 class="w-full text-left text-[11px] font-black text-slate-400 mb-6 uppercase tracking-[0.2em] border-b border-slate-100 pb-4">Profil Administrator</h3>
                                 <div class="relative mb-6 group cursor-pointer">
                                     <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff&bold=true&size=150" class="w-32 h-32 rounded-full shadow-xl border-4 border-white transition-transform group-hover:scale-105" alt="Admin">
@@ -1099,7 +299,7 @@
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-slate-500 mb-1">Email Resmi</label>
-                                            <input type="email" value="info@politeknikjambi.ac.id" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all" readonly>
+                                            <input type="email" value="lpm@politeknikjambi.ac.id" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -1280,7 +480,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': window.dashboardConfig.csrfToken
                 },
                 body: JSON.stringify({
                     title: currentTitle,
@@ -1299,6 +499,104 @@
             .catch(err => {
                 showToast('Gagal memproses pembaruan data.', 'warning');
             });
+        }
+
+        function loadSocialMediaPage() {
+            currentTitle = 'Media Sosial';
+            const content = document.getElementById('dynamic-content');
+            content.style.opacity = 0;
+
+            fetch(`/admin/page-data?title=${encodeURIComponent(currentTitle)}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.success) {
+                        showToast(res.message, 'warning');
+                        showHome();
+                        return;
+                    }
+
+                    loadedFields = res.fields;
+                    loadedDefaults = res.defaults || {};
+                    retrievedData = res.data;
+
+                    let headersHtml = `<th class="px-10 py-6 border-b border-slate-100 w-24 text-center text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">UID</th>`;
+                    res.fields.forEach(field => {
+                        const label = field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                        headersHtml += `<th class="px-10 py-6 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">${label}</th>`;
+                    });
+                    headersHtml += `<th class="px-10 py-6 border-b border-slate-100 text-right w-48 text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">Manajemen</th>`;
+
+                    let rowsHtml = "";
+                    if (res.data.length === 0) {
+                        rowsHtml = `<tr><td colspan="${res.fields.length + 2}" class="px-10 py-12 text-center font-bold text-slate-400">Belum ada data medsos. Tambah entri untuk melihatnya di sini.</td></tr>`;
+                    } else {
+                        res.data.forEach((item, index) => {
+                            const paddedIndex = String(index + 1).padStart(3, '0');
+                            let cellsHtml = `<td class="px-10 py-8 font-black text-slate-400 text-center font-display">${paddedIndex}</td>`;
+                            res.fields.forEach(field => {
+                                let displayVal = item[field] || "";
+                                if (typeof displayVal === 'string' && displayVal.includes('<')) {
+                                    const temp = document.createElement("div");
+                                    temp.innerHTML = displayVal;
+                                    displayVal = temp.textContent || temp.innerText || "";
+                                }
+                                if (displayVal.length > 80) {
+                                    displayVal = displayVal.slice(0, 80) + '...';
+                                }
+                                cellsHtml += `<td class="px-10 py-8 leading-relaxed font-semibold text-slate-700 text-sm">${displayVal}</td>`;
+                            });
+                            cellsHtml += `
+                                <td class="px-10 py-8">
+                                    <div class="flex justify-end space-x-2">
+                                        <button onclick="openModalEdit(${item.id})" class="text-slate-400 hover:text-blue-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Edit"><i class="fas fa-pen text-sm"></i></button>
+                                        <button onclick="confirmDelete(${item.id}, this)" class="text-slate-400 hover:text-rose-600 bg-white border border-slate-200 transition-all w-12 h-12 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center hover:-translate-y-1" title="Hapus"><i class="fas fa-trash text-sm"></i></button>
+                                    </div>
+                                </td>
+                            `;
+                            rowsHtml += `<tr class="hover:bg-slate-50/50 transition-colors group">${cellsHtml}</tr>`;
+                        });
+                    }
+
+                    content.innerHTML = `
+                    <div class="max-w-7xl mx-auto pb-12">
+                        <div class="bg-white/80 backdrop-blur-xl p-10 lg:p-12 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative overflow-hidden">
+                            <div class="absolute -right-20 -top-20 text-[200px] text-slate-100 opacity-50 pointer-events-none transform -rotate-12">
+                                <i class="fas fa-hashtag"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
+                                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Konten</p>
+                                </div>
+                                <h2 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter font-display leading-none">Media Sosial</h2>
+                                <p class="text-slate-500 font-medium mt-3">Kelola link media sosial dan kontak resmi LP3M. Perubahan akan langsung tersimpan di database dan tercermin di halaman publik.</p>
+                            </div>
+                            <div class="relative z-10">
+                                <button onclick="openTambah()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl flex items-center gap-3 text-xs font-bold transition-all shadow-[0_15px_30px_rgba(15,23,42,0.2)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(15,23,42,0.3)] hover:bg-slate-800">
+                                    <i class="fas fa-plus"></i>
+                                    <span class="tracking-widest uppercase text-[10px]">Tambah Entri</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)]">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-slate-50/50">
+                                        <tr>${headersHtml}</tr>
+                                    </thead>
+                                    <tbody id="table-body" class="divide-y divide-slate-50">${rowsHtml}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                    content.style.opacity = 1;
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Gagal memuat data Media Sosial.', 'warning');
+                    showHome();
+                });
         }
 
         // Modal Logic
@@ -1384,7 +682,15 @@
                     const isURL = val && (val.startsWith('http://') || val.startsWith('https://'));
                     let previewHtml = '';
                     if (val && !isURL) {
-                        previewHtml = `<div class="mb-3"><img src="/storage/${val}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">File/Gambar saat ini: ${val}</p></div>`;
+                        let previewSrc = val;
+                        if (!previewSrc.startsWith('http://') && !previewSrc.startsWith('https://')) {
+                            if (previewSrc.startsWith('storage/')) {
+                                previewSrc = '/' + previewSrc;
+                            } else if (!previewSrc.startsWith('/')) {
+                                previewSrc = '/' + previewSrc;
+                            }
+                        }
+                        previewHtml = `<div class="mb-3"><img src="${previewSrc}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">File/Gambar saat ini: ${val}</p></div>`;
                     }
                     
                     const isDocField = field.toLowerCase().includes('file') || field.toLowerCase().includes('dokumen');
@@ -1471,7 +777,7 @@
             fetch('/admin/save-page-data', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': window.dashboardConfig.csrfToken
                 },
                 body: fd
             })
@@ -1515,7 +821,7 @@
                     } else if (field === 'link_file' && el && el.value) {
                         fd.append(field, el.value);
                     }
-                    // Image fields are optional — don't flag as empty
+                    // Image fields are optional â€” don't flag as empty
                 } else {
                     // Check if Editor is active for this field
                     const editorId = el.dataset.editorId;
@@ -1540,7 +846,7 @@
             fetch('/admin/add-row', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': window.dashboardConfig.csrfToken
                 },
                 body: fd
             })
@@ -1567,7 +873,7 @@
             setTimeout(() => modal.classList.remove('scale-95'), 10);
         }
 
-        function submitImportKuesioner() {
+        function submitImportKuesionerDosen() {
             const tahun = document.getElementById('ik_tahun').value;
             const file = document.getElementById('ik_file').files[0];
             const btn = document.getElementById('ik_submit_btn');
@@ -1580,7 +886,7 @@
             const fd = new FormData();
             fd.append('tahun_akademik', tahun);
             fd.append('file', file);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengimpor...';
@@ -1615,7 +921,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': window.dashboardConfig.csrfToken
                     },
                     body: JSON.stringify({
                         title: currentTitle,
@@ -1641,26 +947,8 @@
             }
         }
         // ================================================================
-        // DOKUMEN SPMI — Fungsi Panel Upload
+        // DOKUMEN SPMI â€” Fungsi Panel Upload
         // ================================================================
-        function toggleUploadForm() {
-            const formContainer = document.getElementById('uploadFormContainer');
-            if (formContainer) {
-                if (formContainer.classList.contains('hidden')) {
-                    formContainer.classList.remove('hidden');
-                    // Add slight delay for animation
-                    setTimeout(() => {
-                        formContainer.classList.remove('opacity-0', 'translate-y-4');
-                    }, 10);
-                } else {
-                    formContainer.classList.add('opacity-0', 'translate-y-4');
-                    setTimeout(() => {
-                        formContainer.classList.add('hidden');
-                    }, 300);
-                }
-            }
-        }
-
         function loadRenstraPanel() {
             const content = document.getElementById('dynamic-content');
             content.innerHTML = `
@@ -1697,10 +985,7 @@
                                 <div>
                                     <label class="block text-[11px] font-bold text-blue-400 uppercase tracking-widest mb-3">Tahun (Opsional - Timpa Tahun di Excel)</label>
                                     <select id="renstra_import_year" class="w-full bg-white border border-blue-100 rounded-xl px-4 py-3 text-xs font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all">
-                                        <option value="">Gunakan Tahun dari Excel</option>
-                                        @foreach(range(date('Y')-5, date('Y')+5) as $y)
-                                            <option value="{{ $y }}">{{ $y }}</option>
-                                        @endforeach
+                                        ${generateYearOptions(new Date().getFullYear() - 5, new Date().getFullYear() + 5, 'Gunakan Tahun dari Excel')}
                                     </select>
                                 </div>
                             </div>
@@ -1726,10 +1011,7 @@
                             <div class="flex items-center gap-6">
                                 <h3 class="text-xl font-black text-slate-800 font-display">Data Terdaftar</h3>
                                 <select id="filter-tahun-renstra" onchange="fetchRenstraList()" class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer">
-                                    <option value="">Semua Tahun</option>
-                                    @foreach(range(date('Y')-5, date('Y')+5) as $y)
-                                        <option value="{{ $y }}">{{ $y }}</option>
-                                    @endforeach
+                                    ${generateYearOptions(new Date().getFullYear() - 5, new Date().getFullYear() + 5, 'Semua Tahun')}
                                 </select>
                             </div>
                              <button onclick="fetchRenstraList()" class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 flex items-center justify-center transition-all">
@@ -1820,7 +1102,7 @@
             const fd = new FormData();
             fd.append('file', file);
             if (yearOverride) fd.append('tahun_override', yearOverride);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
 
             fetch('/admin/renstra/import', {
                 method: 'POST',
@@ -1896,7 +1178,7 @@
             container.innerHTML = fieldsHtml;
         }
 
-        // Renstra-specific overrides removed — saveData/addNewData now detect
+        // Renstra-specific overrides removed â€” saveData/addNewData now detect
         // Renstra context automatically via the renstra_id element check.
 
         function submitRenstra(isEdit = false) {
@@ -1908,7 +1190,7 @@
                 tahun:     document.getElementById('renstra_tahun').value,
                 target:    document.getElementById('renstra_target').value,
                 realisasi: document.getElementById('renstra_realisasi').value,
-                _token:    '{{ csrf_token() }}'
+                _token:    window.dashboardConfig.csrfToken
             };
 
             const url = isEdit ? `/admin/renstra/${id}/update` : '/admin/renstra/store';
@@ -1938,7 +1220,7 @@
             if (!confirm('Hapus data Renstra ini?')) return;
             fetch(`/admin/renstra/delete/${id}`, {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken }
             })
             .then(r => r.json())
             .then(res => {
@@ -1955,7 +1237,7 @@
             if (!confirm('Peringatan: Semua data Renstra akan dihapus secara permanen. Lanjutkan?')) return;
             fetch('/admin/renstra/truncate', {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken }
             })
             .then(r => r.json())
             .then(res => {
@@ -2019,7 +1301,7 @@
                             </div>
                             <div>
                                 <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi Singkat</label>
-                                <input type="text" id="ud_deskripsi" placeholder="Opsional — keterangan singkat dokumen"
+                                <input type="text" id="ud_deskripsi" placeholder="Opsional â€” keterangan singkat dokumen"
                                     class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all">
                             </div>
                         </div>
@@ -2031,7 +1313,7 @@
                                 <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>
                             </div>
                             <p id="dropzone-text" class="text-sm font-bold text-slate-500 group-hover:text-blue-600 transition-colors">Klik atau seret file ke sini</p>
-                            <p class="text-xs text-slate-400 mt-1">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP — Maks. 20MB</p>
+                            <p class="text-xs text-slate-400 mt-1">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP â€” Maks. 20MB</p>
                             <input type="file" id="ud_file" name="file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar">
                         </div>
 
@@ -2069,7 +1351,7 @@
                                     <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-24">Tahun</th>
                                     <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-36">Kategori</th>
                                     <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-28">File</th>
-                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-20">↓</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 w-20">â†“</th>
                                     <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right w-36">Aksi</th>
                                 </tr>
                             </thead>
@@ -2157,7 +1439,7 @@
             const iconClass = icons[ext] || 'fa-file-alt text-slate-500';
             const size = (file.size / (1024*1024)).toFixed(2) + ' MB';
             document.getElementById('dropzone-icon').innerHTML = `<i class="fas ${iconClass} text-3xl"></i>`;
-            document.getElementById('dropzone-text').textContent = `✓ ${file.name} (${size})`;
+            document.getElementById('dropzone-text').textContent = `âœ“ ${file.name} (${size})`;
             document.getElementById('dropzone-text').classList.add('text-blue-600');
         }
 
@@ -2204,7 +1486,7 @@
                                 <div>
                                     <span class="inline-block bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase">${d.tipe_file || 'file'}</span>
                                     <p class="text-[10px] text-slate-400 mt-1">${d.ukuran_file || ''}</p>
-                                </div>` : '<span class="text-slate-300 text-xs">—</span>'}
+                                </div>` : '<span class="text-slate-300 text-xs">â€”</span>'}
                             </td>
                             <td class="px-8 py-6 text-center">
                                 <span class="text-sm font-bold text-slate-500">${d.downloads}</span>
@@ -2242,7 +1524,7 @@
             formData.append('deskripsi', document.getElementById('ud_deskripsi')?.value || '');
             formData.append('kategori', document.getElementById('ud_kategori')?.value || 'Dokumen SPMI');
             formData.append('file',     file);
-            formData.append('_token',   '{{ csrf_token() }}');
+            formData.append('_token',   window.dashboardConfig.csrfToken);
 
             const btn = document.getElementById('uploadBtn');
             btn.disabled = true;
@@ -2309,7 +1591,7 @@
             formData.append('tahun',    document.getElementById('edit_tahun').value);
             formData.append('deskripsi',document.getElementById('edit_deskripsi').value);
             formData.append('kategori', document.getElementById('edit_kategori').value);
-            formData.append('_token',   '{{ csrf_token() }}');
+            formData.append('_token',   window.dashboardConfig.csrfToken);
             formData.append('_method',  'POST');
             const fileEl = document.getElementById('edit_file');
             if (fileEl.files.length > 0) formData.append('file', fileEl.files[0]);
@@ -2332,7 +1614,7 @@
             if (!confirm('Hapus dokumen ini beserta file-nya secara permanen?')) return;
             fetch(`/admin/dokumen-spmi/${id}`, {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' }
             })
             .then(r => r.json())
             .then(res => {
@@ -2402,7 +1684,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi Singkat</label>
-                                    <input type="text" id="ud_deskripsi" placeholder="Opsional — keterangan singkat dokumen"
+                                    <input type="text" id="ud_deskripsi" placeholder="Opsional â€” keterangan singkat dokumen"
                                         class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all">
                                 </div>
                             </div>
@@ -2414,7 +1696,7 @@
                                     <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>
                                 </div>
                                 <p id="dropzone-text" class="text-sm font-bold text-slate-500 group-hover:text-blue-600 transition-colors">Klik atau seret file ke sini</p>
-                                <p class="text-xs text-slate-400 mt-1">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP — Maks. 20MB</p>
+                                <p class="text-xs text-slate-400 mt-1">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP â€” Maks. 20MB</p>
                                 <input type="file" id="ud_file" name="file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar">
                             </div>
 
@@ -2579,7 +1861,7 @@
                                 <div>
                                     <span class="inline-block bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase">${d.tipe_file || 'file'}</span>
                                     <p class="text-[10px] text-slate-400 mt-1">${d.ukuran_file || ''}</p>
-                                </div>` : '<span class="text-slate-300 text-xs">—</span>'}
+                                </div>` : '<span class="text-slate-300 text-xs">â€”</span>'}
                             </td>
                             <td class="px-8 py-6 text-center">
                                 <span class="text-sm font-bold text-slate-500">${d.downloads || 0}</span>
@@ -2621,7 +1903,7 @@
             formData.append('deskripsi', document.getElementById('ud_deskripsi')?.value || '');
             formData.append('kategori', document.getElementById('ud_kategori')?.value || '');
             formData.append('file',     file);
-            formData.append('_token',   '{{ csrf_token() }}');
+            formData.append('_token',   window.dashboardConfig.csrfToken);
 
             const btn = document.getElementById('uploadBtn');
             btn.disabled = true;
@@ -2683,7 +1965,7 @@
             formData.append('tahun',    document.getElementById('edit_tahun').value);
             formData.append('deskripsi',document.getElementById('edit_deskripsi').value);
             formData.append('kategori', document.getElementById('edit_kategori').value);
-            formData.append('_token',   '{{ csrf_token() }}');
+            formData.append('_token',   window.dashboardConfig.csrfToken);
             formData.append('_method',  'POST');
             const fileEl = document.getElementById('edit_file');
             if (fileEl.files.length > 0) formData.append('file', fileEl.files[0]);
@@ -2706,7 +1988,7 @@
             if (!confirm('Hapus dokumen ini beserta file-nya secara permanen?')) return;
             fetch(`${apiBase}/${id}`, {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' }
             })
             .then(r => r.json())
             .then(res => {
@@ -2960,7 +2242,7 @@
             fd.append('sub_judul', document.getElementById('sl_sub_judul').value);
             fd.append('urutan', document.getElementById('sl_urutan').value);
             fd.append('link_url', document.getElementById('sl_link').value);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
             
             const fileInput = document.getElementById('sl_gambar');
             if (fileInput.files.length > 0) {
@@ -2999,7 +2281,7 @@
             if (!confirm('Hapus slide ini?')) return;
             fetch(`/admin/slider/${id}`, {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' }
             })
             .then(r => r.json())
             .then(res => {
@@ -3014,18 +2296,18 @@
         }
 
         // ================================================================
-        // KUESIONER MODULES — Shared State
+        // KUESIONER MODULES â€” Shared State
         // ================================================================
-        var kuesionerData = [];
-        // kuesionerChart is already declared at the top level
-        var kuesionerEditId = null;
+        let kuesionerData = [];
+        let kuesionerChart = null;
+        let kuesionerEditId = null;
 
-        var kuesionerDataStudent = [];
-        var kuesionerChartStudent = null;
-        var kuesionerEditIdStudent = null;
+        let kuesionerDataStudent = [];
+        let kuesionerChartStudent = null;
+        let kuesionerEditIdStudent = null;
 
         // ================================================================
-        // KUESIONER DOSEN & KARYAWAN — Full CRUD + Excel Import + Chart
+        // KUESIONER DOSEN & KARYAWAN â€” Full CRUD + Excel Import + Chart
         // ================================================================
         function loadKuesionerDosenPanel() {
             currentTitle = 'Kuesioner Dosen & Karyawan';
@@ -3090,7 +2372,7 @@
                                     class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all">
                             </div>
                             <div class="md:col-span-2">
-                                <button type="button" onclick="submitImportKuesioner()" id="importKuesionerBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[11px] py-5 rounded-2xl shadow-xl transition-all hover:shadow-2xl hover:-translate-y-0.5">
+                                <button type="button" onclick="submitImportKuesionerDosen()" id="importKuesionerBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[11px] py-5 rounded-2xl shadow-xl transition-all hover:shadow-2xl hover:-translate-y-0.5">
                                     <i class="fas fa-cloud-upload-alt mr-2"></i> Upload & Verifikasi Data Otomatis
                                 </button>
                             </div>
@@ -3290,11 +2572,11 @@
             }
 
             const activeTahun = data[0].tahun_akademik;
-            if (chartTitle) chartTitle.textContent = `Kepuasan Dosen & Karyawan — T.A ${activeTahun}`;
+            if (chartTitle) chartTitle.textContent = `Kepuasan Dosen & Karyawan â€” T.A ${activeTahun}`;
 
             const labels = data.map(i => {
                 let t = i.program;
-                return t.length > 18 ? t.substring(0, 18) + '…' : t;
+                return t.length > 18 ? t.substring(0, 18) + 'â€¦' : t;
             });
 
             const datasets = [
@@ -3388,7 +2670,7 @@
             try {
                 const r = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const res = await r.json();
@@ -3410,7 +2692,7 @@
             try {
                 const r = await fetch(`/admin/kuesioner-dosen/${id}`, {
                     method: 'DELETE',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                    headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' }
                 });
                 const res = await r.json();
                 if (res.success) {
@@ -3448,7 +2730,7 @@
             const fd = new FormData();
             fd.append('tahun_akademik', tahun);
             fd.append('file', file);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
 
             try {
                 const r = await fetch('/admin/kuesioner-dosen/import', {
@@ -3477,24 +2759,29 @@
         }
 
         async function truncateKuesionerDosen() {
-            const currentYears = [...new Set(kuesionerData.map(item => {
+            const currentData = (typeof kuesionerData !== 'undefined') ? kuesionerData : [];
+            const uniqueYears = [...new Set(currentData.map(item => {
                 const yearPart = String(item.tahun_akademik || '').trim().split(/\s+/)[0];
                 return yearPart;
             }).filter(Boolean))].sort();
+            let tahunOptionsHtml = '<option value="">Semua Tahun Akademik</option>';
+            uniqueYears.forEach(tahun => {
+                const isSelected = document.getElementById('kdFilterTahun')?.value === tahun ? 'selected' : '';
+                tahunOptionsHtml += `<option value="${tahun}" ${isSelected}>${tahun}</option>`;
+            });
 
             const { value: formValues } = await Swal.fire({
-                title: 'Kosongkan Data Kuesioner Dosen & Karyawan',
+                title: 'Kosongkan Data Dosen & Karyawan',
                 html: `
                     <div class="mb-4">
                         <label class="block text-left font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2">Pilih Tahun Akademik:</label>
-                        <select id="swal-kd-tahun" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white transition-all">
-                            <option value="">Semua Tahun</option>
-                            ${currentYears.map(y => `<option value="${y}">${y}</option>`).join('')}
+                        <select id="swal-kd-tahun" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                            ${tahunOptionsHtml}
                         </select>
                     </div>
                     <div>
                         <label class="block text-left font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2">Pilih Semester:</label>
-                        <select id="swal-kd-semester" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white transition-all">
+                        <select id="swal-kd-semester" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
                             <option value="">Semua Semester</option>
                             <option value="Ganjil">Ganjil</option>
                             <option value="Genap">Genap</option>
@@ -3511,23 +2798,18 @@
                     confirmButton: 'rounded-xl font-bold uppercase tracking-wider text-xs px-6 py-4 mr-2',
                     cancelButton: 'rounded-xl font-bold uppercase tracking-wider text-xs px-6 py-4'
                 },
-                preConfirm: () => {
-                    return {
-                        tahun: document.getElementById('swal-kd-tahun').value,
-                        semester: document.getElementById('swal-kd-semester').value
-                    }
-                }
+                preConfirm: () => ({
+                    tahun: document.getElementById('swal-kd-tahun').value,
+                    semester: document.getElementById('swal-kd-semester').value
+                })
             });
 
             if (!formValues) return;
 
             const { tahun, semester } = formValues;
+            const tahunText = tahun ? `tahun akademik "${tahun}"` : 'SEMUA tahun akademik';
             const semesterText = semester ? ` semester ${semester}` : '';
-            const yearText = tahun ? ` tahun ${tahun}` : '';
-            const msg = (tahun || semester)
-                ? `Hapus semua data kuesioner untuk${yearText}${semesterText}?`
-                : 'Hapus SEMUA data kuesioner dosen & karyawan?';
-            if (!confirm(msg)) return;
+            if (!confirm(`Apakah Anda yakin ingin menghapus data kuesioner Dosen & Karyawan untuk ${tahunText}${semesterText}?`)) return;
 
             try {
                 const queryParams = new URLSearchParams({
@@ -3538,7 +2820,7 @@
 
                 const r = await fetch(`/admin/kuesioner-dosen/truncate?${queryParams.toString()}`, {
                     method: 'DELETE',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                    headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' }
                 });
                 
                 const res = await r.json();
@@ -3557,7 +2839,7 @@
         }
 
         // ================================================================
-        // KUESIONER MAHASISWA — Panel Import + Table + Chart
+        // KUESIONER MAHASISWA â€” Panel Import + Table + Chart
         // ================================================================
         function loadKuesionerMahasiswaPanel() {
             currentTitle = 'Kuesioner Mahasiswa';
@@ -3759,10 +3041,42 @@
         async function initKuesionerMahasiswaPanel() {
             try {
                 const r = await fetch('/admin/kuesioner-dosen/data?kategori=Mahasiswa');
-                const res = await r.json();
-                if (!res.success) return;
-                
+                console.log('initKuesionerMahasiswaPanel: fetch status', r.status, r.statusText);
+                const text = await r.text();
+                // Log a trimmed preview to help debug large responses
+                console.log('initKuesionerMahasiswaPanel: raw response preview', text.slice(0, 2000));
+
+                if (!r.ok) {
+                    throw new Error('HTTP error ' + r.status + ' ' + r.statusText);
+                }
+
+                let res;
+                try {
+                    res = JSON.parse(text);
+                } catch (jsonErr) {
+                    console.error('initKuesionerMahasiswaPanel: JSON parse error', jsonErr);
+                    throw new Error('JSON parse error: ' + jsonErr.message);
+                }
+
+                if (!res.success) {
+                    console.warn('initKuesionerMahasiswaPanel: response.success is falsy', res);
+                    throw new Error('Response success false');
+                }
+
                 kuesionerDataStudent = res.data;
+                const prodiSelector = document.getElementById('km_import_prodi');
+                if (prodiSelector) {
+                    // Clear existing options (keep default first if present)
+                    prodiSelector.innerHTML = '<option value="">Pilih Program Studi</option>';
+                    const backendProdis = Array.isArray(res.prodis) ? res.prodis : null;
+                    const prodis = backendProdis || [...new Set(kuesionerDataStudent.map(item => item.prodi).filter(Boolean))].sort();
+                    prodis.forEach(prodi => {
+                        const option = document.createElement('option');
+                        option.value = prodi;
+                        option.textContent = prodi;
+                        prodiSelector.appendChild(option);
+                    });
+                }
                 const years = res.years;
                 const selector = document.getElementById('kmFilterTahun');
                 if (selector) {
@@ -3773,17 +3087,11 @@
                         selector.appendChild(opt);
                     });
                 }
-
-                const prodiSelect = document.getElementById('km_import_prodi');
-                if (prodiSelect) {
-                    const uniqueProdis = [...new Set(res.data.map(i => i.prodi).filter(Boolean))].sort();
-                    prodiSelect.innerHTML = '<option value="">Pilih Program Studi</option>' + uniqueProdis.map(p => `<option value="${p}">${p}</option>`).join('');
-                }
-
                 renderKMTable(kuesionerDataStudent);
                 renderKMChart(kuesionerDataStudent);
             } catch(e) {
-                showToast('Gagal memuat data kuesioner mahasiswa.', 'warning');
+                console.error('initKuesionerMahasiswaPanel error', e);
+                showToast('Gagal memuat data kuesioner mahasiswa. ' + (e.message || ''), 'warning');
             }
         }
 
@@ -3848,7 +3156,7 @@
             }
 
             const activeTahun = data[0].tahun_akademik;
-            if (chartTitle) chartTitle.textContent = `Kepuasan Mahasiswa — T.A ${activeTahun}`;
+            if (chartTitle) chartTitle.textContent = `Kepuasan Mahasiswa â€” T.A ${activeTahun}`;
 
             const labels = data.map(i => i.program.length > 20 ? i.program.substring(0, 20) + '...' : i.program);
             const datasets = [
@@ -3930,7 +3238,7 @@
             try {
                 const r = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const res = await r.json();
@@ -3947,7 +3255,7 @@
             try {
                 const r = await fetch(`/admin/kuesioner-dosen/${id}`, {
                     method: 'DELETE',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken }
                 });
                 const res = await r.json();
                 if (res.success) {
@@ -3983,7 +3291,7 @@
             fd.append('prodi', prodi);
             fd.append('file', file);
             fd.append('kategori', 'Mahasiswa');
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
 
             try {
                 const r = await fetch('/admin/kuesioner-dosen/import', { method: 'POST', body: fd });
@@ -4068,7 +3376,7 @@
 
                 const r = await fetch(`/admin/kuesioner-dosen/truncate?${queryParams.toString()}`, {
                     method: 'DELETE',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                    headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' }
                 });
                 const res = await r.json();
                 if (res.success) {
@@ -4092,7 +3400,7 @@
         }
 
         // ================================================================
-        // GALERI FOTO & VIDEO — Fungsi Panel Upload Khusus
+        // GALERI FOTO & VIDEO â€” Fungsi Panel Upload Khusus
         // ================================================================
         function loadGaleriFotoPanel() {
 
@@ -4171,7 +3479,7 @@
                             <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Video</p>
                         </div>
                         <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Galeri Video</h2>
-                        <p class="text-slate-500 text-sm mt-2">Upload file video atau pasang link YouTube.</p>
+                        <p class="text-slate-500 text-sm mt-2">Upload file video atau pasang link video apa saja.</p>
                     </div>
                     <button onclick="toggleUploadForm()" class="relative z-10 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all hover:-translate-y-1">
                         <i class="fas fa-plus mr-2 text-[10px]"></i> Tambah Video
@@ -4202,7 +3510,7 @@
                                     <i class="fas fa-upload mr-1"></i> Upload Lokal
                                 </button>
                                 <button type="button" onclick="setVideoSource('link')" id="gvSrcLink" class="flex-1 py-3 px-4 rounded-xl border-2 border-slate-200 bg-white text-slate-500 font-black text-[10px] uppercase tracking-widest transition-all">
-                                    <i class="fab fa-youtube mr-1"></i> Link YouTube/URL
+                                    <i class="fas fa-link mr-1"></i> Link Video Apa Saja
                                 </button>
                             </div>
                         </div>
@@ -4212,10 +3520,10 @@
                             <p class="text-[9px] text-slate-400 mt-2 italic font-bold">Format: MP4, MKV, WMV. Limit server: 40MB.</p>
                         </div>
                         <div id="gvLinkSection" class="mb-6 hidden">
-                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Link YouTube / URL Video</label>
-                            <input type="text" id="gv_link" placeholder="https://www.youtube.com/watch?v=... atau URL video lain"
+                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Link Video Apa Saja</label>
+                            <input type="text" id="gv_link" placeholder="Tempel link video apa saja"
                                 class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                            <p class="text-[9px] text-slate-400 mt-2 italic font-bold">Masukkan link YouTube lengkap atau URL video publik.</p>
+                            <p class="text-[9px] text-slate-400 mt-2 italic font-bold">Bisa menggunakan link YouTube, TikTok, Vimeo, Google Drive, CDN, atau link video lainnya.</p>
                         </div>
                         <button type="button" onclick="submitUploadVideo()" id="uploadVideoBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[11px] py-5 rounded-2xl shadow-xl transition-all">
                             <i class="fas fa-save mr-2"></i> Simpan Video
@@ -4250,7 +3558,7 @@
                     if (d.sampul_foto) {
                         coverUrl = d.sampul_foto.startsWith('http') ? d.sampul_foto : '/storage/gallery/' + d.sampul_foto;
                     } else if (d.first_foto) {
-                        coverUrl = '/storage/gallery/' + d.first_foto.file_path;
+                        coverUrl = d.first_foto.file_path.startsWith('http') ? d.first_foto.file_path : '/storage/gallery/' + d.first_foto.file_path;
                     }
                     
                     return `
@@ -4292,14 +3600,19 @@
                 if (!tbody || !res.success) return;
                 tbody.innerHTML = res.data.map((d, i) => {
                     let youtubeId = null;
+                    let tiktokId = null;
                     let isLocal = false;
                     if (d.link_youtube) {
                         const m = d.link_youtube.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/live\/)([^"&?\/ ]{11})/);
                         if (m) youtubeId = m[1];
+                        const tiktokMatch = d.link_youtube.match(/tiktok\.com\/(?:@[^/]+\/video\/|embed\/v2\/)(\d+)/i);
+                        if (tiktokMatch) tiktokId = tiktokMatch[1];
                         else if (!d.link_youtube.startsWith('http')) isLocal = true;
                     }
                     const thumbHtml = youtubeId 
                         ? `<img src="https://img.youtube.com/vi/${youtubeId}/default.jpg" class="w-full h-full object-cover">`
+                        : tiktokId
+                            ? `<div class="w-full h-full flex items-center justify-center bg-slate-900 text-white"><i class="fab fa-tiktok text-lg"></i></div>`
                         : isLocal 
                             ? `<div class="w-full h-full flex items-center justify-center bg-slate-100"><i class="fas fa-film text-slate-400 text-lg"></i></div>`
                             : `<div class="w-full h-full flex items-center justify-center bg-slate-100"><i class="fas fa-video-slash text-slate-300 text-lg"></i></div>`;  
@@ -4352,7 +3665,7 @@
             fd.append('nama_album', nama);
             if(file) fd.append('sampul_foto', file);
             if(link) fd.append('link_extern', link);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
 
             const btn = document.getElementById('uploadAlbumBtn');
             const originalBtnHtml = btn.innerHTML;
@@ -4427,7 +3740,7 @@
             fd.append('deskripsi', desc);
             if(fileSectionVisible && file) fd.append('video_file', file);
             if(!fileSectionVisible && link) fd.append('link_youtube', link);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
 
             const btn = document.getElementById('uploadVideoBtn');
             const originalBtnHtml = btn.innerHTML;
@@ -4471,13 +3784,13 @@
 
         function deleteAlbum(id) {
             if(!confirm('Hapus album ini secara permanen?')) return;
-            fetch('/admin/galeri-album/' + id, {method: 'DELETE', body: new FormData(), headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}})
+            fetch('/admin/galeri-album/' + id, {method: 'DELETE', body: new FormData(), headers: {'X-CSRF-TOKEN': window.dashboardConfig.csrfToken}})
                 .then(r => r.json()).then(res => { if(res.success) { showToast(res.message, 'success'); fetchAlbums(); } });
         }
 
         function deleteVideo(id) {
             if(!confirm('Hapus video ini secara permanen?')) return;
-            fetch('/admin/galeri-video/' + id, {method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}})
+            fetch('/admin/galeri-video/' + id, {method: 'DELETE', headers: {'X-CSRF-TOKEN': window.dashboardConfig.csrfToken}})
                 .then(r => r.json()).then(res => { if(res.success) { showToast(res.message, 'success'); fetchVideos(); } });
         }
 
@@ -4521,7 +3834,7 @@
             fd.append('nama_album', nama);
             if(file) fd.append('sampul_foto', file);
             if(link) fd.append('link_extern', link);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
             fetch('/admin/galeri-album/' + currentEditAlbumId + '/update', {
                 method:'POST', 
                 body: fd, 
@@ -4600,7 +3913,7 @@
             if(desc) fd.append('deskripsi', desc);
             if(fileSectionVisible && file) fd.append('video_file', file);
             if(!fileSectionVisible && link) fd.append('link_youtube', link);
-            fd.append('_token', '{{ csrf_token() }}');
+            fd.append('_token', window.dashboardConfig.csrfToken);
             fetch('/admin/galeri-video/' + currentEditVideoId + '/update', {
                 method:'POST', 
                 body: fd,
@@ -4652,23 +3965,30 @@
                 .then(r => r.json())
                 .then(res => {
                     if (res.success) {
-                        container.innerHTML = res.data.map(p => `
-                            <div class="relative group rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 shadow-sm">
-                                <img src="${p.file_path && p.file_path.startsWith('http') ? p.file_path : '/storage/gallery/' + p.file_path}" class="w-full h-36 object-cover">
-                                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white">
-                                    <p class="text-[10px] font-black uppercase tracking-widest truncate">${p.judul || 'Foto'}</p>
-                                    <p class="text-[9px] opacity-80 truncate">${p.deskripsi || 'Tanpa deskripsi'}</p>
+                        container.innerHTML = res.data.map(p => {
+                                const photoUrl = p.file_path.startsWith('http') ? p.file_path : '/storage/gallery/' + p.file_path;
+                                const title = p.judul ? p.judul : '';
+                                const desc = p.deskripsi ? p.deskripsi : '';
+                                const escTitle = (title || '').replace(/'/g, "\\'");
+                                const escDesc = (desc || '').replace(/'/g, "\\'");
+                                return `
+                                <div class="relative group rounded-2xl overflow-hidden aspect-square border border-slate-100 bg-slate-50">
+                                    <img src="${photoUrl}" class="w-full h-full object-cover">
+                                    <div class="p-2 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent text-white">
+                                        ${title ? `<div class="text-sm font-semibold truncate">${title}</div>` : ''}
+                                        ${desc ? `<div class="text-[11px] opacity-80 line-clamp-1">${desc}</div>` : ''}
+                                    </div>
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                        <button onclick="deletePhoto(${p.id})" class="w-8 h-8 rounded-lg bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 transition-colors">
+                                            <i class="fas fa-trash text-[10px]"></i>
+                                        </button>
+                                        <button onclick="enlargeImage('${photoUrl}', '${escTitle}', '${escDesc}')" class="w-8 h-8 rounded-lg bg-white text-slate-900 flex items-center justify-center hover:bg-slate-100 transition-colors">
+                                            <i class="fas fa-expand-alt text-[12px]"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="absolute top-2 right-2 flex gap-2">
-                                    <button onclick="openEditPhoto(${p.id}, '${(p.judul || '').replace(/'/g, "\\'")}', '${(p.deskripsi || '').replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg bg-blue-500/90 text-white flex items-center justify-center hover:bg-blue-600 transition-colors">
-                                        <i class="fas fa-pen text-[10px]"></i>
-                                    </button>
-                                    <button onclick="deletePhoto(${p.id})" class="w-8 h-8 rounded-lg bg-rose-500/90 text-white flex items-center justify-center hover:bg-rose-600 transition-colors">
-                                        <i class="fas fa-trash text-[10px]"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('') || '<div class="col-span-full py-10 text-center text-slate-300 font-semibold uppercase tracking-widest text-[10px]">Belum ada foto di album ini.</div>';
+                            `;
+                            }).join('') || '<div class="col-span-full py-10 text-center text-slate-300 font-semibold uppercase tracking-widest text-[10px]">Belum ada foto di album ini.</div>';
                     }
                 });
         }
@@ -4676,8 +3996,8 @@
         function submitAddPhotos() {
             const files = document.getElementById('mp_files').files;
             const linksInput = document.getElementById('mp_links');
-            const title = document.getElementById('mp_title').value;
-            const description = document.getElementById('mp_description').value;
+            const judulInput = document.getElementById('mp_judul');
+            const descInput = document.getElementById('mp_deskripsi');
             const links = linksInput ? linksInput.value.trim() : '';
             if (files.length === 0 && !links) return showToast('Pilih foto atau isi link foto terlebih dahulu', 'warning');
 
@@ -4691,9 +4011,9 @@
                 fd.append('photos[]', files[i]);
             }
             if (links) fd.append('photo_links', links);
-            if (title) fd.append('judul', title);
-            if (description) fd.append('deskripsi', description);
-            fd.append('_token', '{{ csrf_token() }}');
+            if (judulInput && judulInput.value.trim()) fd.append('judul', judulInput.value.trim());
+            if (descInput && descInput.value.trim()) fd.append('deskripsi', descInput.value.trim());
+            fd.append('_token', window.dashboardConfig.csrfToken);
 
             fetch(`/admin/galeri-album/${currentManageAlbumId}/photos/upload`, {
                 method: 'POST',
@@ -4711,8 +4031,8 @@
                     showToast(res.message, 'success');
                     document.getElementById('mp_files').value = '';
                     if (linksInput) linksInput.value = '';
-                    document.getElementById('mp_title').value = '';
-                    document.getElementById('mp_description').value = '';
+                    if (judulInput) judulInput.value = '';
+                    if (descInput) descInput.value = '';
                     fetchAlbumPhotos();
                 }
             })
@@ -4721,53 +4041,8 @@
                 btn.innerHTML = originalBtnHtml;
                 let msg = 'Gagal mengunggah foto.';
                 if (err.errors) msg = Object.values(err.errors).flat().join(' ');
+                else if (err.message) msg = err.message;
                 showToast(msg, 'warning');
-            });
-        }
-
-        let currentEditPhotoId = null;
-        function openEditPhoto(id, title, description) {
-            currentEditPhotoId = id;
-            document.getElementById('ep_title').value = title || '';
-            document.getElementById('ep_description').value = description || '';
-            document.getElementById('editPhotoModal').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('editPhotoModal').classList.remove('opacity-0');
-                document.getElementById('editPhotoModalBox').classList.remove('scale-95');
-            }, 10);
-        }
-
-        function closeEditPhotoModal() {
-            document.getElementById('editPhotoModal').classList.add('opacity-0');
-            document.getElementById('editPhotoModalBox').classList.add('scale-95');
-            setTimeout(() => document.getElementById('editPhotoModal').classList.add('hidden'), 200);
-        }
-
-        function saveEditPhoto() {
-            const title = document.getElementById('ep_title').value;
-            const description = document.getElementById('ep_description').value;
-            const file = document.getElementById('ep_file').files[0];
-
-            const fd = new FormData();
-            if (title) fd.append('judul', title);
-            if (description) fd.append('deskripsi', description);
-            if (file) fd.append('photo_file', file);
-            fd.append('_token', '{{ csrf_token() }}');
-
-            fetch(`/admin/galeri-foto/${currentEditPhotoId}/update`, {
-                method: 'POST',
-                body: fd,
-                headers: { 'Accept': 'application/json' }
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.success) {
-                    showToast(res.message, 'success');
-                    closeEditPhotoModal();
-                    fetchAlbumPhotos();
-                } else {
-                    showToast(res.message || 'Gagal memperbarui foto.', 'warning');
-                }
             });
         }
 
@@ -4775,7 +4050,7 @@
             if (!confirm('Hapus foto ini?')) return;
             fetch(`/admin/galeri-foto/${id}`, {
                 method: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                headers: { 'X-CSRF-TOKEN': window.dashboardConfig.csrfToken, 'Accept': 'application/json' }
             })
             .then(r => r.json())
             .then(res => {
@@ -4788,14 +4063,21 @@
 
         function playDashboardVideo(url, title) {
             let youtubeId = null;
+            let tiktokId = null;
             let isLocal = false;
+            let isTiktok = false;
             if (url) {
                 const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/live\/)([^"&?\/ ]{11})/;
                 const matches = url.match(regex);
                 if (matches && matches[1]) {
                     youtubeId = matches[1];
-                } else if (!url.startsWith('http')) {
-                    isLocal = true;
+                } else {
+                    const tiktokMatch = url.match(/tiktok\.com\/(?:@[^/]+\/video\/|embed\/v2\/)(\d+)/i);
+                    if (tiktokMatch) tiktokId = tiktokMatch[1];
+                    else if (/((^|\.)?(vt|vm|www)?\.?tiktok\.com)/i.test(url)) {
+                        isTiktok = true;
+                    }
+                    else if (!url.startsWith('http')) isLocal = true;
                 }
             }
 
@@ -4813,6 +4095,45 @@
                     `,
                     background: '#fff',
                     width: '800px',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    customClass: {
+                        popup: 'rounded-[2.5rem] border border-white shadow-2xl',
+                        closeButton: 'text-slate-400 hover:text-rose-500'
+                    }
+                });
+            } else if (tiktokId) {
+                Swal.fire({
+                    title: `<span class="text-slate-800 font-bold text-lg">${title}</span>`,
+                    html: `
+                        <div class="aspect-[9/16] max-h-[70vh] rounded-2xl overflow-hidden shadow-2xl border border-slate-100 mt-4 mx-auto">
+                            <iframe width="100%" height="100%"
+                                src="https://www.tiktok.com/player/v1/${tiktokId}?description=1&music_info=1"
+                                title="${title}" frameborder="0"
+                                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                                allowfullscreen></iframe>
+                        </div>
+                    `,
+                    background: '#fff',
+                    width: '500px',
+                    showConfirmButton: false,
+                    showCloseButton: true
+                });
+            } else if (isTiktok) {
+                Swal.fire({
+                    title: `<span class="text-slate-800 font-bold text-lg">${title}</span>`,
+                    html: `
+                        <div class="w-full max-w-[420px] rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white p-8 text-center shadow-2xl border border-white/10 mt-4 mx-auto">
+                            <i class="fab fa-tiktok text-5xl mb-4 text-cyan-400"></i>
+                            <h3 class="text-xl font-bold mb-2">Video TikTok</h3>
+                            <p class="text-sm text-slate-400 mb-6">Link ini tidak bisa diputar langsung di halaman ini. Buka langsung lewat TikTok agar kontennya terbuka.</p>
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100">
+                                <i class="fab fa-tiktok"></i> Buka di TikTok
+                            </a>
+                        </div>
+                    `,
+                    background: '#fff',
+                    width: '480px',
                     showConfirmButton: false,
                     showCloseButton: true,
                     customClass: {
@@ -4847,7 +4168,7 @@
         }
 
         // ================================================================
-        // KUESIONER — Manajemen Pertanyaan
+        // KUESIONER â€” Manajemen Pertanyaan
         // ================================================================
         let currentKuesionerId = null;
 
@@ -4934,7 +4255,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': window.dashboardConfig.csrfToken
                 },
                 body: JSON.stringify({
                     kuesioner_id: currentKuesionerId,
@@ -4965,7 +4286,7 @@
                 fetch(`/admin/kuesioner/pertanyaan/${id}`, {
                     method: 'DELETE',
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': window.dashboardConfig.csrfToken
                     }
                 })
                 .then(r => r.json())
@@ -4986,248 +4307,117 @@
                 container.classList.add('hidden');
             }
         });
-    </script>
 
-    <!-- EDIT ALBUM MODAL -->
-    <div id="editAlbumModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="editAlbumModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
-            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <div>
-                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Album Foto</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Perbarui nama & sampul album</p>
-                </div>
-                <button onclick="closeEditAlbumModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-10 space-y-5">
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Nama Album <span class="text-rose-500">*</span></label>
-                    <input type="text" id="ea_nama" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Ganti Sampul (Upload - Max 5MB)</label>
-                    <input type="file" id="ea_file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Atau Link Gambar</label>
-                    <input type="text" id="ea_link" placeholder="https://..." class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                    <button onclick="closeEditAlbumModal()" class="px-6 py-3 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors uppercase tracking-widest">Batal</button>
-                    <button onclick="saveEditAlbum()" class="px-6 py-3 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-widest"><i class="fas fa-save mr-1"></i> Simpan</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        // Ekspos fungsi top-level ke window untuk event handler inline Blade
+        Object.assign(window, {
+            addNewData,
+            closeEditAlbumModal,
+            closeEditDokModal,
+            closeEditVideoModal,
+            closeKdModal,
+            closeKMModal,
+            closeManagePhotosModal,
+            closeManageQuestionsModal,
+            closeModal,
+            closeSliderModal,
+            confirmDelete,
+            deleteAlbum,
+            deleteDokumen,
+            deleteKMRow,
+            deleteKuesionerRow,
+            deletePdfDocument,
+            deletePhoto,
+            deleteQuestion,
+            deleteRenstra,
+            deleteSlider,
+            deleteVideo,
+            destroyEditors,
+            fetchAlbumPhotos,
+            fetchAlbums,
+            fetchDokumenList,
+            fetchKuesionerStats,
+            fetchPdfDocumentList,
+            fetchQuestions,
+            fetchRenstraList,
+            fetchSliderList,
+            fetchVideos,
+            generateFormFields,
+            generateYearOptions,
+            hideOverlay,
+            initKuesionerMahasiswaPanel,
+            initKuesionerPanel,
+            initRichEditor,
+            loadDokumenSpmiPanel,
+            loadGaleriFotoPanel,
+            loadGaleriVideoPanel,
+            loadKMTable,
+            loadKuesionerDosenPanel,
+            loadKuesionerMahasiswaPanel,
+            loadKuesionerTable,
+            loadLaporanAmiPanel,
+            loadPage,
+            loadPdfDocumentPanel,
+            loadRenstraPanel,
+            loadRtmPanel,
+            loadSliderPanel,
+            loadSocialMediaPage,
+            openEditAlbum,
+            openEditDokModal,
+            openEditPdfDocModal,
+            openEditVideo,
+            openImportKuesioner,
+            openKMAddModal,
+            openKMEditModal,
+            openKuesionerAddModal,
+            openKuesionerEditModal,
+            openManagePhotos,
+            openManageQuestions,
+            openModalEdit,
+            openRenstraModal,
+            openSliderModal,
+            openTambah,
+            playDashboardVideo,
+            previewSliderImage,
+            renderKMChart,
+            renderKMTable,
+            renderKuesionerChart,
+            renderKuesionerTable,
+            saveData,
+            saveEditAlbum,
+            saveEditVideo,
+            saveSingleContent,
+            setEditVideoSource,
+            setVideoSource,
+            showHome,
+            showOverlay,
+            showToast,
+            submitAddPhotos,
+            submitAddQuestion,
+            submitEditDokumen,
+            submitEditPdfDocument,
+            submitImportKM,
+            submitImportKuesioner,
+            submitImportKuesionerDosen,
+            submitImportRenstra,
+            submitKdForm,
+            submitKMForm,
+            submitRenstra,
+            submitSlider,
+            submitUploadAlbum,
+            submitUploadDokumen,
+            submitUploadPdfDocument,
+            submitUploadVideo,
+            toggleImportKM,
+            toggleImportKuesioner,
+            toggleMenu,
+            toggleProfileDropdown,
+            toggleUploadForm,
+            truncateKM,
+            truncateKuesionerDosen,
+            truncateRenstra,
+            updateClock,
+            updateDropzoneUI
+        });
+    
 
-    <!-- EDIT VIDEO MODAL -->
-    <div id="editVideoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="editVideoModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
-            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <div>
-                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Video</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Perbarui data video</p>
-                </div>
-                <button onclick="closeEditVideoModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-10 space-y-5">
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Video <span class="text-rose-500">*</span></label>
-                    <input type="text" id="ev_judul" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi</label>
-                    <input type="text" id="ev_deskripsi" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                </div>
-                <!-- Edit Source Selector -->
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Sumber Video</label>
-                    <div class="flex gap-3 mb-4">
-                        <button type="button" onclick="setEditVideoSource('file')" id="evSrcFile" class="flex-1 py-2.5 px-4 rounded-xl border-2 border-blue-500 bg-blue-50 text-blue-700 font-black text-[10px] uppercase tracking-widest transition-all">
-                            <i class="fas fa-upload mr-1"></i> Upload Lokal
-                        </button>
-                        <button type="button" onclick="setEditVideoSource('link')" id="evSrcLink" class="flex-1 py-2.5 px-4 rounded-xl border-2 border-slate-200 bg-white text-slate-500 font-black text-[10px] uppercase tracking-widest transition-all">
-                            <i class="fab fa-youtube mr-1"></i> Link YouTube/URL
-                        </button>
-                    </div>
-                </div>
-                <div id="evFileSection">
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Ganti File Video (Lokal - Max 40MB)</label>
-                    <input type="file" id="ev_file" accept="video/mp4,video/x-matroska,video/x-ms-wmv" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100">
-                    <p class="text-[9px] text-slate-400 mt-1 font-bold italic">Biarkan kosong jika tidak ingin mengganti video.</p>
-                </div>
-                <div id="evLinkSection" class="hidden">
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Link YouTube / URL Video</label>
-                    <input type="text" id="ev_link" placeholder="https://www.youtube.com/watch?v=..."
-                        class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                    <button onclick="closeEditVideoModal()" class="px-6 py-3 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors uppercase tracking-widest">Batal</button>
-                    <button onclick="saveEditVideo()" class="px-6 py-3 bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-lg hover:bg-blue-700 transition-all uppercase tracking-widest"><i class="fas fa-save mr-1"></i> Simpan</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- MANAGE PHOTOS MODAL -->
-    <div id="managePhotosModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="managePhotosModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl overflow-hidden scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]">
-            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
-                <div>
-                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Kelola Foto Album</h3>
-                    <p id="mp_album_name" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">Nama Album</p>
-                </div>
-                <button onclick="closeManagePhotosModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="p-10 overflow-y-auto custom-scrollbar flex-grow">
-                <!-- Upload Area -->
-                <div class="mb-10 p-8 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Foto</label>
-                            <input type="text" id="mp_title" placeholder="Contoh: Kegiatan Workshop" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none text-sm font-semibold text-slate-700 bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi Foto</label>
-                            <input type="text" id="mp_description" placeholder="Keterangan singkat foto" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none text-sm font-semibold text-slate-700 bg-white">
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Link Foto (Opsional)</label>
-                        <textarea id="mp_links" rows="3" placeholder="Masukkan satu URL foto per baris atau paste beberapa link langsung" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none text-sm font-semibold text-slate-700 bg-white"></textarea>
-                        <p class="text-[9px] text-slate-400 mt-2 leading-relaxed font-semibold uppercase tracking-wider italic">Bisa diisi dengan link foto dari Google Drive, Unsplash, CDN, atau URL gambar lain.</p>
-                    </div>
-                    <div class="flex flex-col md:flex-row items-center gap-6">
-                        <div class="flex-grow w-full">
-                            <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Tambah Foto Baru (Pilih banyak foto sekaligus)</label>
-                            <input type="file" id="mp_files" multiple accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-all cursor-pointer">
-                        </div>
-                        <button id="mp_upload_btn" onclick="submitAddPhotos()" class="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest text-[10px] px-8 py-4 rounded-2xl shadow-lg shadow-emerald-200 transition-all active:scale-95">
-                            <i class="fas fa-upload mr-2"></i> Unggah Foto
-                        </button>
-                    </div>
-                    <p class="text-[9px] text-slate-400 mt-4 leading-relaxed font-semibold uppercase tracking-wider italic">* Ukuran file disarankan di bawah 10MB per foto. Anda dapat memilih beberapa file sekaligus.</p>
-                </div>
 
-                <div class="mb-4 flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daftar Foto dalam Album</h4>
-                </div>
-                
-                <div id="mp_photos_grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    <!-- Photos will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- EDIT PHOTO MODAL -->
-    <div id="editPhotoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="editPhotoModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
-            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <div>
-                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Foto</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Perbarui judul, deskripsi, atau file foto</p>
-                </div>
-                <button onclick="closeEditPhotoModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-10 space-y-5">
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Judul Foto</label>
-                    <input type="text" id="ep_title" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Deskripsi</label>
-                    <input type="text" id="ep_description" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">Ganti File Foto</label>
-                    <input type="file" id="ep_file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                    <button onclick="closeEditPhotoModal()" class="px-6 py-3 text-slate-500 bg-white border border-slate-200 font-bold text-xs hover:bg-slate-50 rounded-2xl transition-colors uppercase tracking-widest">Batal</button>
-                    <button onclick="saveEditPhoto()" class="px-6 py-3 bg-emerald-600 text-white font-bold text-xs rounded-2xl shadow-lg hover:bg-emerald-700 transition-all uppercase tracking-widest"><i class="fas fa-save mr-1"></i> Simpan</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MANAGE QUESTIONS MODAL -->
-    <div id="manageQuestionsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="manageQuestionsModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl overflow-hidden scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]">
-            <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
-                <div>
-                    <h3 class="font-black text-slate-800 text-xl tracking-tight">Kelola Pertanyaan Kuesioner</h3>
-                    <p id="mq_kuesioner_name" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-1">Nama Kuesioner</p>
-                </div>
-                <button onclick="closeManageQuestionsModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="p-10 overflow-y-auto custom-scrollbar flex-grow">
-                <!-- Add Question Form -->
-                <div class="mb-10 p-8 rounded-3xl border border-slate-200 bg-slate-50/50">
-                    <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6">Tambah Pertanyaan Baru</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="md:col-span-2">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Teks Pertanyaan</label>
-                            <input type="text" id="mq_pertanyaan" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tipe Jawaban</label>
-                            <select id="mq_tipe" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white cursor-pointer">
-                                <option value="skala_likert">Skala Likert (1-5)</option>
-                                <option value="teks">Jawaban Teks</option>
-                                <option value="pilihan_ganda">Pilihan Ganda</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Urutan (Angka)</label>
-                            <input type="number" id="mq_urutan" value="0" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white">
-                        </div>
-                        <div id="mq_opsi_container" class="md:col-span-2 hidden">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Opsi Jawaban (Pisahkan dengan koma)</label>
-                            <input type="text" id="mq_opsi" placeholder="Sangat Baik, Baik, Cukup, Kurang" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white">
-                        </div>
-                    </div>
-                    <div class="flex justify-end">
-                        <button onclick="submitAddQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-widest text-[10px] px-8 py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95">
-                            <i class="fas fa-plus mr-2"></i> Tambahkan Pertanyaan
-                        </button>
-                    </div>
-                </div>
-
-                <div class="mb-4 flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Daftar Pertanyaan Aktif</h4>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50">
-                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100">Urutan</th>
-                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100">Pertanyaan</th>
-                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100">Tipe</th>
-                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-emerald-50/10 mb-3 border-b-2 border-slate-100 text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mq_questions_list" class="divide-y divide-slate-100">
-                            <!-- Questions will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-</body>
-</html>

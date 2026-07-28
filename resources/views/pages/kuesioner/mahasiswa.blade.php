@@ -64,12 +64,15 @@
 
                     <!-- Filter Prodi -->
                     <div class="relative group min-w-[200px]">
-                        <select name="prodi" onchange="this.form.submit()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-white/5 text-slate-900 dark:text-slate-200 text-[11px] font-black rounded-2xl px-6 py-4 pr-10 appearance-none focus:ring-4 focus:ring-blue-500/10 transition-all uppercase tracking-widest shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <select id="filter-prodi-select" name="prodi" onchange="this.form.submit()" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-white/5 text-slate-900 dark:text-slate-200 text-[11px] font-black rounded-2xl px-6 py-4 pr-10 appearance-none focus:ring-4 focus:ring-blue-500/10 transition-all uppercase tracking-widest shadow-sm">
                             <option value="all" {{ request('prodi') == 'all' || !request('prodi') ? 'selected' : '' }}>Semua Program Studi (All Page)</option>
                             @foreach($prodiList as $prodi)
                                 <option value="{{ $prodi }}" {{ request('prodi') == $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
                             @endforeach
-                        </select>
+                            </select>
+                            
+                        </div>
                         <i class="fas fa-graduation-cap absolute right-5 top-1/2 -translate-y-1/2 text-blue-500 pointer-events-none"></i>
                     </div>
 
@@ -182,6 +185,44 @@
                 }
             }
         }
+
+        // --- Prodi Management: refresh selects from backend prodis ---
+        async function refreshProdiSelects(selected = null) {
+            try {
+            const res = await fetch('/admin/kuesioner-dosen/data?kategori=Mahasiswa');
+            const json = await res.json();
+            if (!json.success) return;
+            const data = json.data || [];
+            const backendProdis = Array.isArray(json.prodis) ? json.prodis : null;
+            const unique = backendProdis || [...new Set(data.map(i => i.prodi).filter(Boolean))].sort();
+
+                // Update filter select
+                const filterSelect = document.getElementById('filter-prodi-select');
+                if (filterSelect) {
+                    const cur = filterSelect.value;
+                    filterSelect.innerHTML = '';
+                    const optAll = document.createElement('option'); optAll.value = 'all'; optAll.textContent = 'Semua Program Studi (All Page)';
+                    filterSelect.appendChild(optAll);
+                    unique.forEach(p => {
+                        const o = document.createElement('option'); o.value = p; o.textContent = p; filterSelect.appendChild(o);
+                    });
+                    if (selected) filterSelect.value = selected; else filterSelect.value = cur || 'all';
+                }
+
+                // Update any import selects (if present)
+                document.querySelectorAll('#km_import_prodi, #km_import_prodi_multiple').forEach(sel => {
+                    const prev = sel.value;
+                    sel.innerHTML = '<option value="">Pilih Program Studi</option>';
+                    unique.forEach(p => {
+                        const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o);
+                    });
+                    sel.value = prev || '';
+                });
+            } catch (e) {
+                console.error('refreshProdiSelects error', e);
+            }
+        }
+
 
         // --- 1. SPECIALIZED 4-SCALE BAR CHART (LOOP FOR ALL CANVASES) ---
         const colors = {

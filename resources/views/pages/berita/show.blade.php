@@ -70,15 +70,15 @@
     <div class="bg-[#0056b3] py-3 border-b border-[#004494] w-full">
         <div class="w-full px-6 lg:px-16 flex justify-between items-center text-[10px] font-bold tracking-widest text-white uppercase">
             <div class="flex gap-8">
-                <a href="mailto:info@politeknikjambi.ac.id" class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer relative z-50">
-                    <i class="fas fa-envelope text-yellow-400"></i> <span class="notranslate">info@politeknikjambi.ac.id</span>
+                <a href="{{ optional($socialLinks->get('email'))->url ?? 'mailto:lpm@politeknikjambi.ac.id' }}" class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer relative z-50">
+                    <i class="fas fa-envelope text-yellow-400"></i> <span class="notranslate">{{ preg_replace('/^mailto:/', '', optional($socialLinks->get('email'))->url ?? 'lpm@politeknikjambi.ac.id') }}</span>
                 </a>
             </div>
             <div class="flex gap-6 items-center">
                 <div class="flex gap-3">
-                    <a href="https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-youtube"></i></a>
+                    <a href="{{ optional($socialLinks->get('instagram'))->url ?? 'https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==' }}" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="{{ optional($socialLinks->get('tiktok'))->url ?? 'https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK' }}" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-tiktok"></i></a>
+                    <a href="{{ optional($socialLinks->get('youtube'))->url ?? 'https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1' }}" target="_blank" class="text-white hover:text-yellow-400 transition"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
         </div>
@@ -199,7 +199,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start gap-16 mb-16">
                 <div class="max-w-xs">
                     <div class="bg-white p-2 rounded-xl inline-block mb-6">
-                        <img src="/images/logo.png" alt="Logo" class="h-10">
+                        <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-10">
                     </div>
                     <p class="text-blue-100 text-sm font-light leading-relaxed">
                         Lembaga Penjamin Mutu Politeknik Jambi berkomitmen menjaga standar kualitas pendidikan tinggi nasional.

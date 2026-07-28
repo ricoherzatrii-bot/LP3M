@@ -48,7 +48,9 @@
                         if ($album->sampul_foto) {
                             $coverUrl = str_starts_with($album->sampul_foto, 'http') ? $album->sampul_foto : asset('storage/gallery/' . $album->sampul_foto);
                         } elseif ($album->firstFoto) {
-                            $coverUrl = asset('storage/gallery/' . $album->firstFoto->file_path);
+                            $coverUrl = str_starts_with($album->firstFoto->file_path, 'http')
+                                ? $album->firstFoto->file_path
+                                : asset('storage/gallery/' . $album->firstFoto->file_path);
                         }
                     @endphp
                     <img src="{{ $coverUrl }}" 
@@ -128,21 +130,33 @@
 
         fetch(`/admin/galeri-album/${albumId}/photos`)
             .then(r => r.json())
-            .then(res => {
+                    .then(res => {
                 if (res.success) {
                     countEl.innerText = res.data.length + ' Foto';
-                    grid.innerHTML = res.data.map((p, i) => `
+                    grid.innerHTML = res.data.map((p, i) => {
+                        const photoUrl = p.file_path.startsWith('http') ? p.file_path : '/storage/gallery/' + p.file_path;
+                        const title = p.judul ? p.judul : '';
+                        const description = p.deskripsi ? p.deskripsi : '';
+                        // escape single quotes for inline onclick
+                        const escTitle = (title || '').replace(/'/g, "\\'");
+                        const escDesc = (description || '').replace(/'/g, "\\'");
+                        return `
                         <div class="group relative aspect-square rounded-[1.5rem] overflow-hidden border border-white/5 cursor-pointer bg-slate-900/50" 
                              style="animation: emerge 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.05}s both;"
-                             onclick="enlargeImage('/storage/gallery/${p.file_path}')">
-                            <img src="/storage/gallery/${p.file_path}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
+                             onclick="enlargeImage('${photoUrl}', '${escTitle}', '${escDesc}')">
+                            <img src="${photoUrl}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
+                            <div class="p-3 bg-white/5 text-white flex flex-col gap-1">
+                                ${title ? `<div class="text-sm font-semibold truncate text-white">${title}</div>` : ''}
+                                ${description ? `<div class="text-[11px] text-slate-200 line-clamp-2">${description}</div>` : ''}
+                            </div>
                             <div class="absolute inset-0 bg-gradient-to-t from-blue-600/40 text-white opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
                                 <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center scale-75 group-hover:scale-100 transition-transform duration-500">
                                     <i class="fas fa-expand-alt text-xl"></i>
                                 </div>
                             </div>
                         </div>
-                    `).join('') || '<div class="col-span-full py-20 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">Album ini belum memiliki foto.</div>';
+                    `;
+                    }).join('') || '<div class="col-span-full py-20 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">Album ini belum memiliki foto.</div>';
                 }
             })
             .catch(() => {
@@ -160,17 +174,24 @@
         document.body.style.overflow = '';
     }
 
-    function enlargeImage(src) {
+    function enlargeImage(src, title, description) {
+        const html = `
+            <div class="w-full flex flex-col items-center gap-4">
+                <img src="${src}" class="max-h-[70vh] w-auto rounded-2xl shadow-2xl border border-white/10" />
+                ${description ? `<div class="text-sm text-slate-200 max-w-3xl text-left">${description}</div>` : ''}
+            </div>
+        `;
+
         Swal.fire({
-            imageUrl: src,
-            imageAlt: 'Gallery Photo',
+            title: title || '',
+            html: html,
             showConfirmButton: false,
             background: 'transparent',
             backdrop: 'rgba(0,0,0,0.98)',
             width: '95%',
             showCloseButton: true,
             customClass: {
-                image: 'rounded-3xl shadow-2xl border border-white/10 animate__animated animate__zoomIn'
+                popup: 'bg-transparent',
             }
         });
     }

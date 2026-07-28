@@ -125,6 +125,27 @@
             height: 400,
             plugins: 'link image code lists',
             toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image code',
+            automatic_uploads: true,
+            images_upload_handler: function (blobInfo, success, failure) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '{{ route('admin.upload_content_image') }}');
+                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                xhr.responseType = 'json';
+                xhr.onload = function() {
+                    const json = xhr.response;
+                    if (xhr.status !== 200 || !json || !json.url) {
+                        failure(json?.message || 'Gagal mengunggah gambar.');
+                        return;
+                    }
+                    success(json.url);
+                };
+                xhr.onerror = function() {
+                    failure('Gagal mengunggah gambar.');
+                };
+                const formData = new FormData();
+                formData.append('upload', blobInfo.blob(), blobInfo.filename());
+                xhr.send(formData);
+            },
             content_css: 'default',
             branding: false,
         });
@@ -133,7 +154,7 @@
         document.querySelector('input[name="judul"]').addEventListener('keyup', function() {
             const slugField = document.querySelector('input[name="slug"]');
             if (slugField.value === '') {
-                slugField.value = this.value
+                slugField.value = this value
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/^-|-$/g, '');

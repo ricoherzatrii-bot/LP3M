@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Spmi extends Model
+class BrandAsset extends Model
 {
     use HasFactory;
 
-    protected $table = 'spmi';
+    protected $table = 'brand_assets';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'key',
+        'logo_file',
+    ];
 }

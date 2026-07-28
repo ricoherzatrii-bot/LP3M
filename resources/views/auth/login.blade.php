@@ -24,7 +24,7 @@
         <!-- Logo & Header -->
         <div class="text-center mb-10">
             <div class="inline-block bg-white p-3 rounded-2xl shadow-2xl mb-6">
-                <img src="/images/logo.png" alt="Logo Poljam" class="h-16 w-auto">
+                <img src="{{ asset('/images/logo-poljam.png') }}" alt="Logo Poljam" class="h-16 w-auto">
             </div>
             <h1 class="text-white text-2xl font-extrabold tracking-tight">PORTAL LOGIN</h1>
             <p class="text-blue-300/60 text-sm font-semibold uppercase tracking-[0.2em] mt-2">Politeknik Jambi</p>
@@ -34,6 +34,11 @@
         <div class="glass-effect rounded-[32px] p-10 shadow-2xl">
             <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
                 @csrf
+                @if ($errors->any())
+                    <div class="rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
                 <div>
                     <label class="block text-blue-100 text-xs font-extrabold uppercase tracking-widest mb-2 ml-1">Nama Pengguna / NIP</label>
                     <div class="relative">
@@ -52,17 +57,13 @@
                         <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-blue-400">
                             <i class="fas fa-lock"></i>
                         </span>
-                        <input type="password" name="password" required
-                            class="block w-full pl-11 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-blue-300/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        <input id="login-password" type="password" name="password" required
+                            class="block w-full pl-11 pr-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-blue-300/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                             placeholder="••••••••">
+                        <button type="button" id="toggleLoginPassword" aria-label="Toggle password visibility" class="absolute inset-y-0 right-2 flex items-center text-blue-300">
+                            <i class="fa fa-eye"></i>
+                        </button>
                     </div>
-                </div>
-
-                <div class="flex items-center justify-between text-xs">
-                    <label class="flex items-center text-blue-200/70 font-semibold cursor-pointer">
-                        <input type="checkbox" class="mr-2 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-0"> Ingat Saya
-                    </label>
-                    <a href="#" class="text-blue-400 font-bold hover:text-blue-300 transition">Lupa Kata Sandi?</a>
                 </div>
 
                 <button type="submit" 
@@ -84,4 +85,24 @@
     </div>
 
 </body>
+<script>
+    (function() {
+        var toggle = document.getElementById('toggleLoginPassword');
+        var input = document.getElementById('login-password');
+        if (toggle && input) {
+            toggle.addEventListener('click', function() {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.querySelector('i').classList.remove('fa-eye');
+                    this.querySelector('i').classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    this.querySelector('i').classList.remove('fa-eye-slash');
+                    this.querySelector('i').classList.add('fa-eye');
+                }
+            });
+        }
+    })();
+</script>
+</html>
 </html>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\KuesionerDosenKaryawan;
+use App\Models\Prodi;
 use App\Shuchkin\SimpleXLSX;
 use Illuminate\Support\Facades\Validator;
 
@@ -21,16 +22,21 @@ class KuesionerDosenKaryawanController extends Controller
         $query->where('kategori', $kategori);
         
         if ($tahun) {
-            $query->where('tahun_akademik', $tahun);
+            $trimmedYear = trim($tahun);
+            $query->whereRaw('LOWER(tahun_akademik) LIKE ?', [strtolower($trimmedYear) . '%']);
         }
 
         $data = $query->orderBy('tahun_akademik', 'desc')->orderBy('program', 'asc')->get();
         $years = KuesionerDosenKaryawan::where('kategori', $kategori)->select('tahun_akademik')->distinct()->orderBy('tahun_akademik', 'desc')->pluck('tahun_akademik');
 
+        // Also include canonical prodi list from backend
+        $prodis = Prodi::orderBy('nama')->pluck('nama');
+
         return response()->json([
             'success' => true,
             'data' => $data,
-            'years' => $years
+            'years' => $years,
+            'prodis' => $prodis
         ]);
     }
 
@@ -232,7 +238,8 @@ class KuesionerDosenKaryawanController extends Controller
         $query->where('kategori', $kategori);
 
         if ($tahun) {
-            $query->where('tahun_akademik', $tahun);
+            $trimmedYear = trim($tahun);
+            $query->whereRaw('LOWER(tahun_akademik) LIKE ?', [strtolower($trimmedYear) . '%']);
         } else {
             // Default to latest year for this category
             $latestYear = KuesionerDosenKaryawan::where('kategori', $kategori)->max('tahun_akademik');
@@ -251,6 +258,7 @@ class KuesionerDosenKaryawanController extends Controller
     {
         try {
             $tahun = $request->query('tahun_akademik');
+            $semester = $request->query('semester');
             $kategori = $request->query('kategori', 'Dosen & Karyawan');
             $prodi = $request->query('prodi');
 
@@ -261,20 +269,54 @@ class KuesionerDosenKaryawanController extends Controller
             }
 
             if ($tahun) {
-                $query->where('tahun_akademik', $tahun);
+                $trimmedYear = trim($tahun);
+                $query->whereRaw('LOWER(tahun_akademik) LIKE ?', [strtolower($trimmedYear) . '%']);
+            }
+
+            if ($semester) {
+                $semester = strtolower(trim($semester));
+                if ($semester === 'ganjil' || $semester === 'genap') {
+                    $query->whereRaw('LOWER(tahun_akademik) LIKE ?', ["%{$semester}%"]);
+                }
             }
             
             $count = $query->delete();
             
             $prodiMsg = ($prodi && $prodi !== 'all' && $prodi !== '') ? " prodi $prodi" : "";
             $tahunMsg = $tahun ? " tahun $tahun" : "";
+            $semesterMsg = $semester ? " semester " . ucfirst($semester) : "";
 
             return response()->json([
                 'success' => true, 
-                'message' => "Data $kategori$prodiMsg$tahunMsg ($count entri) berhasil dihapus."
+                'message' => "Data $kategori$prodiMsg$tahunMsg$semesterMsg ($count entri) berhasil dihapus."
             ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Add a new prodi entry so it appears in prodi lists.
+     * Creates a minimal record with kategori 'Mahasiswa'.
+     */
+    public function addProdi(Request $request)
+    {
+        $request->validate([
+            'prodi' => 'required|string|max:100'
+        ]);
+
+        try {
+            $name = trim($request->input('prodi'));
+            if (empty($name)) {
+                return response()->json(['success' => false, 'message' => 'Nama prodi tidak boleh kosong.'], 422);
+            }
+
+            // Create or return existing
+            $prodi = Prodi::firstOrCreate(['nama' => $name]);
+
+            return response()->json(['success' => true, 'message' => 'Prodi berhasil ditambahkan.', 'prodi' => $prodi]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menambahkan prodi: ' . $e->getMessage()], 500);
         }
     }
 }

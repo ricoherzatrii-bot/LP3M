@@ -103,22 +103,47 @@ Route::get('/pengumuman/{slug}', [\App\Http\Controllers\PengumumanController::cl
 // --- HALAMAN LOGIN & BACK-END (DASHBOARD) ---
 // ==========================================
 
+use App\Http\Controllers\UserController;
+
 // Jalur untuk membuka halaman Login
 Route::get('/login', function() { 
     return view('auth.login'); 
 })->name('login');
 
-// Jalur untuk memproses login (mengarahkan langsung ke back-end)
+// Jalur untuk memproses login
 Route::post('/login', function() {
-    return redirect()->route('dashboard');
+    $credentials = request()->only('username', 'password');
+
+    if (auth()->attempt($credentials)) {
+        request()->session()->regenerate();
+        return redirect()->intended(route('dashboard'));
+    }
+
+    return back()->withErrors(['username' => 'Username atau password salah.'])->withInput();
 })->name('login.post');
 
+Route::post('/logout', function() {
+    auth()->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect()->route('login');
+})->name('logout');
+
 // Jalur halaman utama Dashboard setelah login
-Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 // API Admin untuk olah database dinamis di dashboard
 Route::get('/admin/page-data', [App\Http\Controllers\DashboardController::class, 'getPageData'])->name('admin.page_data');
 Route::post('/admin/save-page-data', [App\Http\Controllers\DashboardController::class, 'savePageData'])->name('admin.save_page_data');
+Route::post('/admin/upload-content-image', [App\Http\Controllers\DashboardController::class, 'uploadContentImage'])->name('admin.upload_content_image');
 Route::post('/admin/add-row', [App\Http\Controllers\DashboardController::class, 'addRow'])->name('admin.add_row');
 Route::post('/admin/delete-row', [App\Http\Controllers\DashboardController::class, 'deleteRow'])->name('admin.delete_row');
 
@@ -175,6 +200,7 @@ Route::post('/admin/galeri-album/{id}/update', [\App\Http\Controllers\GaleriCont
 Route::delete('/admin/galeri-album/{id}', [\App\Http\Controllers\GaleriController::class, 'deleteAlbum'])->name('admin.galeri_album.destroy');
 Route::get('/admin/galeri-album/{album_id}/photos', [\App\Http\Controllers\GaleriController::class, 'getPhotos']);
 Route::post('/admin/galeri-album/{album_id}/photos/upload', [\App\Http\Controllers\GaleriController::class, 'uploadPhotos']);
+Route::post('/admin/galeri-foto/{id}/update', [\App\Http\Controllers\GaleriController::class, 'updatePhoto']);
 Route::delete('/admin/galeri-foto/{id}', [\App\Http\Controllers\GaleriController::class, 'deletePhoto']);
 
 Route::get('/admin/galeri-video', [\App\Http\Controllers\GaleriController::class, 'getVideos'])->name('admin.galeri_video.index');
@@ -186,6 +212,8 @@ Route::delete('/admin/galeri-video/{id}', [\App\Http\Controllers\GaleriControlle
 // --- SISTEM MANAJEMEN CAPAIAN RENSTRA ---
 // ============================================
 Route::get('/admin/renstra', [\App\Http\Controllers\RenstraController::class, 'index'])->name('admin.renstra.index');
+
+
 Route::post('/admin/renstra/store', [\App\Http\Controllers\RenstraController::class, 'store'])->name('admin.renstra.store');
 Route::post('/admin/renstra/{id}/update', [\App\Http\Controllers\RenstraController::class, 'update'])->name('admin.renstra.update');
 Route::delete('/admin/renstra/delete/{id}', [\App\Http\Controllers\RenstraController::class, 'destroy'])->name('admin.renstra.destroy');
@@ -211,6 +239,7 @@ Route::post('/kuesioner/submit', [\App\Http\Controllers\KuesionerPertanyaanContr
 // ============================================
 Route::get('/admin/kuesioner-dosen/data', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'index'])->name('admin.kuesioner_dosen.index');
 Route::post('/admin/kuesioner-dosen/store', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'store'])->name('admin.kuesioner_dosen.store');
+Route::post('/admin/kuesioner-dosen/add-prodi', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'addProdi'])->name('admin.kuesioner_dosen.add_prodi');
 Route::post('/admin/kuesioner-dosen/{id}/update', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'update'])->name('admin.kuesioner_dosen.update');
 Route::delete('/admin/kuesioner-dosen/truncate', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'truncate'])->name('admin.kuesioner_dosen.truncate');
 Route::delete('/admin/kuesioner-dosen/{id}', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'destroy'])->name('admin.kuesioner_dosen.destroy');

@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Spmi extends Model
+class Prodi extends Model
 {
     use HasFactory;
 
-    protected $table = 'spmi';
-
-    protected $guarded = [];
+    protected $fillable = ['kode', 'nama'];
 }

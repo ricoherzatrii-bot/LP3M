@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         // Run all seeders
         $this->call([
             ProfilSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

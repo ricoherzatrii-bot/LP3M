@@ -75,7 +75,7 @@
     <footer class="bg-white dark:bg-slate-900 py-12 text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-white/5 transition-colors duration-500">
         <div class="max-w-6xl mx-auto px-6 text-center">
             <div class="mb-6">
-                <img src="/images/logo-poljam.png" class="h-10 mx-auto dark:grayscale dark:opacity-50" alt="Logo">
+                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" class="h-10 mx-auto dark:grayscale dark:opacity-50" alt="Logo">
             </div>
             <p class="text-sm tracking-widest uppercase">&copy; 2026 LPM Politeknik Jambi</p>
             <p class="text-xs mt-2 opacity-50 dark:opacity-50 font-light text-slate-400">Internal Quality Assurance System (IQAS)</p>
@@ -83,5 +83,47 @@
     </footer>
 
     @stack('scripts')
+    <script>
+        // Global password toggle: insert an eye-button for any password input that lacks one
+        (function(){
+            function ensureToggleForInput(input) {
+                if (!input || input.type !== 'password') return;
+                var parent = input.parentElement;
+                if (!parent) return;
+                if (parent.querySelector('.toggle-password')) return;
+                // ensure parent positioned
+                var style = window.getComputedStyle(parent);
+                if (style.position === 'static') parent.style.position = 'relative';
+
+                if (!input.id) input.id = 'pw_' + Math.random().toString(36).slice(2,9);
+
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer';
+                btn.setAttribute('data-target', input.id);
+                btn.setAttribute('aria-label', 'Toggle password visibility');
+                btn.innerHTML = '<i class="fa fa-eye"></i>';
+                parent.appendChild(btn);
+
+                btn.addEventListener('click', function(){
+                    var tgt = document.getElementById(this.dataset.target);
+                    var icon = this.querySelector('i');
+                    if (!tgt) return;
+                    if (tgt.type === 'password') { tgt.type = 'text'; if (icon) { icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } }
+                    else { tgt.type = 'password'; if (icon) { icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); } }
+                });
+            }
+
+            function scanAndAttach(){
+                document.querySelectorAll('input[type="password"]').forEach(function(i){ ensureToggleForInput(i); });
+            }
+
+            // initial run
+            document.addEventListener('DOMContentLoaded', scanAndAttach);
+            // also observe DOM for dynamically added inputs
+            var obs = new MutationObserver(function(m){ scanAndAttach(); });
+            obs.observe(document.body, { childList: true, subtree: true });
+        })();
+    </script>
 </body>
 </html>

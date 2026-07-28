@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 use App\Models\Profil;
 use App\Models\Spmi;
 use App\Models\Akreditasi;
 use App\Models\Capaian;
 use App\Models\Kuesioner;
+use App\Models\Prodi;
 
 use App\Models\Artikel;
 use App\Models\GaleriAlbum;
@@ -25,55 +29,244 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $totalMutuDocs = 0;
-        
-        // Sum Dokumen Mutu counts safely from the available tables
-        try {
-            $totalMutuDocs += DokumenSpmi::count();
-        } catch (\Exception $e) {}
-
-        try {
-            $totalMutuDocs += LaporanAmi::count();
-        } catch (\Exception $e) {}
-
-        try {
-            $totalMutuDocs += Rtm::count();
-        } catch (\Exception $e) {}
-
-        try {
-            $totalMutuDocs += Akreditasi::where('kategori', 'Dokumen Akreditasi')->count();
-        } catch (\Exception $e) {}
-
-        try {
-            if (\Schema::hasTable((new CapaianRenstra)->getTable())) {
-                $totalMutuDocs += CapaianRenstra::count();
-            } else if (\Schema::hasTable((new Capaian)->getTable())) {
-                $totalMutuDocs += Capaian::count();
-            }
-        } catch (\Exception $e) {}
-
-        $avgIku = 94.5;
-        try {
-            if (\Schema::hasTable((new CapaianRenstra)->getTable())) {
-                $avgIku = round(CapaianRenstra::whereNotNull('realisasi')->avg('realisasi') ?? 94.5, 1);
-            } else if (\Schema::hasTable((new Capaian)->getTable())) {
-                $avgIku = round(Capaian::whereNotNull('persentase_capaian')->avg('persentase_capaian') ?? 94.5, 1);
-            }
-        } catch (\Exception $e) {}
-
-        $totalProdi = 0;
-        try {
-            $totalProdi = Akreditasi::where('kategori', 'Akreditasi')->count();
-        } catch (\Exception $e) {}
-        if ($totalProdi === 0) $totalProdi = 8; // fallback
-
+        $countDokumenSpmi = 0;
+        $countLaporanAmi = 0;
+        $countRtm = 0;
+        $countAkreditasiDocs = 0;
+        $countAkreditasi = 0;
+        $avgIku = 0;
         $totalResponden = 0;
+
+        try {
+            $countDokumenSpmi = DokumenSpmi::count();
+        } catch (\Exception $e) {}
+
+        try {
+            $countLaporanAmi = LaporanAmi::count();
+        } catch (\Exception $e) {}
+
+        try {
+            $countRtm = Rtm::count();
+        } catch (\Exception $e) {}
+
+        try {
+            $countAkreditasiDocs = Akreditasi::where('kategori', 'Dokumen Akreditasi')->count();
+            $countAkreditasi = Akreditasi::where('kategori', 'Akreditasi')->count();
+        } catch (\Exception $e) {}
+
+        $totalMutuDocs = $countDokumenSpmi + $countLaporanAmi + $countRtm + $countAkreditasiDocs;
+
+        try {
+            if (Schema::hasTable((new CapaianRenstra)->getTable())) {
+                $avgIku = round(CapaianRenstra::whereNotNull('realisasi')->avg('realisasi') ?? 0, 1);
+            } elseif (Schema::hasTable((new Capaian)->getTable())) {
+                $avgIku = round(Capaian::whereNotNull('persentase_capaian')->avg('persentase_capaian') ?? 0, 1);
+            }
+        } catch (\Exception $e) {
+            $avgIku = 0;
+        }
+
         try {
             $totalResponden = Kuesioner::sum('hits');
-        } catch (\Exception $e) {}
-        if ($totalResponden === 0) $totalResponden = 3673; // fallback
+        } catch (\Exception $e) {
+            $totalResponden = 0;
+        }
 
-        return view('dashboard', compact('totalMutuDocs', 'avgIku', 'totalProdi', 'totalResponden'));
+        try {
+            $totalProdi = Prodi::count();
+        } catch (\Exception $e) {
+            $totalProdi = 0;
+        }
+
+        $akreditasiUnggul = 0;
+        $akreditasiBaik = 0;
+        $akreditasiCukup = 0;
+        $akreditasiData = collect();
+        try {
+            $akreditasiQuery = Akreditasi::query();
+            if (Schema::hasColumn((new Akreditasi)->getTable(), 'kategori')) {
+                $akreditasiQuery->where('kategori', 'Akreditasi');
+            }
+            $akreditasiData = $akreditasiQuery->get();
+
+            $akreditasiUnggul = $akreditasiData->filter(function ($item) {
+                return $item->peringkat && str_contains(strtolower($item->peringkat), 'unggul');
+            })->count();
+
+            $akreditasiBaik = $akreditasiData->filter(function ($item) {
+                $peringkat = strtolower($item->peringkat ?? '');
+                return $peringkat && str_contains($peringkat, 'baik') && !str_contains($peringkat, 'unggul') && !str_contains($peringkat, 'sekali');
+            })->count();
+
+            $akreditasiCukup = $akreditasiData->filter(function ($item) {
+                return $item->peringkat && str_contains(strtolower($item->peringkat), 'cukup');
+            })->count();
+
+            if ($akreditasiCukup === 0) {
+                $totalAkreditasiStatus = $akreditasiUnggul + $akreditasiBaik + $akreditasiCukup;
+                $remaining = max(0, $akreditasiData->count() - $totalAkreditasiStatus);
+                if ($remaining > 0) {
+                    $akreditasiCukup = $remaining;
+                }
+            }
+        } catch (\Exception $e) {
+            $akreditasiUnggul = 0;
+            $akreditasiBaik = 0;
+            $akreditasiCukup = 0;
+        }
+
+        $renstraLabels = [];
+        $renstraRealisasi = [];
+        $renstraTarget = [];
+        try {
+            $renstraTrend = CapaianRenstra::selectRaw('tahun, ROUND(AVG(realisasi), 1) as avg_realisasi, ROUND(AVG(target), 1) as avg_target')
+                ->groupBy('tahun')
+                ->orderBy('tahun', 'asc')
+                ->get();
+
+            $renstraLabels = $renstraTrend->pluck('tahun')->map(function ($year) {
+                return (string) $year;
+            })->toArray();
+            $renstraRealisasi = $renstraTrend->pluck('avg_realisasi')->toArray();
+            $renstraTarget = $renstraTrend->pluck('avg_target')->toArray();
+        } catch (\Exception $e) {
+            $renstraLabels = [];
+            $renstraRealisasi = [];
+            $renstraTarget = [];
+        }
+
+        $kuesionerCategories = [];
+        $kuesionerHits = [];
+        try {
+            $kuesionerSummary = Kuesioner::selectRaw('kategori, SUM(hits) as total_hits')
+                ->groupBy('kategori')
+                ->get();
+
+            $kuesionerCategories = $kuesionerSummary->pluck('kategori')->toArray();
+            $kuesionerHits = $kuesionerSummary->pluck('total_hits')->toArray();
+        } catch (\Exception $e) {
+            $kuesionerCategories = [];
+            $kuesionerHits = [];
+        }
+
+        $recentDocuments = collect();
+        try {
+            $recentDocuments = $recentDocuments->concat(DokumenSpmi::latest('created_at')->take(4)->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'judul' => $item->judul,
+                    'tahun' => $item->tahun,
+                    'kategori' => $item->kategori,
+                    'type' => 'Dokumen SPMI',
+                    'created_at' => $item->created_at,
+                    'link' => $item->path_file ? Storage::url($item->path_file) : null,
+                ];
+            }));
+        } catch (\Exception $e) {}
+
+        try {
+            $recentDocuments = $recentDocuments->concat(LaporanAmi::latest('created_at')->take(4)->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'judul' => $item->judul,
+                    'tahun' => $item->tahun,
+                    'kategori' => $item->kategori,
+                    'type' => 'Laporan AMI',
+                    'created_at' => $item->created_at,
+                    'link' => $item->path_file ? Storage::url($item->path_file) : null,
+                ];
+            }));
+        } catch (\Exception $e) {}
+
+        try {
+            $recentDocuments = $recentDocuments->concat(Rtm::latest('created_at')->take(4)->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'judul' => $item->judul,
+                    'tahun' => $item->tahun,
+                    'kategori' => $item->kategori,
+                    'type' => 'RTM',
+                    'created_at' => $item->created_at,
+                    'link' => $item->path_file ? Storage::url($item->path_file) : null,
+                ];
+            }));
+        } catch (\Exception $e) {}
+
+        try {
+            $recentDocuments = $recentDocuments->concat(Akreditasi::where('kategori', 'Dokumen Akreditasi')->latest('created_at')->take(4)->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'judul' => $item->judul,
+                    'tahun' => null,
+                    'kategori' => $item->kategori,
+                    'type' => 'Dokumen Akreditasi',
+                    'created_at' => $item->created_at,
+                    'link' => null,
+                ];
+            }));
+        } catch (\Exception $e) {}
+
+        $recentDocuments = $recentDocuments
+            ->sortByDesc('created_at')
+            ->values()
+            ->take(6);
+
+        $recentActivities = $recentDocuments->map(function ($item) {
+            return [
+                'id' => $item['id'],
+                'title' => "Unggah {$item['type']} - {$item['judul']}",
+                'subtitle' => $item['kategori'] ?? $item['type'],
+                'status' => 'Terverifikasi',
+                'badgeColor' => 'emerald',
+                'time' => optional($item['created_at'])->diffForHumans() ?? 'Beberapa saat lalu',
+            ];
+        });
+
+        $months = collect(range(1, 12));
+        $monthlyUploadCounts = $months->map(function ($month) {
+            $year = Carbon::now()->year;
+            $count = 0;
+
+            try {
+                $count += DokumenSpmi::whereYear('created_at', $year)->whereMonth('created_at', $month)->count();
+            } catch (\Exception $e) {}
+            try {
+                $count += LaporanAmi::whereYear('created_at', $year)->whereMonth('created_at', $month)->count();
+            } catch (\Exception $e) {}
+            try {
+                $count += Rtm::whereYear('created_at', $year)->whereMonth('created_at', $month)->count();
+            } catch (\Exception $e) {}
+            try {
+                $count += Akreditasi::where('kategori', 'Dokumen Akreditasi')->whereYear('created_at', $year)->whereMonth('created_at', $month)->count();
+            } catch (\Exception $e) {}
+
+            return $count;
+        })->toArray();
+
+        $chartLabels = $months->map(function ($month) {
+            return Carbon::createFromDate(null, $month, 1)->translatedFormat('M');
+        })->toArray();
+
+        return view('dashboard', compact(
+            'totalMutuDocs',
+            'avgIku',
+            'countAkreditasi',
+            'countAkreditasiDocs',
+            'totalResponden',
+            'totalProdi',
+            'akreditasiUnggul',
+            'akreditasiBaik',
+            'akreditasiCukup',
+            'renstraLabels',
+            'renstraRealisasi',
+            'renstraTarget',
+            'kuesionerCategories',
+            'kuesionerHits',
+            'recentDocuments',
+            'recentActivities',
+            'chartLabels',
+            'monthlyUploadCounts'
+        ));
     }
 
     /**
@@ -163,7 +356,7 @@ class DashboardController extends Controller
                 'type' => 'table',
                 'model' => Akreditasi::class,
                 'query' => ['kategori' => 'Dokumen Akreditasi'],
-                'fields' => ['judul', 'file_dokumen'],
+                'fields' => ['judul', 'file_dokumen', 'foto_logo'],
                 'defaults' => ['kategori' => 'Dokumen Akreditasi', 'judul' => 'Dokumen Akreditasi Baru'],
             ];
         }
@@ -181,8 +374,6 @@ class DashboardController extends Controller
 
         $capaianKategori = [
             'Capaian Renstra' => ['kategori' => 'Capaian Renstra'],
-            'Kepuasan Mahasiswa Poljam' => ['kategori' => 'Kepuasan Mahasiswa', 'sub_kategori' => 'Poljam 2020/2021'],
-            'Kepuasan Mahasiswa Prodi' => ['kategori' => 'Kepuasan Mahasiswa', 'sub_kategori' => 'Prodi 2020/2021'],
             'Kepuasan Dosen & Tendik' => ['kategori' => 'Kepuasan Dosen Dan Tendik'],
         ];
 
@@ -238,6 +429,27 @@ class DashboardController extends Controller
                 'query' => [],
                 'fields' => ['judul', 'isi_konten', 'gambar', 'status'],
                 'defaults' => ['status' => 'aktif', 'judul' => 'Pengumuman Baru'],
+            ];
+        }
+
+        // 7C. Media Sosial
+        if ($title === 'Media Sosial') {
+            return [
+                'type' => 'table',
+                'model' => \App\Models\SocialLink::class,
+                'query' => [],
+                'fields' => ['key', 'url'],
+                'defaults' => [],
+            ];
+        }
+
+        if ($title === 'Logo Poljam') {
+            return [
+                'type' => 'table',
+                'model' => \App\Models\BrandAsset::class,
+                'query' => [],
+                'fields' => ['key', 'logo_file'],
+                'defaults' => [],
             ];
         }
 
@@ -303,6 +515,34 @@ class DashboardController extends Controller
             // Tipe Tabel / List
             $records = $modelClass::where($mapping['query'])->get();
 
+            if ($title === 'Media Sosial' && $records->isEmpty()) {
+                $defaults = [
+                    ['key' => 'instagram', 'url' => 'https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA=='],
+                    ['key' => 'tiktok', 'url' => 'https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK'],
+                    ['key' => 'youtube', 'url' => 'https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1'],
+                    ['key' => 'email', 'url' => 'mailto:lpm@politeknikjambi.ac.id'],
+                    ['key' => 'phone', 'url' => 'tel:+62741123456'],
+                ];
+
+                foreach ($defaults as $default) {
+                    $modelClass::firstOrCreate(['key' => $default['key']], $default);
+                }
+
+                $records = $modelClass::where($mapping['query'])->get();
+            }
+
+            if ($title === 'Logo Poljam' && $records->isEmpty()) {
+                $defaults = [
+                    ['key' => 'logo_poljam', 'logo_file' => 'images/logo-poljam.png'],
+                ];
+
+                foreach ($defaults as $default) {
+                    $modelClass::firstOrCreate(['key' => $default['key']], $default);
+                }
+
+                $records = $modelClass::where($mapping['query'])->get();
+            }
+
             return response()->json([
                 'success' => true,
                 'type' => 'table',
@@ -363,7 +603,8 @@ class DashboardController extends Controller
                 if ($this->isFileField($key)) {
                     if ($request->hasFile($key)) {
                         // Check if document or image based on key
-                        $isDoc = str_contains(strtolower($key), 'file') || str_contains(strtolower($key), 'dokumen');
+                        $isDoc = str_contains(strtolower($key), 'dokumen')
+                            || (str_contains(strtolower($key), 'file') && strtolower($key) !== 'logo_file');
                         $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
                         $request->validate([$key => $rules]);
                         
@@ -418,6 +659,22 @@ class DashboardController extends Controller
     }
 
     /**
+     * Upload gambar yang disisipkan melalui editor isi konten.
+     */
+    public function uploadContentImage(Request $request)
+    {
+        $request->validate([
+            'upload' => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+        ]);
+
+        $path = $request->file('upload')->store('content-images', 'public');
+
+        return response()->json([
+            'url' => asset('storage/' . $path),
+        ]);
+    }
+
+    /**
      * Menambahkan baris entri baru ke tabel basis data
      */
     public function addRow(Request $request)
@@ -437,7 +694,8 @@ class DashboardController extends Controller
             if ($this->isFileField($key)) {
                 if ($request->hasFile($key)) {
                     // Check if document or image based on key
-                    $isDoc = str_contains(strtolower($key), 'file') || str_contains(strtolower($key), 'dokumen');
+                    $isDoc = str_contains(strtolower($key), 'dokumen')
+                        || (str_contains(strtolower($key), 'file') && strtolower($key) !== 'logo_file');
                     $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
                     $request->validate([$key => $rules]);
                     $insertData[$key] = $request->file($key)->store('uploads', 'public');

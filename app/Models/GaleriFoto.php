@@ -8,9 +8,13 @@ class GaleriFoto extends Model
 {
     protected $table = 'galeri_foto';
 
+    public const UPDATED_AT = null;
+
     protected $fillable = [
         'album_id',
         'file_path',
+        'judul',
+        'deskripsi',
         'keterangan'
     ];
 

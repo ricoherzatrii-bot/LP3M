@@ -108,8 +108,8 @@
             <div class="space-y-8">
                 <!-- Search -->
                 <div class="bg-slate-50 dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 p-6 shadow-sm">
-                    <form action="{{ route('artikel.index') }}" method="GET" class="relative">
-                        <input type="text" name="search" placeholder="Search ..." class="w-full bg-white dark:bg-slate-700/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                    <form action="{{ route('search') }}" method="GET" class="relative">
+                        <input type="text" name="q" placeholder="Search ..." class="w-full bg-white dark:bg-slate-700/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition" required>
                         <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition">
                             <i class="fas fa-search text-sm"></i>
                         </button>
@@ -123,8 +123,7 @@
                         <a href="{{ route('kuesioner.mahasiswa') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">Kuisioner Mahasiswa</a>
                         <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">Visi Dan Misi</a>
                         <a href="#" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">PPM STIKES Baiturrahim Jambi melakukan Kegiatan Studi Banding</a>
-                        <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm pb-4 border-b border-slate-100 dark:border-white/5">e-spmiPoljam</a>
-                        <a href="{{ route('spmi.show', 'rtm') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm">RTM</a>
+                        <a href="{{ route('capaian.rtm') }}" class="block text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition text-sm">RTM</a>
                     </div>
                 </div>
             </div>

@@ -28,7 +28,7 @@
             <div class="w-full lg:w-1/3 space-y-8 animate-in slide-in-from-left duration-700">
                 <div class="bg-white dark:bg-slate-800 rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-white/5 relative z-10 overflow-visible backdrop-blur-xl">
                     <div class="flex items-center gap-4 relative z-10 px-2">
-                        <img src="/images/logo.png" class="w-14 h-14 object-contain" alt="Poljam Logo">
+                        <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" class="w-14 h-14 object-contain" alt="Poljam Logo">
                         <div class="flex-1">
                             <h3 class="text-lg font-black text-[#e67e22] leading-none mb-1 border-b-2 border-slate-900 dark:border-white/20 pb-1">Politeknik Jambi</h3>
                             <p class="text-[9px] font-black text-blue-800 dark:text-blue-400 uppercase tracking-tight leading-tight">Lembaga Perencanaan Pengembangan<br>& Penjaminan Mutu</p>
@@ -356,10 +356,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             let left = tooltipModel.caretX + 20;
                             let top = tooltipModel.caretY - tooltipHeight / 2;
                             
-                            // Boundary detection
-                            if (left + tooltipWidth > position.width) {
-                                left = tooltipModel.caretX - tooltipWidth - 20;
-                            }
                             if (top < 0) top = 5;
                             if (top + tooltipHeight > position.height) top = position.height - tooltipHeight - 5;
                             

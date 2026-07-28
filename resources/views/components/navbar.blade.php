@@ -4,26 +4,24 @@
         <div class="w-full px-6 lg:px-16 py-2.5 flex justify-between items-center">
             <!-- Contact Info -->
             <div class="flex items-center gap-8 text-[9px] font-black text-white/90 tracking-widest uppercase">
-                <a href="mailto:info@politeknikjambi.ac.id" class="flex items-center gap-2.5 hover:text-white transition-colors group">
+                <a href="{{ optional($socialLinks->get('email'))->url ?? 'mailto:lpm@politeknikjambi.ac.id' }}" class="flex items-center gap-2.5 hover:text-white transition-colors group">
                     <i class="fas fa-envelope text-yellow-400 group-hover:scale-110 transition-transform"></i> 
-                    <span>info@politeknikjambi.ac.id</span>
+                    <span>{{ preg_replace('/^mailto:/', '', optional($socialLinks->get('email'))->url ?? 'lpm@politeknikjambi.ac.id') }}</span>
                 </a>
-                <a href="tel:+62741123456" class="flex items-center gap-2.5 hover:text-white transition-colors group">
+                <a href="{{ optional($socialLinks->get('phone'))->url ?? 'tel:+62741123456' }}" class="flex items-center gap-2.5 hover:text-white transition-colors group">
                     <i class="fas fa-phone text-yellow-400 group-hover:scale-110 transition-transform"></i> 
-                    <span>+62 741 123 456</span>
+                    <span>{{ preg_replace('/^tel:/', '', optional($socialLinks->get('phone'))->url ?? '+62 741 123 456') }}</span>
                 </a>
             </div>
 
             <!-- Right: Social & Language -->
-            <div class="flex items-center gap-8">
-                <div class="flex items-center gap-5 text-white/60 text-xs shadow-sm">
-                    <a href="https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-youtube"></i></a>
+            <div class="flex items-center justify-end gap-5 flex-none">
+                <div class="flex items-center gap-5 text-white/60 text-xs">
+                    <a href="{{ optional($socialLinks->get('instagram'))->url ?? 'https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==' }}" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-instagram"></i></a>
+                    <a href="{{ optional($socialLinks->get('tiktok'))->url ?? 'https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK' }}" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-tiktok"></i></a>
+                    <a href="{{ optional($socialLinks->get('youtube'))->url ?? 'https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1' }}" target="_blank" class="hover:text-yellow-400 transition-all hover:scale-125"><i class="fab fa-youtube"></i></a>
                 </div>
-                
                 <div class="h-4 w-[1px] bg-white/20"></div>
-
                 <div class="flex items-center gap-6 text-[9px] font-black tracking-[0.2em] text-white">
                     <a href="javascript:void(0);" onclick="changeLanguage('id')" class="flex items-center gap-2 hover:text-yellow-400 transition-all group">
                         ID <img src="https://flagcdn.com/w20/id.png" class="w-4 h-auto rounded-sm shadow-sm group-hover:scale-110 transition-transform" alt="ID">
@@ -33,15 +31,125 @@
                     </a>
                 </div>
             </div>
+            </div>
         </div>
     </div>
 
     <!-- MAIN NAVBAR -->
     <nav class="bg-[#0056b3] shadow-md border-b border-[#004494]">
-        <div class="w-full px-6 lg:px-16 py-4 flex justify-between items-center">
+        <div class="w-full px-4 sm:px-6 lg:px-16 py-3 lg:py-4 flex items-center justify-between gap-3 xl:hidden">
+            <a href="{{ url('/') }}" class="flex items-center gap-2.5 min-w-0">
+                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-10 w-auto">
+                <div class="min-w-0">
+                    <span class="block text-white font-extrabold text-sm leading-tight tracking-wide">Politeknik Jambi</span>
+                    <span class="block text-white/80 text-[9px] font-bold uppercase tracking-[0.2em]">LPM LP3M</span>
+                </div>
+            </a>
+            <div class="flex items-center gap-2">
+                @guest
+                @endguest
+                <button type="button" id="mobile-search-toggle" class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white" aria-label="Cari">
+                    <i id="mobile-search-icon" class="fas fa-search"></i>
+                </button>
+                <button type="button" id="mobile-menu-toggle" class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white" aria-label="Buka menu">
+                    <i id="mobile-menu-icon" class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-search-panel" class="hidden border-t border-white/10 bg-[#0056b3] px-4 sm:px-6 py-3 xl:hidden">
+            <form action="{{ route('search') }}" method="GET" class="flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-3 py-2 shadow-sm backdrop-blur-sm">
+                <i class="fas fa-search text-white/80"></i>
+                <input type="text" name="q" placeholder="Cari informasi..." autocomplete="off" class="w-full bg-transparent text-sm text-white placeholder-white/70 outline-none" required>
+                <button type="submit" class="rounded-xl bg-white/15 px-3 py-1.5 text-sm font-semibold text-white">Cari</button>
+            </form>
+        </div>
+
+        <div id="mobile-menu-panel" class="hidden border-t border-white/10 bg-[#0056b3] xl:hidden">
+            <div class="mx-auto max-w-6xl px-4 sm:px-6 py-4">
+                <div class="rounded-[1.5rem] border border-white/10 bg-white/10 p-2 shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-md">
+                    <div class="mb-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/80">
+                        Menu Utama
+                    </div>
+                    <div class="space-y-2">
+                        <a href="{{ url('/') }}" class="flex items-center justify-between rounded-xl border border-white/10 bg-[#0b4f9b]/50 px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white shadow-sm hover:bg-white/10 {{ Request::is('/') ? 'bg-white/15 text-yellow-400' : '' }}">
+                            <span>Home</span><i class="fas fa-home"></i>
+                        </a>
+
+                        <div>
+                            <button type="button" data-mobile-section="mobile-profil" class="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#0b4f9b]/40 px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white/10">
+                                <span>Profil</span><i class="fas fa-chevron-down text-[10px]"></i>
+                            </button>
+                            <div id="mobile-profil" class="hidden mt-2 space-y-2 rounded-xl bg-white/10 p-2">
+                                @if(isset($allProfil) && count($allProfil) > 0)
+                                    @foreach($allProfil as $m)
+                                        @if($m->slug === 'artikel')
+                                            <a href="{{ route('artikel.index') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">{{ $m->judul }}</a>
+                                        @else
+                                            <a href="{{ route('profil.show', $m->slug) }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">{{ $m->judul }}</a>
+                                        @endif
+                                    @endforeach
+                                @endif
+                                <a href="{{ route('pengumuman.index') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Pengumuman</a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="button" data-mobile-section="mobile-akreditasi" class="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#0b4f9b]/40 px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white/10">
+                                <span>Akreditasi</span><i class="fas fa-chevron-down text-[10px]"></i>
+                            </button>
+                            <div id="mobile-akreditasi" class="hidden mt-2 space-y-2 rounded-xl bg-white/10 p-2">
+                                <a href="{{ route('akreditasi.index') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Data Akreditasi</a>
+                                <a href="{{ route('akreditasi.dokumen') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Dokumen Pendukung</a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="button" data-mobile-section="mobile-capaian" class="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#0b4f9b]/40 px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white/10">
+                                <span>Capaian</span><i class="fas fa-chevron-down text-[10px]"></i>
+                            </button>
+                            <div id="mobile-capaian" class="hidden mt-2 space-y-2 rounded-xl bg-white/10 p-2">
+                                <a href="{{ url('/capaian/renop') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Renop</a>
+                                <a href="{{ route('renstra.publicIndex') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Capaian Renstra</a>
+                                <a href="{{ route('capaian.laporan_ami') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Laporan AMI</a>
+                                <a href="{{ route('capaian.rtm') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">RTM</a>
+                            </div>
+                        </div>
+
+                        <a href="{{ url('/spmi/dokumen-spmi') }}" class="flex items-center justify-between rounded-xl border border-white/10 bg-[#0b4f9b]/40 px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white/10">
+                            <span>SPMI</span><i class="fas fa-file-alt"></i>
+                        </a>
+
+                        <div>
+                            <button type="button" data-mobile-section="mobile-kuesioner" class="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#0b4f9b]/40 px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white/10">
+                                <span>Kuesioner</span><i class="fas fa-chevron-down text-[10px]"></i>
+                            </button>
+                            <div id="mobile-kuesioner" class="hidden mt-2 space-y-2 rounded-xl bg-white/10 p-2">
+                                <a href="{{ route('kuesioner.dosen') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Dosen & Karyawan</a>
+                                <a href="{{ route('kuesioner.mahasiswa') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Mahasiswa</a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="button" data-mobile-section="mobile-galeri" class="w-full flex items-center justify-between rounded-xl border border-white/10 bg-[#0b4f9b]/40 px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white hover:bg-white/10">
+                                <span>Galeri</span><i class="fas fa-chevron-down text-[10px]"></i>
+                            </button>
+                            <div id="mobile-galeri" class="hidden mt-2 space-y-2 rounded-xl bg-white/10 p-2">
+                                <a href="{{ route('gallery.index') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Foto Kegiatan</a>
+                                <a href="{{ route('gallery.video') }}" class="block rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10">Video</a>
+                            </div>
+                        </div>
+                        @guest
+                        @endguest
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hidden xl:flex w-full px-6 lg:px-16 py-4 justify-between items-center">
             
             <a href="{{ url('/') }}" class="flex items-center gap-3.5 group cursor-pointer">
-                <img src="/images/logo-emblem.png" alt="Logo" class="h-14 w-auto group-hover:scale-110 transition-transform duration-500">
+                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-14 w-auto group-hover:scale-110 transition-transform duration-500">
                 <div class="flex flex-col justify-center text-left">
                     <span class="text-white font-extrabold text-xl leading-[1.1] tracking-wide select-none group-hover:scale-105 transition-transform duration-500 origin-left">
                         Politeknik Jambi
@@ -133,7 +241,7 @@
                     </div>
                 </div>
 
-                <a href="{{ url('/spmi/dokumen-spmi') }}" class="{{ Request::is('spmi/dokumen-spmi*') ? 'text-yellow-400' : '' }} hover:text-yellow-400 transition-all duration-300">DOKUMEN SPMI</a>
+                <a href="{{ url('/spmi/dokumen-spmi') }}" class="{{ Request::is('spmi/dokumen-spmi*') ? 'text-yellow-400' : '' }} hover:text-yellow-400 transition-all duration-300">SPMI</a>
 
                 <div class="relative group py-2">
                     <span class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer {{ Request::is('kuesioner*') ? 'text-yellow-400' : '' }}">
@@ -192,7 +300,9 @@
                         <i id="theme-toggle-light-icon" class="hidden fas fa-sun text-lg transition-transform group-hover:rotate-45"></i>
                     </button>
 
-                    <!-- LOGIN: tersembunyi, akses via /login langsung -->
+                    @guest
+                        <!-- Login link removed as requested -->
+                    @endguest
                 </div>
 
                 <script>
@@ -274,4 +384,79 @@
             </div>
         </div>
     </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('mobile-menu-toggle');
+            const panel = document.getElementById('mobile-menu-panel');
+            const icon = document.getElementById('mobile-menu-icon');
+            const searchToggle = document.getElementById('mobile-search-toggle');
+            const searchPanel = document.getElementById('mobile-search-panel');
+            const searchIcon = document.getElementById('mobile-search-icon');
+            const searchInput = searchPanel ? searchPanel.querySelector('input') : null;
+
+            if (toggle && panel) {
+                toggle.addEventListener('click', function () {
+                    const isOpen = !panel.classList.contains('hidden');
+                    panel.classList.toggle('hidden', isOpen);
+                    panel.classList.toggle('block', !isOpen);
+                    if (icon) {
+                        icon.classList.toggle('fa-bars', isOpen);
+                        icon.classList.toggle('fa-times', !isOpen);
+                    }
+                    if (!isOpen && searchPanel) {
+                        searchPanel.classList.add('hidden');
+                        if (searchIcon) {
+                            searchIcon.classList.remove('fa-times');
+                            searchIcon.classList.add('fa-search');
+                        }
+                    }
+                });
+            }
+
+            if (searchToggle && searchPanel) {
+                searchToggle.addEventListener('click', function () {
+                    const isOpen = searchPanel.classList.contains('hidden');
+                    searchPanel.classList.toggle('hidden', !isOpen);
+                    if (searchIcon) {
+                        searchIcon.classList.toggle('fa-search', !isOpen);
+                        searchIcon.classList.toggle('fa-times', isOpen);
+                    }
+                    if (isOpen && searchInput) {
+                        setTimeout(function () {
+                            searchInput.focus();
+                        }, 100);
+                    }
+                    if (panel && !panel.classList.contains('hidden')) {
+                        panel.classList.add('hidden');
+                        panel.classList.remove('block');
+                        if (icon) {
+                            icon.classList.remove('fa-times');
+                            icon.classList.add('fa-bars');
+                        }
+                    }
+                });
+            }
+
+            document.querySelectorAll('[data-mobile-section]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const targetId = button.getAttribute('data-mobile-section');
+                    const target = document.getElementById(targetId);
+                    if (!target) return;
+
+                    const shouldOpen = target.classList.contains('hidden');
+                    document.querySelectorAll('[data-mobile-section]').forEach(function (otherButton) {
+                        const otherTarget = document.getElementById(otherButton.getAttribute('data-mobile-section'));
+                        if (otherTarget && otherTarget !== target) {
+                            otherTarget.classList.add('hidden');
+                            otherTarget.classList.remove('block');
+                        }
+                    });
+
+                    target.classList.toggle('hidden', !shouldOpen);
+                    target.classList.toggle('block', shouldOpen);
+                });
+            });
+        });
+    </script>
 </div>

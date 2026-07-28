@@ -12,34 +12,40 @@
         <div class="max-w-4xl mx-auto text-center mb-20">
             <span class="text-[#0056b3] font-black tracking-[0.4em] text-[10px] uppercase block mb-4">Search Results</span>
             <h1 class="font-serif-luxury text-5xl text-slate-900 dark:text-white mb-6">Hasil untuk: <span class="text-[#0056b3] italic">"{{ $query }}"</span></h1>
-            <p class="text-slate-500 text-sm font-medium">Ditemukan <span class="text-[#0056b3] font-bold">{{ $results->count() }}</span> informasi yang relevan dengan kata kunci Anda.</p>
+            <p class="text-slate-500 text-sm font-medium">
+                @if($results->count() > 0)
+                    Ditemukan <span class="text-[#0056b3] font-bold">{{ $results->count() }}</span> informasi yang relevan dengan kata kunci Anda.
+                @else
+                    Tidak ada hasil yang cocok dengan pencarian Anda. Coba gunakan kata kunci lain, atau cari istilah yang lebih umum.
+                @endif
+            </p>
         </div>
 
         <div class="max-w-5xl mx-auto">
             @if($results->count() > 0)
                 <div class="grid gap-8">
                     @foreach($results as $item)
-                        <div class="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-white/10 p-8 hover:border-[#0056b3] hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 flex flex-col md:flex-row gap-8 items-center cursor-pointer" onclick="window.location.href='{{ route('profil.show', $item->slug) }}'">
+                        <a href="{{ $item->search_url ?? route('profil.show', $item->slug) }}" class="group block bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-white/10 p-4 sm:p-8 hover:border-[#0056b3] hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 flex flex-col md:flex-row gap-4 sm:gap-8 items-start md:items-center">
                             <div class="w-full md:w-48 h-32 bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden flex-shrink-0">
                                 <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100" alt="{{ $item->judul }}">
                             </div>
-                            <div class="flex-grow">
-                                <div class="flex items-center gap-3 text-[9px] text-[#0056b3] font-black uppercase tracking-widest mb-3">
-                                    <span class="px-2 py-1 bg-blue-50 rounded-md">{{ $item->kategori }}</span>
+                            <div class="flex-grow min-w-0">
+                                <div class="flex flex-wrap items-center gap-2 text-[9px] text-[#0056b3] font-black uppercase tracking-widest mb-3">
+                                    <span class="px-2 py-1 bg-blue-50 rounded-md">{{ $item->search_type ?? $item->kategori ?? 'Informasi' }}</span>
                                     <span class="text-slate-300">•</span>
-                                    <span class="text-slate-400 capitalize">{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d F Y') }}</span>
+                                    <span class="text-slate-400 capitalize">{{ isset($item->created_at) ? \Carbon\Carbon::parse($item->created_at)->translatedFormat('d F Y') : '' }}</span>
                                 </div>
-                                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-[#0056b3] transition leading-tight">{{ $item->judul }}</h3>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 leading-relaxed">
-                                    {!! strip_tags($item->isi_konten) !!}
+                                <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-[#0056b3] transition leading-tight">{{ $item->judul }}</h3>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                                    {!! $item->search_excerpt ?? Str::limit(strip_tags($item->isi_konten ?? $item->isi ?? $item->deskripsi ?? $item->isi_artikel ?? ''), 180) !!}
                                 </p>
                             </div>
                             <div class="flex-shrink-0 items-center justify-center hidden md:flex">
                                 <div class="w-12 h-12 rounded-full border border-slate-100 dark:border-white/10 flex items-center justify-center text-slate-300 dark:text-slate-600 group-hover:bg-[#0056b3] group-hover:text-white group-hover:border-[#0056b3] transition-all">
-                                    <i class="fas fa-arrow-right"></i>
+                                    <i class="{{ $item->search_icon ?? 'fas fa-arrow-right' }}"></i>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             @else

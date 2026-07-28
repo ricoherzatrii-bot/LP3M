@@ -93,7 +93,7 @@
     <!-- SPLASH SCREEN -->
     <div id="splash-screen" class="active bg-white dark:bg-slate-950 transition-colors duration-500">
         <div class="text-center">
-            <img src="/images/logo.png" alt="Logo" class="splash-logo mb-4">
+            <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="splash-logo mb-4">
             <div class="w-48 h-1 bg-slate-100 dark:bg-slate-800 mx-auto rounded-full overflow-hidden">
                 <div class="h-full bg-blue-700 animate-[loading_2s_ease-in-out_infinite]"></div>
             </div>
@@ -306,13 +306,7 @@
                                 <span class="text-[10px] text-slate-400 mt-1 block">{{ $sideBerita->created_at ? $sideBerita->created_at->translatedFormat('d M Y') : '' }}</span>
                             </a>
                             @endforeach
-                            <a href="https://e-spmi.politeknikjambi.ac.id" target="_blank" class="group block py-4">
-                                <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
-                                    e-spmiPoljam
-                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
-                                </span>
-                            </a>
-                            <a href="{{ route('spmi.show', 'rtm') }}" class="group block py-4 last:pb-0">
+                            <a href="{{ route('capaian.rtm') }}" class="group block py-4 last:pb-0">
                                 <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between">
                                     RTM
                                     <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all"></i>
@@ -334,22 +328,22 @@
             <div class="flex flex-col md:flex-row justify-between items-start gap-20 mb-24">
                 <div class="max-w-xs">
                     <div class="bg-white p-2 rounded-xl inline-block mb-8">
-                        <img src="/images/logo.png" alt="Logo" class="h-10 transition-all cursor-pointer">
+                        <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-10 transition-all cursor-pointer">
                     </div>
                     <p class="text-blue-100 text-sm font-light leading-relaxed mb-8">
                         Lembaga Penjamin Mutu Politeknik Jambi berkomitmen menjaga standar kualitas pendidikan tinggi nasional.
                     </p>
                     <div class="flex gap-4 relative z-50">
-                        <a href="https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-youtube"></i></a>
+                        <a href="{{ optional($socialLinks->get('instagram'))->url ?? 'https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==' }}" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-instagram"></i></a>
+                        <a href="{{ optional($socialLinks->get('tiktok'))->url ?? 'https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK' }}" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-tiktok"></i></a>
+                        <a href="{{ optional($socialLinks->get('youtube'))->url ?? 'https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1' }}" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-20 uppercase font-black text-[10px] tracking-[0.2em] text-blue-200">
                     <div class="space-y-6">
                         <div class="text-yellow-400 mb-2">Tautan Utama</div>
-                        <a href="#" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Dashboard</a>
+                        <a href="{{ route('login') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Login Dashboard</a>
                         <a href="{{ route('spmi.show', 'dokumen') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Dokumen SPMI</a>
                         <a href="#" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Laporan AMI</a>
                     </div>
