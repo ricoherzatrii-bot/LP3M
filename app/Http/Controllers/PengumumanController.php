@@ -42,7 +42,12 @@ class PengumumanController extends Controller
             ->take(5)
             ->get();
 
-        return view('pages.pengumuman.show', compact('pengumuman', 'allProfil', 'recentPengumumans'));
+        $prev = Pengumuman::where('created_at', '<', $pengumuman->created_at)->where('status', 'aktif')->orderBy('created_at', 'desc')->first();
+        $next = Pengumuman::where('created_at', '>', $pengumuman->created_at)->where('status', 'aktif')->orderBy('created_at', 'asc')->first();
+        $prevUrl = $prev ? route('pengumuman.show', $prev->slug) : null;
+        $nextUrl = $next ? route('pengumuman.show', $next->slug) : null;
+
+        return view('pages.pengumuman.show', compact('pengumuman', 'allProfil', 'recentPengumumans', 'prevUrl', 'nextUrl'));
     }
 
     /**

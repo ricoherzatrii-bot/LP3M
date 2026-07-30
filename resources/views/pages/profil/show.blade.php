@@ -31,12 +31,6 @@
                     <span>Profil</span> <span class="text-slate-300 dark:text-white/20">•</span>
                     <span>{{ $profil->created_at ? $profil->created_at->format('d F Y') : '04 February 2023' }}</span> <span class="text-slate-300 dark:text-white/20">•</span>
                     <span>Hits: {{ $profil->hits ?? 1469 }}</span>
-                    
-                    <!-- Social Icons (Align Right in Meta row) -->
-                    <div class="ml-auto flex gap-3">
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 hover:text-white transition"><i class="fab fa-facebook-f text-xs"></i></a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-400 hover:text-white transition"><i class="fab fa-twitter text-xs"></i></a>
-                    </div>
                 </div>
 
                 <!-- ARTICLE CONTENT -->
@@ -80,12 +74,25 @@
 
                 <!-- PREV / NEXT BUTTONS -->
                 <div class="flex gap-2 mb-12 border-b border-white/10 pb-12">
-                    <button class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                    @if(!empty($prevUrl))
+                    <a href="{{ $prevUrl }}" class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                        <i class="fas fa-chevron-left text-[10px]"></i> Prev
+                    </a>
+                    @else
+                    <button disabled class="bg-slate-300 dark:bg-slate-800 text-slate-500 text-xs font-bold px-4 py-2 rounded flex items-center gap-2 cursor-not-allowed">
                         <i class="fas fa-chevron-left text-[10px]"></i> Prev
                     </button>
-                    <button class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                    @endif
+
+                    @if(!empty($nextUrl))
+                    <a href="{{ $nextUrl }}" class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                        Next <i class="fas fa-chevron-right text-[10px]"></i>
+                    </a>
+                    @else
+                    <button disabled class="bg-slate-300 dark:bg-slate-800 text-slate-500 text-xs font-bold px-4 py-2 rounded flex items-center gap-2 cursor-not-allowed">
                         Next <i class="fas fa-chevron-right text-[10px]"></i>
                     </button>
+                    @endif
                 </div>
 
                 <!-- ARTIKEL LAINNYA -->
@@ -165,6 +172,46 @@
     .custom-prose ul li,
     .custom-prose ol li {
         margin-bottom: 0.5rem;
+    }
+
+    /* CKEditor Image Resize - Frontend Display */
+    .custom-prose .image {
+        clear: both;
+        text-align: center;
+        margin: 1em auto;
+    }
+    .custom-prose .image.image_resized {
+        max-width: 100%;
+        display: block;
+        box-sizing: border-box;
+    }
+    .custom-prose .image.image_resized img {
+        width: 100%;
+    }
+    .custom-prose .image img,
+    .custom-prose figure.image img {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        height: auto;
+    }
+    .custom-prose .image-style-side {
+        float: right;
+        margin-left: 1.5em;
+        max-width: 50%;
+    }
+    .custom-prose .image-style-align-left {
+        float: left;
+        margin-right: 1.5em;
+        max-width: 50%;
+    }
+    .custom-prose .image-style-align-center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .custom-prose figure.image {
+        display: inline-block;
+        margin: 1em auto;
     }
 
 </style>

@@ -29,8 +29,25 @@ class KuesionerDosenKaryawanController extends Controller
         $data = $query->orderBy('tahun_akademik', 'desc')->orderBy('program', 'asc')->get();
         $years = KuesionerDosenKaryawan::where('kategori', $kategori)->select('tahun_akademik')->distinct()->orderBy('tahun_akademik', 'desc')->pluck('tahun_akademik');
 
-        // Also include canonical prodi list from backend
-        $prodis = Prodi::orderBy('nama')->pluck('nama');
+        // Merge prodi from all sources: prodis table + akreditasi + kuesioner data
+        $prodiFromTable = Prodi::orderBy('nama')->pluck('nama');
+        $prodiFromAkreditasi = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('akreditasi')) {
+                $prodiFromAkreditasi = \App\Models\Akreditasi::where('kategori', 'Akreditasi')->pluck('judul');
+            }
+        } catch (\Exception $e) {}
+        $prodiFromData = KuesionerDosenKaryawan::where('kategori', $kategori)
+            ->whereNotNull('prodi')
+            ->where('prodi', '!=', '')
+            ->distinct()
+            ->pluck('prodi');
+        $prodis = $prodiFromTable->merge($prodiFromAkreditasi)->merge($prodiFromData)
+            ->map(function ($prodi) { return trim($prodi); })
+            ->filter(function ($prodi) { return !empty($prodi); })
+            ->unique(function ($prodi) { return strtolower(trim($prodi)); })
+            ->sort()
+            ->values();
 
         return response()->json([
             'success' => true,
@@ -105,7 +122,33 @@ class KuesionerDosenKaryawanController extends Controller
 
         $tahun = $request->tahun_akademik;
         $kategori = $request->input('kategori', 'Dosen & Karyawan');
-        $prodi = $request->input('prodi', '');
+        $prodi = trim($request->input('prodi', ''));
+
+        // Normalization Map to prevent duplicates
+        $prodiMap = [
+            'Akuntansi Perpajakan' => 'D4 Akuntansi Perpajakan',
+            'D4 Akuntasi Perpajakan' => 'D4 Akuntansi Perpajakan',
+            'Bisnis Digital' => 'D4 Bisnis Digital',
+            'D3 Elektronika' => 'D3 Teknik Elektronika',
+            'Teknik Elektronika' => 'D3 Teknik Elektronika',
+            'D3 Listrik' => 'D3 Teknik Listrik',
+            'Teknik Listrik' => 'D3 Teknik Listrik',
+            'Teknik Mesin' => 'D3 Teknik Mesin',
+            'D4 TRLOG' => 'D4 Teknologi Rekayasa Logistik',
+            'Teknologi Rekayasa Logistik' => 'D4 Teknologi Rekayasa Logistik',
+            'D4 TRPAB' => 'D4 Teknologi Rekayasa Pemeliharaan Alat Berat',
+            'Teknologi Rekayasa Pemeliharaan Alat Berat' => 'D4 Teknologi Rekayasa Pemeliharaan Alat Berat',
+            'D4 Teknologi Rekayasa Perangkat Lunak' => 'D4 Teknologi Rekayasa Perangkat Lunak',
+            'Teknologi Rekayasa Perangkat Lunak' => 'D4 Teknologi Rekayasa Perangkat Lunak',
+            'IT' => 'D4 Teknologi Rekayasa Perangkat Lunak',
+            'Tambang' => 'D3 Teknik Pertambangan',
+        ];
+        foreach ($prodiMap as $key => $value) {
+            if (strtolower(trim($prodi)) === strtolower($key)) {
+                $prodi = $value;
+                break;
+            }
+        }
 
         try {
             $extension = $request->file('file')->getClientOriginalExtension();
@@ -318,5 +361,75 @@ class KuesionerDosenKaryawanController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal menambahkan prodi: ' . $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Download template Excel (CSV) untuk import Kuesioner Mahasiswa.
+     * Format: Tahun Akademik | Aspek Penilaian | SB (%) | B (%) | K (%) | SK (%)
+     */
+    public function downloadTemplateMahasiswa()
+    {
+        $headers = [
+            'Tahun Akademik',
+            'Aspek Penilaian',
+            'Sangat Baik (%)',
+            'Baik (%)',
+            'Kurang (%)',
+            'Sangat Kurang (%)'
+        ];
+
+        $callback = function () use ($headers) {
+            $file = fopen('php://output', 'w');
+            // BOM for Excel UTF-8 compatibility
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($file, $headers);
+
+            // Sample rows for guidance
+            fputcsv($file, ['2026 Ganjil', 'Assurance', '68.73', '23.69', '6.6', '0.97']);
+            fputcsv($file, ['2026 Ganjil', 'Responsiveness', '55.44', '32.77', '10.39', '1.4']);
+            fputcsv($file, ['2026 Ganjil', 'Tangible', '60.12', '28.50', '9.30', '2.08']);
+            fputcsv($file, ['2026 Ganjil', 'Empathy', '62.00', '25.00', '11.00', '2.00']);
+            fputcsv($file, ['2026 Ganjil', 'Reliability', '58.00', '30.00', '10.00', '2.00']);
+
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, 'template_kuesioner_mahasiswa.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * Download template Excel (CSV) untuk import Kuesioner Dosen & Karyawan.
+     * Format: Program | Sangat Setuju (%) | Setuju (%) | Cukup Setuju (%) | Tidak Setuju (%) | Sangat Tidak Setuju (%)
+     */
+    public function downloadTemplateDosen()
+    {
+        $headers = [
+            'Program',
+            'Sangat Setuju (%)',
+            'Setuju (%)',
+            'Cukup Setuju (%)',
+            'Tidak Setuju (%)',
+            'Sangat Tidak Setuju (%)'
+        ];
+
+        $callback = function () use ($headers) {
+            $file = fopen('php://output', 'w');
+            // BOM for Excel UTF-8 compatibility
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($file, $headers);
+
+            // Sample rows for guidance
+            fputcsv($file, ['Kepuasan Layanan Akademik', '45.5', '30.2', '15.0', '7.3', '2.0']);
+            fputcsv($file, ['Kepuasan Layanan Administratif', '40.0', '35.0', '14.0', '8.0', '3.0']);
+            fputcsv($file, ['Kepuasan Sarana Prasarana', '38.5', '32.0', '18.5', '9.0', '2.0']);
+
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, 'template_kuesioner_dosen_karyawan.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }

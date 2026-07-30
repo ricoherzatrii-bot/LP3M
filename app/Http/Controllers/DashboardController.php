@@ -73,7 +73,20 @@ class DashboardController extends Controller
         }
 
         try {
-            $totalProdi = Prodi::count();
+            // Merge prodi names from all sources: prodis table + akreditasi table
+            $prodiNames = collect();
+
+            if (\Illuminate\Support\Facades\Schema::hasTable((new Prodi)->getTable())) {
+                $prodiNames = $prodiNames->merge(Prodi::pluck('nama'));
+            }
+
+            $akreditasiProdi = Akreditasi::where('kategori', 'Akreditasi')->pluck('judul');
+            $prodiNames = $prodiNames->merge($akreditasiProdi);
+
+            $totalProdi = $prodiNames->map(function ($prodi) { return trim($prodi); })
+                ->filter(function ($prodi) { return !empty($prodi); })
+                ->unique(function ($prodi) { return strtolower(trim($prodi)); })
+                ->count();
         } catch (\Exception $e) {
             $totalProdi = 0;
         }
@@ -90,12 +103,13 @@ class DashboardController extends Controller
             $akreditasiData = $akreditasiQuery->get();
 
             $akreditasiUnggul = $akreditasiData->filter(function ($item) {
-                return $item->peringkat && str_contains(strtolower($item->peringkat), 'unggul');
+                $peringkat = strtolower($item->peringkat ?? '');
+                return $peringkat && (str_contains($peringkat, 'unggul') || str_contains($peringkat, 'baik sekali') || $peringkat === 'a');
             })->count();
 
             $akreditasiBaik = $akreditasiData->filter(function ($item) {
                 $peringkat = strtolower($item->peringkat ?? '');
-                return $peringkat && str_contains($peringkat, 'baik') && !str_contains($peringkat, 'unggul') && !str_contains($peringkat, 'sekali');
+                return $peringkat && (str_contains($peringkat, 'baik') && !str_contains($peringkat, 'sekali')) || $peringkat === 'b';
             })->count();
 
             $akreditasiCukup = $akreditasiData->filter(function ($item) {
@@ -115,38 +129,47 @@ class DashboardController extends Controller
             $akreditasiCukup = 0;
         }
 
-        $renstraLabels = [];
-        $renstraRealisasi = [];
-        $renstraTarget = [];
+        $availableYearsForChart = collect();
+        $allProgramStats = collect();
         try {
-            $renstraTrend = CapaianRenstra::selectRaw('tahun, ROUND(AVG(realisasi), 1) as avg_realisasi, ROUND(AVG(target), 1) as avg_target')
-                ->groupBy('tahun')
+            $availableYearsForChart = CapaianRenstra::select('tahun')
+                ->distinct()
                 ->orderBy('tahun', 'asc')
-                ->get();
+                ->pluck('tahun');
 
-            $renstraLabels = $renstraTrend->pluck('tahun')->map(function ($year) {
-                return (string) $year;
-            })->toArray();
-            $renstraRealisasi = $renstraTrend->pluck('avg_realisasi')->toArray();
-            $renstraTarget = $renstraTrend->pluck('avg_target')->toArray();
+            $allProgramStats = CapaianRenstra::selectRaw('program, tahun, ROUND(AVG(realisasi),2) as avg_realisasi')
+                ->groupBy('program', 'tahun')
+                ->orderBy('program')
+                ->orderBy('tahun')
+                ->get()
+                ->groupBy('program');
         } catch (\Exception $e) {
-            $renstraLabels = [];
-            $renstraRealisasi = [];
-            $renstraTarget = [];
+            $availableYearsForChart = collect();
+            $allProgramStats = collect();
         }
 
-        $kuesionerCategories = [];
-        $kuesionerHits = [];
+        $kuesionerDosenData = [];
+        $kuesionerMahasiswaData = ['labels' => [], 'ss' => [], 's' => [], 'ts' => [], 'sts' => []];
         try {
-            $kuesionerSummary = Kuesioner::selectRaw('kategori, SUM(hits) as total_hits')
-                ->groupBy('kategori')
-                ->get();
+            $dosenStats = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Dosen & Karyawan')
+                ->selectRaw('SUM(sangat_setuju) as ss, SUM(setuju) as s, SUM(cukup_setuju) as cs, SUM(tidak_setuju) as ts, SUM(sangat_tidak_setuju) as sts')
+                ->first();
+                
+            $kuesionerDosenData = [(int)($dosenStats->ss ?? 0), (int)($dosenStats->s ?? 0), (int)($dosenStats->cs ?? 0), (int)($dosenStats->ts ?? 0), (int)($dosenStats->sts ?? 0)];
+            $mhsStats = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Mahasiswa')
+                ->selectRaw('AVG(sangat_setuju) as ss, AVG(setuju) as s, AVG(cukup_setuju) as cs, AVG(tidak_setuju) as ts, AVG(sangat_tidak_setuju) as sts')
+                ->first();
 
-            $kuesionerCategories = $kuesionerSummary->pluck('kategori')->toArray();
-            $kuesionerHits = $kuesionerSummary->pluck('total_hits')->toArray();
+            $kuesionerMahasiswaData = [
+                round((float)($mhsStats->ss ?? 0), 1),
+                round((float)($mhsStats->s ?? 0), 1),
+                round((float)($mhsStats->cs ?? 0), 1),
+                round((float)($mhsStats->ts ?? 0), 1),
+                round((float)($mhsStats->sts ?? 0), 1)
+            ];
         } catch (\Exception $e) {
-            $kuesionerCategories = [];
-            $kuesionerHits = [];
+            $kuesionerDosenData = [0, 0, 0, 0, 0];
+            $kuesionerMahasiswaData = [0, 0, 0, 0, 0];
         }
 
         $recentDocuments = collect();
@@ -257,11 +280,10 @@ class DashboardController extends Controller
             'akreditasiUnggul',
             'akreditasiBaik',
             'akreditasiCukup',
-            'renstraLabels',
-            'renstraRealisasi',
-            'renstraTarget',
-            'kuesionerCategories',
-            'kuesionerHits',
+            'availableYearsForChart',
+            'allProgramStats',
+            'kuesionerDosenData',
+            'kuesionerMahasiswaData',
             'recentDocuments',
             'recentActivities',
             'chartLabels',
@@ -453,6 +475,17 @@ class DashboardController extends Controller
             ];
         }
 
+        // 7E. Program Studi
+        if ($title === 'Program Studi') {
+            return [
+                'type' => 'table',
+                'model' => Prodi::class,
+                'query' => [],
+                'fields' => ['kode', 'nama'],
+                'defaults' => [],
+            ];
+        }
+
         // 8. Galeri Kampus
         if ($title === 'Dokumentasi Foto' || $title === 'Album Kegiatan') {
             return [
@@ -596,6 +629,12 @@ class DashboardController extends Controller
                 return response()->json(['success' => false, 'message' => 'Record tidak ditemukan']);
             }
 
+            // Track old name for Prodi to cascade updates
+            $oldProdiName = null;
+            if ($modelClass === \App\Models\Prodi::class) {
+                $oldProdiName = $record->nama;
+            }
+
             $updateData = $request->except(['title', 'id', '_token']);
 
             // Handle file uploads for image fields
@@ -647,6 +686,31 @@ class DashboardController extends Controller
                 }
 
                 $record->update($updateData);
+
+                // Cascade update if it's Prodi and the name was changed
+                if ($modelClass === \App\Models\Prodi::class && $oldProdiName && isset($updateData['nama']) && $oldProdiName !== $updateData['nama']) {
+                    $newProdiName = $updateData['nama'];
+                    
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('kuesioner_dosen_karyawan', 'prodi')) {
+                        \DB::table('kuesioner_dosen_karyawan')
+                            ->where('prodi', $oldProdiName)
+                            ->update(['prodi' => $newProdiName]);
+                    }
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('kuesioners', 'prodi') || \Illuminate\Support\Facades\Schema::hasTable('kuesioner')) {
+                        $kuesionerTable = \Illuminate\Support\Facades\Schema::hasTable('kuesioners') ? 'kuesioners' : 'kuesioner';
+                        if (\Illuminate\Support\Facades\Schema::hasColumn($kuesionerTable, 'prodi')) {
+                            \DB::table($kuesionerTable)
+                                ->where('prodi', $oldProdiName)
+                                ->update(['prodi' => $newProdiName]);
+                        }
+                    }
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('akreditasi', 'judul')) {
+                        \DB::table('akreditasi')
+                            ->where('kategori', 'Akreditasi')
+                            ->where('judul', $oldProdiName)
+                            ->update(['judul' => $newProdiName]);
+                    }
+                }
 
                 return response()->json(['success' => true, 'message' => 'Data entri berhasil diperbarui secara permanen!']);
             } catch (\Exception $e) {

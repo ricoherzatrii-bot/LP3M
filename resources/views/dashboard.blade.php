@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/super-build/ckeditor.js"></script>
     <style>
         body { 
             font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; 
@@ -111,6 +111,56 @@
             min-height: 200px;
             max-height: 400px;
             overflow-y: auto !important;
+        }
+        
+        /* Fix overlapping and focus issues inside Tailwind modals */
+        :root {
+            --ck-z-default: 10000;
+            --ck-z-modal: 10000;
+        }
+        .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
+            box-shadow: var(--ck-inner-shadow), 0 0 0 3px rgba(59, 130, 246, 0.4);
+            border: 1px solid var(--ck-color-focus-border);
+            outline: none;
+        }
+        /* Ensure dropdowns appear above modal overlay which has z-50 */
+        .ck.ck-balloon-panel {
+            z-index: 10005 !important;
+        }
+
+        /* CKEditor Image Resize Styles */
+        .ck-editor__editable .image {
+            clear: both;
+            text-align: center;
+            margin: 0.9em auto;
+        }
+        .ck-editor__editable .image.image_resized {
+            max-width: 100%;
+            display: block;
+            box-sizing: border-box;
+        }
+        .ck-editor__editable .image.image_resized img {
+            width: 100%;
+        }
+        .ck-editor__editable .image img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            min-width: 50px;
+        }
+        .ck-editor__editable .image.image-style-side {
+            float: right;
+            margin-left: 1.5em;
+            max-width: 50%;
+        }
+        .ck-editor__editable .image.image-style-align-left {
+            float: left;
+            margin-right: 1.5em;
+            max-width: 50%;
+        }
+        .ck-editor__editable .image.image-style-align-center {
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .modal-body-scroll {
@@ -276,6 +326,18 @@
                     </div>
                 </div>
 
+                <!-- Modul Program Studi -->
+                <div class="mb-1">
+                    <button type="button" data-page="Program Studi" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-8 h-8 rounded-xl bg-white/20 border border-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:text-white text-white transition-colors">
+                                <i class="fas fa-graduation-cap text-sm"></i>
+                            </div>
+                            <span class="text-[13px] font-semibold tracking-wide">Program Studi</span>
+                        </div>
+                    </button>
+                </div>
+
                 <div class="mb-1">
                     <button type="button" data-page="Media Sosial" class="w-full sidebar-item flex items-center justify-between py-3.5 px-4 rounded-2xl text-white hover:bg-white/10 font-bold group">
                         <div class="flex items-center space-x-4">
@@ -371,33 +433,51 @@
                 <div class="max-w-7xl mx-auto">
                     
                     <!-- DASHBOARD OVERVIEW PANELS -->
-                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-12">
-                        <div class="stagger-1 stat-card bg-white/75 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden h-full">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-12">
+                        <div class="stagger-1 stat-card bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden h-full">
                             <div class="absolute top-0 right-0 w-28 h-28 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex items-center gap-4 relative z-10">
-                                <div class="w-16 h-16 rounded-[1.8rem] bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner border border-blue-100">
-                                    <i class="fas fa-university"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Total Program Studi</p>
-                                    <h3 class="mt-3 text-4xl font-black text-slate-900 font-display">{{ $totalProdi ?? 8 }}</h3>
-                                </div>
-                            </div>
-                            <p class="mt-8 text-sm text-slate-500">Jumlah prodi yang terdata dalam sistem SPMI saat ini.</p>
-                        </div>
-
-                        <div class="stagger-2 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden h-full">
                             <div class="absolute -left-8 -top-10 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                            
+                            <!-- Header -->
                             <div class="flex justify-between items-start relative z-10 mb-6">
                                 <div>
                                     <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Akreditasi</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Perbandingan Status</h3>
+                                    <h3 class="text-2xl font-black text-slate-900 font-display">Program Studi & Status</h3>
                                 </div>
                                 <div class="w-12 h-12 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner border border-blue-100">
-                                    <i class="fas fa-chart-pie"></i>
+                                    <i class="fas fa-university"></i>
                                 </div>
                             </div>
-                            <div class="relative w-full h-[280px]"><canvas id="accreditationDonutChart"></canvas></div>
+
+                            <!-- Total Prodi Stat -->
+                            <div class="relative z-10 mb-6">
+                                <div class="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-6 border border-blue-100/50">
+                                    <div class="flex items-center gap-5">
+                                        <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                                            <i class="fas fa-university"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-bold uppercase tracking-[0.15em] text-slate-400 mb-1">Total Program Studi</p>
+                                            <h3 class="text-4xl font-black text-slate-900 font-display">{{ $totalProdi ?? 8 }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Mini stat badges -->
+                                <div class="mt-4 flex gap-3">
+                                    <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                        <span class="text-[11px] font-bold text-emerald-700">Unggul: {{ $akreditasiUnggul ?? 5 }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 bg-blue-50 border border-blue-100 rounded-xl px-3 py-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                        <span class="text-[11px] font-bold text-blue-700">Baik: {{ $akreditasiBaik ?? 7 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Donut Chart below -->
+                            <div class="relative z-10 w-full">
+                                <div class="relative w-full h-[240px]"><canvas id="accreditationDonutChart"></canvas></div>
+                            </div>
                         </div>
 
                         <div class="stagger-3 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden h-full">
@@ -405,52 +485,34 @@
                             <div class="flex justify-between items-start relative z-10 mb-6">
                                 <div>
                                     <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Renstra</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Tren Capaian</h3>
+                                    <h3 class="text-2xl font-black text-slate-900 font-display">Growth Performance Trend</h3>
                                 </div>
                                 <div class="w-12 h-12 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-inner border border-indigo-100">
                                     <i class="fas fa-chart-line"></i>
                                 </div>
                             </div>
-                            <div class="relative w-full h-[280px]"><canvas id="mainChart"></canvas></div>
+                            <div class="relative w-full h-[650px]">
+                                <div id="chartTooltip" class="opacity-0 absolute pointer-events-none z-[100] text-[11px] font-bold bg-white text-slate-900 px-5 py-4 rounded-2xl shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] border border-slate-200 transition-opacity duration-200 max-w-[350px]"></div>
+                                <canvas id="mainChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-                        <div class="stagger-4 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden">
-                            <div class="absolute -right-10 -top-10 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex justify-between items-start relative z-10 mb-6">
-                                <div>
-                                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Kuesioner</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Grafik Kepuasan</h3>
-                                </div>
-                                <div class="w-12 h-12 rounded-3xl bg-slate-50 text-slate-600 flex items-center justify-center shadow-inner border border-slate-200">
-                                    <i class="fas fa-smile"></i>
-                                </div>
+                    <div class="stagger-4 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden mb-12">
+                        <div class="absolute -right-10 -top-10 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="flex justify-between items-start relative z-10 mb-6">
+                            <div>
+                                <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Kuesioner</p>
+                                <h3 class="text-2xl font-black text-slate-900 font-display">Grafik Kepuasan</h3>
                             </div>
-                            <div class="relative w-full h-[380px]"><canvas id="kuesionerChart"></canvas></div>
+                            <div class="w-12 h-12 rounded-3xl bg-slate-50 text-slate-600 flex items-center justify-center shadow-inner border border-slate-200">
+                                <i class="fas fa-smile"></i>
+                            </div>
                         </div>
-
-                        <div class="stagger-4 bg-white/80 backdrop-blur-xl rounded-[2rem] p-8 border border-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] relative overflow-hidden">
-                            <div class="absolute -left-10 -top-10 w-36 h-36 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex justify-between items-start relative z-10 mb-6">
-                                <div>
-                                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Ringkasan</p>
-                                    <h3 class="text-2xl font-black text-slate-900 font-display">Status Program Studi</h3>
-                                </div>
-                                <div class="w-12 h-12 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner border border-emerald-100">
-                                    <i class="fas fa-layer-group"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-slate-500">Lihat ringkasan kuesioner dan renstra untuk membantu memonitor kualitas program studi.</p>
-                            <div class="mt-8 grid grid-cols-1 gap-4 text-slate-700">
-                                <div class="rounded-3xl bg-slate-50 p-5 border border-slate-100 shadow-sm">
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Program Studi Terakreditasi Unggul</p>
-                                    <p class="mt-3 text-3xl font-black text-slate-900">{{ $akreditasiUnggul ?? 5 }}</p>
-                                </div>
-                                <div class="rounded-3xl bg-slate-50 p-5 border border-slate-100 shadow-sm">
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Program Studi Terakreditasi Baik</p>
-                                    <p class="mt-3 text-3xl font-black text-slate-900">{{ $akreditasiBaik ?? 7 }}</p>
-                                </div>
+                        <div class="grid grid-cols-1 gap-8">
+                            <div>
+                                <h4 class="text-xs font-black tracking-widest uppercase text-center text-blue-600 mb-2">Dosen & Karyawan</h4>
+                                <div class="relative w-full h-[320px]"><canvas id="kuesionerDosenChart"></canvas></div>
                             </div>
                         </div>
                     </div>
@@ -613,11 +675,10 @@
             return gradient;
         }
 
-        const renstraLabels = @json($renstraLabels ?? []);
-        const renstraRealisasi = @json($renstraRealisasi ?? []);
-        const renstraTarget = @json($renstraTarget ?? []);
-        const kuesionerCategories = @json($kuesionerCategories ?? []);
-        const kuesionerHits = @json($kuesionerHits ?? []);
+        const allProgramStats = @json($allProgramStats ?? []);
+        const availableYearsForChart = @json($availableYearsForChart ?? []).sort();
+        const kuesionerDosenData = @json($kuesionerDosenData);
+        const kuesionerMahasiswaData = @json($kuesionerMahasiswaData);
 
         function renderDashboardRenstraChart() {
             const canvas = document.getElementById('mainChart');
@@ -625,118 +686,218 @@
             const ctx = canvas.getContext('2d');
 
             if (mainChart) mainChart.destroy();
-            mainChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: renstraLabels.length ? renstraLabels : ['Tahun'],
-                    datasets: [
-                        {
-                            label: 'Realisasi Renstra',
-                            data: renstraRealisasi.length ? renstraRealisasi : [0],
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: createGradient(ctx, 'rgba(16, 185, 129, 1)'),
-                            borderWidth: 4,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#10b981',
-                            pointBorderWidth: 3,
-                            pointRadius: 6,
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Target Renstra',
-                            data: renstraTarget.length ? renstraTarget : [0],
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            borderDash: [6, 4],
-                            borderWidth: 3,
-                            pointRadius: 0,
-                            pointHoverRadius: 0,
-                            fill: false,
-                            tension: 0.4
+            
+            const pillarColors = {
+                'I': '#1e3a8a',
+                'V': '#f1c40f',
+                'II': '#16a085', 
+                'VI': '#2ecc71',
+                'III': '#e91e63',
+                'VII': '#8e44ad',
+                'IV': '#e67e22',
+                'VIII': '#3498db'
+            };
+
+            const pillarLabelsShort = {
+                'I': 'Pilar I',
+                'II': 'Pilar II',
+                'III': 'Pilar III',
+                'IV': 'Pilar IV',
+                'V': 'Pilar V',
+                'VI': 'Pilar VI',
+                'VII': 'Pilar VII',
+                'VIII': 'Pilar VIII'
+            };
+
+            const pillarFullTitles = {
+                'I': 'Pengembangan Sistem Pengelolaan berbasis SMART Campus untuk Menuju kwalitas Regional',
+                'II': 'Membangun Poltek Jambi branding melalui global networking for global partnership',
+                'III': 'Menjadi pusat penyelenggaraan kegiatan akademik yang unggul dan berlandaskan academic exellence berstandar nasional dan internasional',
+                'IV': 'Menjadi pusat penelitian yang unggul (research exellence) sesuai perkembangan IPTEKS yang berorientasi pada pemberdayaan masyarakat.',
+                'V': 'Kualitas sumberdaya manusia melalui manajemen berbasis kinerja',
+                'VI': 'Kualitas manajemen aset yang integratif, efektif dan efisien melalui kebijakan resources sharing, berwawasan lingkungandan berkelanjutan',
+                'VII': 'Kapasitas institusi dalam pengelolaan',
+                'VIII': 'Kemandirian keuangan dengan pengelolaan yang akuntabel dan transparan, efektif, dan efisien sesuai standar yang berlaku.'
+            };
+
+            const datasets = Object.keys(pillarColors).map(key => {
+                return {
+                    label: pillarLabelsShort[key],
+                    backgroundColor: pillarColors[key],
+                    borderRadius: 6,
+                    data: availableYearsForChart.map(year => {
+                        const progKey = Object.keys(allProgramStats).find(p => p.startsWith(key + '.'));
+                        if (progKey && allProgramStats[progKey]) {
+                            const stats = allProgramStats[progKey].find(s => s.tahun == year);
+                            return stats ? stats.avg_realisasi : 0;
                         }
-                    ]
+                        return 0;
+                    }),
+                    barThickness: 8,
+                    maxBarThickness: 10,
+                };
+            });
+
+            mainChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: availableYearsForChart,
+                    datasets: datasets
                 },
                 options: {
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { labels: { color: '#334155' } },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#64748b',
+                                font: { family: 'Arial', size: 10, weight: 'bold' },
+                                boxWidth: 12,
+                                padding: 20
+                            }
+                        },
                         tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { family: 'Arial', size: 13 },
-                            bodyFont: { family: 'Arial', size: 14, weight: 'bold' },
-                            padding: 12,
-                            cornerRadius: 12,
-                            displayColors: true
+                            enabled: false,
+                            position: 'nearest',
+                            external: function(context) {
+                                const tooltipEl = document.getElementById('chartTooltip');
+                                const tooltipModel = context.tooltip;
+                                
+                                if (!tooltipEl) return;
+                                
+                                if (tooltipModel.opacity === 0) {
+                                    tooltipEl.style.opacity = 0;
+                                    return;
+                                }
+                                
+                                if (tooltipModel.body) {
+                                    const dataPoint = tooltipModel.dataPoints[0];
+                                    const key = Object.keys(pillarLabelsShort).find(k => pillarLabelsShort[k] === dataPoint.dataset.label);
+                                    const fullTitle = pillarFullTitles[key] || dataPoint.dataset.label;
+                                    const color = dataPoint.dataset.backgroundColor;
+                                    tooltipEl.innerHTML = `
+                                        <div class="mb-2 pb-2 border-b border-slate-100 flex items-center justify-between">
+                                            <div class="text-blue-600 font-black text-sm">${dataPoint.label}</div>
+                                            <span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${color}"></span>
+                                        </div>
+                                        <div class="text-[11px] leading-relaxed text-slate-700">
+                                            <strong class="text-slate-900">${dataPoint.dataset.label}.</strong> ${fullTitle}: <span class="font-black text-blue-700 text-lg ml-1">${dataPoint.raw}%</span>
+                                        </div>
+                                    `;
+                                }
+                                
+                                const position = context.chart.canvas.getBoundingClientRect();
+                                const tooltipWidth = tooltipEl.offsetWidth;
+                                const tooltipHeight = tooltipEl.offsetHeight;
+                                
+                                let left = tooltipModel.caretX + 20;
+                                let top = tooltipModel.caretY - tooltipHeight / 2;
+                                
+                                if (top < 0) top = 5;
+                                if (top + tooltipHeight > position.height) top = position.height - tooltipHeight - 5;
+                                
+                                tooltipEl.style.opacity = 1;
+                                tooltipEl.style.left = left + 'px';
+                                tooltipEl.style.top = top + 'px';
+                            }
                         }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        intersect: true,
+                        axis: 'y'
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            suggestedMax: 100,
-                            grid: { color: 'rgba(15, 23, 42, 0.06)', drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
-                        },
                         x: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(15, 23, 42, 0.05)', drawBorder: false },
+                            ticks: { 
+                                color: '#64748b', 
+                                font: { family:'Arial', size: 10, weight: 'bold' },
+                                callback: v => v + '%'
+                            }
+                        },
+                        y: {
                             grid: { display: false, drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
+                            ticks: { 
+                                color: '#64748b', 
+                                font: { family:'Arial', size: 12, weight: 'bold' }
+                            }
                         }
                     },
-                    interaction: { mode: 'index', intersect: false },
-                    animation: { duration: 1600, easing: 'easeOutQuad' }
+                    animation: { duration: 1500, easing: 'easeOutQuart' }
                 }
             });
         }
 
-        function renderDashboardKuesionerChart() {
-            const canvas = document.getElementById('kuesionerChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
+        let kuesionerDosenChartObj = null;
+        let kuesionerMahasiswaChartObj = null;
 
-            if (kuesionerChart) kuesionerChart.destroy();
-            kuesionerChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: kuesionerCategories.length ? kuesionerCategories : ['Dosen & Karyawan', 'Mahasiswa'],
-                    datasets: [
-                        {
-                            label: 'Total Hits',
-                            data: kuesionerHits.length ? kuesionerHits : [0, 0],
-                            backgroundColor: ['#3b82f6', '#10b981', '#6366f1'].slice(0, Math.max(2, kuesionerCategories.length)),
-                            borderRadius: 16,
-                            barThickness: 30
-                        }
-                    ]
+        function renderDashboardKuesionerChart() {
+            const dosenCanvas = document.getElementById('kuesionerDosenChart');
+            const mhsCanvas = document.getElementById('kuesionerMahasiswaChart');
+            
+            const labels = ['Sangat Setuju', 'Setuju', 'Cukup', 'Tidak Setuju', 'Sangat Tidak Setuju'];
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: 'Arial', size: 13 },
+                        bodyFont: { family: 'Arial', size: 14, weight: 'bold' },
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: false
+                    }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { family: 'Arial', size: 13 },
-                            bodyFont: { family: 'Arial', size: 14, weight: 'bold' },
-                            padding: 12,
-                            cornerRadius: 12,
-                            displayColors: false
-                        }
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(15, 23, 42, 0.05)', drawBorder: false },
+                        ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            suggestedMax: Math.max(100, ...kuesionerHits, 0),
-                            grid: { color: 'rgba(15, 23, 42, 0.05)', drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
-                        },
-                        x: {
-                            grid: { display: false, drawBorder: false },
-                            ticks: { font: { family: 'Arial', size: 11, weight: 'bold' }, color: '#64748b' }
-                        }
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { font: { family: 'Arial', size: 10, weight: 'bold' }, color: '#64748b', maxRotation: 45, minRotation: 0 }
+                    }
+                },
+                animation: { duration: 1400, easing: 'easeOutQuad' }
+            };
+
+            if (dosenCanvas) {
+                const ctxDosen = dosenCanvas.getContext('2d');
+                if (kuesionerDosenChartObj) kuesionerDosenChartObj.destroy();
+                
+                let maxDosen = Math.max(...kuesionerDosenData, 10);
+                let dosenOpts = JSON.parse(JSON.stringify(commonOptions));
+                dosenOpts.scales.y.suggestedMax = maxDosen;
+
+                kuesionerDosenChartObj = new Chart(ctxDosen, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Dosen & Karyawan',
+                            data: kuesionerDosenData,
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 8,
+                            barThickness: 24
+                        }]
                     },
-                    animation: { duration: 1400, easing: 'easeOutQuad' }
-                }
-            });
+                    options: dosenOpts
+                });
+            }
+
+
         }
 
         function renderAccreditationDonutChart() {
@@ -968,15 +1129,78 @@
                 if (el.dataset.editorId) continue;
 
                 try {
-                    const editor = await ClassicEditor.create(el, {
-                        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'imageUpload', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo'],
+                    // Custom upload adapter plugin function
+                    function ContentImageUploadAdapterPlugin(editor) {
+                        editor.plugins.get('FileRepository').createUploadAdapter = loader => new ContentImageUploadAdapter(loader);
+                    }
+
+                    const editor = await CKEDITOR.ClassicEditor.create(el, {
+                        extraPlugins: [ContentImageUploadAdapterPlugin],
+                        toolbar: {
+                            items: [
+                                'heading', '|',
+                                'bold', 'italic', 'link', '|',
+                                'uploadImage', '|',
+                                'bulletedList', 'numberedList', '|',
+                                'blockQuote', 'insertTable', '|',
+                                'undo', 'redo'
+                            ],
+                            shouldNotGroupWhenFull: true
+                        },
+                        removePlugins: [
+                            'CKBox', 'CKFinder', 'EasyImage',
+                            'RealTimeCollaborativeComments', 'RealTimeCollaborativeTrackChanges',
+                            'RealTimeCollaborativeRevisionHistory', 'PresenceList', 'Comments',
+                            'TrackChanges', 'TrackChangesData', 'RevisionHistory',
+                            'Pagination', 'WProofreader', 'MathType', 'SlashCommand',
+                            'Template', 'DocumentOutline', 'FormatPainter',
+                            'TableOfContents', 'PasteFromOfficeEnhanced', 'AIAssistant',
+                            'MultiLevelList',
+                            'ExportPdf', 'ExportWord',
+                            'RestrictedEditingMode', 'StandardEditingMode',
+                            'ImageResize',
+                            // Remove CaseChange plugin which requires license in super-build
+                            'CaseChange', 'CaseChangeEditing', 'CaseChangeUI'
+                        ]
                     });
 
-                    editor.plugins.get('FileRepository').createUploadAdapter = loader => new ContentImageUploadAdapter(loader);
-                    
+                    // Unlock read-only mode imposed by super-build
+                    if (editor.isReadOnly) {
+                        try { editor.disableReadOnlyMode('model'); } catch(e) {}
+                    }
+                    // Try all known lock IDs used by the super-build
+                    try { editor.disableReadOnlyMode('lock'); } catch(e) {}
+
                     const editorId = 'editor-' + Math.random().toString(36).substr(2, 9);
                     el.dataset.editorId = editorId;
                     activeEditors[editorId] = editor;
+
+                    // Ensure the original textarea is not marked readonly/disabled
+                    try {
+                        el.removeAttribute && el.removeAttribute('readonly');
+                        el.removeAttribute && el.removeAttribute('disabled');
+                        el.style.pointerEvents = 'auto';
+                    } catch(e) {}
+
+                    // Force editor out of any read-only mode that may be imposed by the build
+                    try {
+                        if (typeof editor.isReadOnly !== 'undefined') editor.isReadOnly = false;
+                        if (editor.enableReadOnlyMode && editor.disableReadOnlyMode) {
+                            try { editor.disableReadOnlyMode('model'); } catch(e) {}
+                            try { editor.disableReadOnlyMode('lock'); } catch(e) {}
+                        }
+                    } catch(e) {}
+
+                    // Make sure the editable view accepts pointer events (in case of overlays)
+                    try {
+                        const editableEl = editor.ui && editor.ui.view && editor.ui.view.editable && editor.ui.view.editable.element;
+                        if (editableEl) {
+                            editableEl.style.pointerEvents = 'auto';
+                        }
+                    } catch(e) {}
+
+                    // Focus the editor so users can type immediately
+                    try { editor.editing.view.focus(); } catch(e) {}
 
                     // Sync content on change
                     editor.model.document.on('change:data', () => {
@@ -984,6 +1208,38 @@
                     });
                 } catch (error) {
                     console.error('CKEditor initialization failed:', error);
+
+                    // Fallback: try to load the simpler Classic build from CDN and initialize.
+                    // This avoids changing UI while ensuring the editor becomes editable.
+                    try {
+                        const loadScript = (src) => new Promise((resolve, reject) => {
+                            if (document.querySelector('script[src="' + src + '"]')) return resolve();
+                            const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
+                        });
+
+                        // Use a known-stable Classic build CDN (no paid plugins)
+                        const classicUrl = 'https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js';
+                        await loadScript(classicUrl);
+
+                        const Classic = window.ClassicEditor || (window.CKEDITOR && window.CKEDITOR.ClassicEditor);
+                        if (Classic) {
+                            const simpleEditor = await Classic.create(el, {
+                                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo', 'insertTable', 'uploadImage']
+                            });
+                            const fallbackId = 'editor-fallback-' + Math.random().toString(36).substr(2, 9);
+                            el.dataset.editorId = fallbackId;
+                            activeEditors[fallbackId] = simpleEditor;
+                            try { simpleEditor.editing.view.focus(); } catch(e) {}
+                            simpleEditor.model.document.on('change:data', () => { el.value = simpleEditor.getData(); });
+                        } else {
+                            console.warn('Classic build loaded but editor constructor not found. Falling back to textarea only.');
+                            // Ensure textarea is writable
+                            try { el.removeAttribute('readonly'); el.removeAttribute('disabled'); el.style.pointerEvents = 'auto'; } catch(e){}
+                        }
+                    } catch (fbErr) {
+                        console.error('Fallback CKEditor initialization failed:', fbErr);
+                        try { el.removeAttribute('readonly'); el.removeAttribute('disabled'); el.style.pointerEvents = 'auto'; } catch(e){}
+                    }
                 }
             }
         }
@@ -3077,6 +3333,7 @@
                                 <div class="bg-white rounded-lg py-2 px-1 border border-blue-100"><p class="text-[9px] font-black text-slate-600">Kolom F</p><p class="text-[10px] font-bold text-rose-600">Sangat Tidak</p></div>
                             </div>
                             <p class="text-[10px] text-blue-600 mt-3 font-medium"><i class="fas fa-magic mr-1"></i> Baris pertama (header) akan dilewati otomatis. Data langsung terverifikasi dan masuk ke database.</p>
+                            <a href="/admin/kuesioner-dosen/template" class="inline-flex items-center gap-2 mt-3 bg-white border border-blue-200 text-blue-700 text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl hover:bg-blue-100 transition-all shadow-sm"><i class="fas fa-download"></i> Download Template CSV</a>
                         </div>
                         <form id="importKuesionerForm" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
                             <div>
@@ -3619,6 +3876,7 @@
                                 <span class="flex items-center gap-1"><i class="fas fa-check-circle text-orange-500"></i> Kurang</span>
                                 <span class="flex items-center gap-1"><i class="fas fa-check-circle text-rose-500"></i> Sangat Kurang</span>
                             </div>
+                            <a href="/admin/kuesioner-mahasiswa/template" class="inline-flex items-center gap-2 mt-3 bg-white border border-indigo-200 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl hover:bg-indigo-100 transition-all shadow-sm"><i class="fas fa-download"></i> Download Template CSV</a>
                         </div>
                         <form id="importKMForm" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                             <div>
@@ -3718,7 +3976,9 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Program Studi</label>
-                                    <input type="text" id="km_prodi" placeholder="Contoh: Teknik Informatika" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                    <select id="km_prodi" class="w-full p-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 transition-all">
+                                        <option value="">Pilih Program Studi</option>
+                                    </select>
                                 </div>
                             </div>
                             <div>
@@ -3775,9 +4035,12 @@
                 }
 
                 const prodiSelect = document.getElementById('km_import_prodi');
+                const manualProdiSelect = document.getElementById('km_prodi');
                 if (prodiSelect) {
-                    const uniqueProdis = [...new Set(res.data.map(i => i.prodi).filter(Boolean))].sort();
-                    prodiSelect.innerHTML = '<option value="">Pilih Program Studi</option>' + uniqueProdis.map(p => `<option value="${p}">${p}</option>`).join('');
+                    const uniqueProdis = res.prodis && res.prodis.length > 0 ? res.prodis : [...new Set(res.data.map(i => i.prodi).filter(Boolean))].sort();
+                    const optionsHtml = '<option value="">Pilih Program Studi</option>' + uniqueProdis.map(p => `<option value="${p}">${p}</option>`).join('');
+                    prodiSelect.innerHTML = optionsHtml;
+                    if(manualProdiSelect) manualProdiSelect.innerHTML = optionsHtml;
                 }
 
                 renderKMTable(kuesionerDataStudent);

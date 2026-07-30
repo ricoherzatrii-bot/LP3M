@@ -38,7 +38,7 @@
                             <div class="flex gap-4">
                                 @if($item->gambar)
                                     <div class="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
-                                        <img src="{{ asset($item->gambar) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
                                     </div>
                                 @endif
                                 

@@ -30,18 +30,12 @@
                     <span>Pengumuman</span> <span class="text-slate-300 dark:text-white/20">•</span>
                     <span>{{ $pengumuman->created_at->format('d F Y') }}</span> <span class="text-slate-300 dark:text-white/20">•</span>
                     <span>Hits: {{ $pengumuman->hits }}</span>
-                    
-                    <!-- Social Icons -->
-                    <div class="ml-auto flex gap-3">
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-600 hover:text-white transition"><i class="fab fa-facebook-f text-xs"></i></a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-blue-400 hover:text-white transition"><i class="fab fa-twitter text-xs"></i></a>
-                    </div>
                 </div>
 
                 <!-- FEATURED IMAGE -->
                 @if($pengumuman->gambar)
                     <div class="mb-8 rounded-xl overflow-hidden">
-                        <img src="{{ asset($pengumuman->gambar) }}" alt="{{ $pengumuman->judul }}" class="w-full h-auto object-cover">
+                        <img src="{{ asset('storage/' . $pengumuman->gambar) }}" alt="{{ $pengumuman->judul }}" class="w-full h-auto object-cover">
                     </div>
                 @endif
 
@@ -56,12 +50,25 @@
 
                 <!-- PREV / NEXT BUTTONS -->
                 <div class="flex gap-2 mb-12 border-b border-white/10 pb-12">
-                    <button class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                    @if(!empty($prevUrl))
+                    <a href="{{ $prevUrl }}" class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                        <i class="fas fa-chevron-left text-[10px]"></i> Prev
+                    </a>
+                    @else
+                    <button disabled class="bg-slate-300 dark:bg-slate-800 text-slate-500 text-xs font-bold px-4 py-2 rounded flex items-center gap-2 cursor-not-allowed">
                         <i class="fas fa-chevron-left text-[10px]"></i> Prev
                     </button>
-                    <button class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                    @endif
+
+                    @if(!empty($nextUrl))
+                    <a href="{{ $nextUrl }}" class="bg-slate-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded transition flex items-center gap-2">
+                        Next <i class="fas fa-chevron-right text-[10px]"></i>
+                    </a>
+                    @else
+                    <button disabled class="bg-slate-300 dark:bg-slate-800 text-slate-500 text-xs font-bold px-4 py-2 rounded flex items-center gap-2 cursor-not-allowed">
                         Next <i class="fas fa-chevron-right text-[10px]"></i>
                     </button>
+                    @endif
                 </div>
 
                 <!-- PENGUMUMAN LAINNYA -->
@@ -72,7 +79,7 @@
                             <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
                                 @if($recent->gambar)
                                     <div class="mb-4 rounded-lg overflow-hidden h-32">
-                                        <img src="{{ asset($recent->gambar) }}" alt="{{ $recent->judul }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset('storage/' . $recent->gambar) }}" alt="{{ $recent->judul }}" class="w-full h-full object-cover">
                                     </div>
                                 @endif
                                 <a href="{{ route('pengumuman.show', $recent->slug) }}">

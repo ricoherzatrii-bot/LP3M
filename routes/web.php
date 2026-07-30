@@ -42,7 +42,11 @@ Route::get('/', function () {
     }
 
     $beritaList = \App\Models\Artikel::latest()->paginate(6);
-    return view('welcome', compact('allProfil', 'sliderItems', 'beritaList'));
+    $pengumumanAktif = \App\Models\Pengumuman::where('status', 'aktif')
+        ->orderBy('created_at', 'desc')
+        ->take(5)
+        ->get();
+    return view('welcome', compact('allProfil', 'sliderItems', 'beritaList', 'pengumumanAktif'));
 })->name('home');
 
 // --- HALAMAN DETAIL BERITA ---
@@ -264,3 +268,7 @@ Route::post('/admin/pengumuman/{pengumuman}/update', [\App\Http\Controllers\Peng
 Route::delete('/admin/pengumuman/{pengumuman}', [\App\Http\Controllers\PengumumanController::class, 'destroy'])->name('admin.pengumuman.destroy');
 
 Route::get('/admin/kuesioner-dosen/stats', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'getStats'])->name('admin.kuesioner_dosen.stats');
+
+// Template Downloads for Kuesioner Import
+Route::get('/admin/kuesioner-mahasiswa/template', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'downloadTemplateMahasiswa'])->name('admin.kuesioner_mahasiswa.template');
+Route::get('/admin/kuesioner-dosen/template', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'downloadTemplateDosen'])->name('admin.kuesioner_dosen.template');

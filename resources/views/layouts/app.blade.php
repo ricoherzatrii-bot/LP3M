@@ -72,13 +72,13 @@
         @yield('content')
     </main>
 
-    <footer class="bg-white dark:bg-slate-900 py-12 text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-white/5 transition-colors duration-500">
+    <footer class="bg-[#0056b3] py-12 text-white border-t border-[#004494] transition-colors duration-500">
         <div class="max-w-6xl mx-auto px-6 text-center">
             <div class="mb-6">
-                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" class="h-10 mx-auto dark:grayscale dark:opacity-50" alt="Logo">
+                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" class="h-16 w-auto mx-auto object-contain bg-white rounded-full p-2 shadow-lg" alt="Logo">
             </div>
-            <p class="text-sm tracking-widest uppercase">&copy; 2026 LPM Politeknik Jambi</p>
-            <p class="text-xs mt-2 opacity-50 dark:opacity-50 font-light text-slate-400">Internal Quality Assurance System (IQAS)</p>
+            <p class="text-sm tracking-widest uppercase text-white/90">&copy; 2026 LPM Politeknik Jambi</p>
+            <p class="text-xs mt-2 font-light text-white/50">Internal Quality Assurance System (IQAS)</p>
         </div>
     </footer>
 

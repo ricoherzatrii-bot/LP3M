@@ -315,12 +315,39 @@
                         </div>
                     </div>
 
+                    <!-- PENGUMUMAN TERBARU (Sidebar) -->
+                    @if(isset($pengumumanAktif) && $pengumumanAktif->count() > 0)
+                    <div class="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 shadow-sm hover:shadow-xl transition-all duration-500">
+                        <h4 class="text-slate-900 dark:text-white font-bold text-xl mb-8 relative inline-block">
+                            📢 Pengumuman
+                            <span class="absolute -bottom-2 left-0 w-12 h-1 bg-yellow-400 rounded-full"></span>
+                        </h4>
+
+                        <div class="space-y-0 divide-y divide-slate-100 dark:divide-white/5">
+                            @foreach($pengumumanAktif as $pItem)
+                            <a href="{{ route('pengumuman.show', $pItem->slug) }}" class="group block py-4 first:pt-0 last:pb-0">
+                                <span class="text-slate-700 dark:text-slate-300 font-semibold group-hover:text-[#0056b3] transition flex items-center justify-between leading-relaxed">
+                                    {{ Str::limit($pItem->judul, 60) }}
+                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0 ml-2"></i>
+                                </span>
+                                <span class="text-[10px] text-slate-400 mt-1 block">{{ $pItem->created_at ? $pItem->created_at->translatedFormat('d F Y') : '' }}</span>
+                            </a>
+                            @endforeach
+                        </div>
+
+                        <a href="{{ route('pengumuman.index') }}" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-[#0056b3] hover:text-blue-800 transition">
+                            Lihat Semua Pengumuman <i class="fas fa-arrow-right text-[9px]"></i>
+                        </a>
+                    </div>
+                    @endif
+
                 </div>
             </div>
 
         </div>
     </div>
 </section>
+
 
 
     <footer class="bg-[#004494] pt-32 pb-12 border-t border-[#003377]">
@@ -344,8 +371,8 @@
                     <div class="space-y-6">
                         <div class="text-yellow-400 mb-2">Tautan Utama</div>
                         <a href="{{ route('login') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Login Dashboard</a>
-                        <a href="{{ route('spmi.show', 'dokumen') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Dokumen SPMI</a>
-                        <a href="#" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Laporan AMI</a>
+                        <a href="{{ url('/spmi/dokumen-spmi') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Dokumen SPMI</a>
+                        <a href="{{ route('capaian.laporan_ami') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Laporan AMI</a>
                     </div>
                     <div class="space-y-6">
                         <div class="text-yellow-400 mb-2">Informasi</div>

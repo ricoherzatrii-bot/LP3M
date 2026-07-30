@@ -120,9 +120,14 @@ class ProfilController extends Controller
         $profilList = Profil::where('kategori', $profil->kategori)
             ->where('id', '!=', $profil->id)
             ->get();
+            
+        $prev = Profil::where('id', '<', $profil->id)->orderBy('id', 'desc')->first();
+        $next = Profil::where('id', '>', $profil->id)->orderBy('id', 'asc')->first();
+        $prevUrl = $prev ? route('profil.show', $prev->slug) : null;
+        $nextUrl = $next ? route('profil.show', $next->slug) : null;
 
         // 4. Kirim variabel ke view
-        return view('pages.profil.show', compact('profil', 'allProfil', 'profilList'));
+        return view('pages.profil.show', compact('profil', 'allProfil', 'profilList', 'prevUrl', 'nextUrl'));
     }
 
     /**
@@ -268,12 +273,34 @@ class ProfilController extends Controller
                 ->get();
         }
         
-        $prodiList = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Mahasiswa')
+        $prodiFromKuesioner = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Mahasiswa')
                                         ->select('prodi')
                                         ->whereNotNull('prodi')
                                         ->distinct()
-                                        ->orderBy('prodi', 'asc')
                                         ->pluck('prodi');
+        
+        // Merge with canonical prodis table
+        $prodiFromTable = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('prodis')) {
+                $prodiFromTable = \App\Models\Prodi::orderBy('nama')->pluck('nama');
+            }
+        } catch (\Exception $e) {}
+
+        // Also include prodi from akreditasi table
+        $prodiFromAkreditasi = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('akreditasi')) {
+                $prodiFromAkreditasi = \App\Models\Akreditasi::where('kategori', 'Akreditasi')->pluck('judul');
+            }
+        } catch (\Exception $e) {}
+        
+        $prodiList = $prodiFromKuesioner->merge($prodiFromTable)->merge($prodiFromAkreditasi)
+            ->map(function ($prodi) { return trim($prodi); })
+            ->filter(function ($prodi) { return !empty($prodi); })
+            ->unique(function ($prodi) { return strtolower(trim($prodi)); })
+            ->sort()
+            ->values();
         $aspekList = \App\Models\KuesionerDosenKaryawan::where('kategori', 'Mahasiswa')
                                         ->select('program')
                                         ->whereNotNull('program')

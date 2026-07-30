@@ -1,0 +1,47 @@
+{
+    "kuesioner": [
+        "id",
+        "judul",
+        "kategori",
+        "prodi",
+        "tahun_akademik",
+        "isi_artikel",
+        "link_embed_grafik",
+        "link_google_form",
+        "slug",
+        "hits",
+        "created_at",
+        "updated_at"
+    ],
+    "kuesioner_mahasiswa": [
+        "id",
+        "tahun_akademik",
+        "prodi",
+        "program",
+        "sangat_setuju",
+        "setuju",
+        "cukup_setuju",
+        "tidak_setuju",
+        "sangat_tidak_setuju",
+        "keterangan",
+        "urutan",
+        "created_at",
+        "updated_at"
+    ],
+    "kuesioner_dosen_karyawan": [
+        "id",
+        "tahun_akademik",
+        "kategori",
+        "prodi",
+        "program",
+        "sangat_setuju",
+        "setuju",
+        "cukup_setuju",
+        "tidak_setuju",
+        "sangat_tidak_setuju",
+        "keterangan",
+        "urutan",
+        "created_at",
+        "updated_at"
+    ]
+}
