@@ -110,9 +110,19 @@
                 <!-- MAIN ARTICLE -->
                 <div class="lg:w-2/3">
                     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-                        @if($berita->gambar_fitur)
+                        @php
+                            $beritaImage = $berita->gambar_fitur_url ?? $berita->gambar_fitur;
+                            if ($beritaImage && !str_starts_with($beritaImage, 'http://') && !str_starts_with($beritaImage, 'https://')) {
+                                if (!str_starts_with($beritaImage, '/storage/')) {
+                                    $beritaImage = asset('storage/' . ltrim($beritaImage, '/'));
+                                } else {
+                                    $beritaImage = asset($beritaImage);
+                                }
+                            }
+                        @endphp
+                        @if(!empty($beritaImage))
                         <div class="h-72 md:h-96 overflow-hidden">
-                            <img src="/storage/{{ $berita->gambar_fitur }}" class="w-full h-full object-cover" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
+                            <img src="{{ $beritaImage }}" class="w-full h-full object-cover" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                         </div>
                         @endif
 
@@ -145,8 +155,18 @@
                             <a href="{{ route('berita.show', $recent->slug) }}" class="group block py-4 first:pt-0 last:pb-0">
                                 <div class="flex gap-4">
                                     <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                                        @if($recent->gambar_fitur)
-                                            <img src="/storage/{{ $recent->gambar_fitur }}" class="w-full h-full object-cover" alt="" onerror="this.src='/images/gedung-poljam.png'">
+                                        @php
+                                            $recentImage = $recent->gambar_fitur_url ?? $recent->gambar_fitur;
+                                            if ($recentImage && !str_starts_with($recentImage, 'http://') && !str_starts_with($recentImage, 'https://')) {
+                                                if (!str_starts_with($recentImage, '/storage/')) {
+                                                    $recentImage = asset('storage/' . ltrim($recentImage, '/'));
+                                                } else {
+                                                    $recentImage = asset($recentImage);
+                                                }
+                                            }
+                                        @endphp
+                                        @if(!empty($recentImage))
+                                            <img src="{{ $recentImage }}" class="w-full h-full object-cover" alt="" onerror="this.src='/images/gedung-poljam.png'">
                                         @else
                                             <img src="/images/gedung-poljam.png" class="w-full h-full object-cover" alt="">
                                         @endif

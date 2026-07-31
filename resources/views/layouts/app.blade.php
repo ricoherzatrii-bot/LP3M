@@ -72,13 +72,50 @@
         @yield('content')
     </main>
 
-    <footer class="bg-[#0056b3] py-12 text-white border-t border-[#004494] transition-colors duration-500">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <div class="mb-6">
-                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" class="h-16 w-auto mx-auto object-contain bg-white rounded-full p-2 shadow-lg" alt="Logo">
+    <footer class="bg-[#004494] pt-32 pb-12 border-t border-[#003377]">
+        <div class="container mx-auto px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-20 mb-24">
+                <div class="max-w-xs">
+                    <div class="bg-white p-2 rounded-xl inline-block mb-8">
+                        <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-10 transition-all cursor-pointer">
+                    </div>
+                    <p class="text-blue-100 text-sm font-light leading-relaxed mb-8">
+                        Lembaga Penjamin Mutu Politeknik Jambi berkomitmen menjaga standar kualitas pendidikan tinggi nasional.
+                    </p>
+                    <div class="flex gap-4 relative z-50">
+                        <a href="{{ optional($socialLinks->get('instagram'))->url ?? 'https://www.instagram.com/politeknikjambi?igsh=MW1scnJubzYxbXI1OA==' }}" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-instagram"></i></a>
+                        <a href="{{ optional($socialLinks->get('tiktok'))->url ?? 'https://www.tiktok.com/@politeknikjambi?_r=1&_t=ZS-97xqcpSv8SK' }}" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-tiktok"></i></a>
+                        <a href="{{ optional($socialLinks->get('youtube'))->url ?? 'https://youtube.com/@poltekjambi?si=gP6jTcGudVbPtwB1' }}" target="_blank" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-[#004494] hover:border-yellow-400 transition-all cursor-pointer"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-20 uppercase font-black text-[10px] tracking-[0.2em] text-blue-200">
+                    <div class="space-y-6">
+                        <div class="text-yellow-400 mb-2">Tautan Utama</div>
+                        <a href="{{ route('login') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Login Dashboard</a>
+                        <a href="{{ url('/spmi/dokumen-spmi') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Dokumen SPMI</a>
+                        <a href="{{ route('capaian.laporan_ami') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Laporan AMI</a>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="text-yellow-400 mb-2">Informasi</div>
+                        <a href="{{ route('profil.show', 'visi-dan-misi') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Visi & Misi</a>
+                        <a href="{{ route('akreditasi.index') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Akreditasi</a>
+                        <a href="{{ route('gallery.index') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Galeri</a>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="text-yellow-400 mb-2">Alamat</div>
+                        <span class="block lowercase font-medium text-white">Jalan Lingkar Barat II, Lorong Veteran</span>
+                        <span class="block lowercase font-medium text-white">Kelurahan: Pinang Merah / Bagan Pete</span>
+                        <span class="block lowercase font-medium text-white">Kecamatan: Alam Barajo</span>
+                         <span class="block lowercase font-medium text-white">Kota: Kota Jambi, 36129</span>
+                    </div>
+                </div>
             </div>
-            <p class="text-sm tracking-widest uppercase text-white/90">&copy; 2026 LPM Politeknik Jambi</p>
-            <p class="text-xs mt-2 font-light text-white/50">Internal Quality Assurance System (IQAS)</p>
+            <div class="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between gap-8 items-center">
+                <span class="text-[10px] font-bold text-blue-200 uppercase tracking-[0.3em]">© 2026 LPM Politeknik Jambi.</span>
+                <div class="flex gap-10 text-[9px] font-black uppercase tracking-widest text-blue-200">
+                </div>
+            </div>
         </div>
     </footer>
 

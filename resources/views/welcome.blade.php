@@ -126,8 +126,18 @@
                     @foreach($sliderItems as $index => $item)
                         <a href="{{ $item->url }}" class="slider-item absolute inset-0 opacity-0 transition-all duration-1000 z-0 {{ $index == 0 ? 'opacity-100 z-10' : '' }}" data-index="{{ $index }}">
                             <div class="relative h-full w-full overflow-hidden">
-                                @if($item->gambar)
-                                    <img src="/storage/{{ $item->gambar }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" onerror="this.src='/images/gedung-poljam.png'">
+                                @php
+                                    $sliderImage = $item->gambar_url ?? $item->gambar;
+                                    if ($sliderImage && !str_starts_with($sliderImage, 'http://') && !str_starts_with($sliderImage, 'https://')) {
+                                        if (!str_starts_with($sliderImage, '/storage/')) {
+                                            $sliderImage = asset('storage/' . ltrim($sliderImage, '/'));
+                                        } else {
+                                            $sliderImage = asset($sliderImage);
+                                        }
+                                    }
+                                @endphp
+                                @if(!empty($sliderImage))
+                                    <img src="{{ $sliderImage }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                                 @else
                                     <img src="/images/gedung-poljam.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">
                                 @endif
@@ -182,8 +192,18 @@
                         <a href="{{ route('berita.show', $berita->slug) }}" class="group block bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-[#0056b3] transition-all duration-500 shadow-sm hover:shadow-xl">
                             <div class="md:flex">
                                 <div class="md:w-1/2 h-64 md:h-auto overflow-hidden relative">
-                                    @if($berita->gambar_fitur)
-                                        <img src="/storage/{{ $berita->gambar_fitur }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
+                                    @php
+                                        $featureImage = $berita->gambar_fitur_url ?? $berita->gambar_fitur;
+                                        if ($featureImage && !str_starts_with($featureImage, 'http://') && !str_starts_with($featureImage, 'https://')) {
+                                            if (!str_starts_with($featureImage, '/storage/')) {
+                                                $featureImage = asset('storage/' . ltrim($featureImage, '/'));
+                                            } else {
+                                                $featureImage = asset($featureImage);
+                                            }
+                                        }
+                                    @endphp
+                                    @if(!empty($featureImage))
+                                        <img src="{{ $featureImage }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                                     @else
                                         <img src="/images/gedung-poljam.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 min-h-[280px]" alt="{{ $berita->judul }}">
                                     @endif
@@ -207,8 +227,18 @@
                         {{-- REGULAR ARTICLE CARDS --}}
                         <a href="{{ route('berita.show', $berita->slug) }}" class="group flex gap-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-[#0056b3] transition-all duration-500 shadow-sm hover:shadow-lg p-4">
                             <div class="w-40 h-32 md:w-48 md:h-36 flex-shrink-0 rounded-xl overflow-hidden relative">
-                                @if($berita->gambar_fitur)
-                                    <img src="/storage/{{ $berita->gambar_fitur }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
+                                @php
+                                    $featureImage = $berita->gambar_fitur_url ?? $berita->gambar_fitur;
+                                    if ($featureImage && !str_starts_with($featureImage, 'http://') && !str_starts_with($featureImage, 'https://')) {
+                                        if (!str_starts_with($featureImage, '/storage/')) {
+                                            $featureImage = asset('storage/' . ltrim($featureImage, '/'));
+                                        } else {
+                                            $featureImage = asset($featureImage);
+                                        }
+                                    }
+                                @endphp
+                                @if(!empty($featureImage))
+                                    <img src="{{ $featureImage }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
                                 @else
                                     <img src="/images/gedung-poljam.png" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $berita->judul }}">
                                 @endif
@@ -380,19 +410,19 @@
                         <a href="{{ route('akreditasi.index') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Akreditasi</a>
                         <a href="{{ route('gallery.index') }}" class="block text-white hover:text-yellow-400 hover:translate-x-2 transition">Galeri</a>
                     </div>
-                    <div class="space-y-6">
-                        <div class="text-yellow-400 mb-2">Kontak</div>
+                     <div class="space-y-6">
+                        <div class="text-yellow-400 mb-2">Alamat</div>
                         <span class="block lowercase font-medium text-white">Jalan Lingkar Barat II, Lorong Veteran</span>
-                        <span class="block lowercase font-medium text-white">Kenali Asam Atas, Kotabaru</span>
-                        <span class="block lowercase font-medium text-white">Kota Jambi, Indonesia</span>
+                        <span class="block lowercase font-medium text-white">Kelurahan: Pinang Merah / Bagan Pete</span>
+                        <span class="block lowercase font-medium text-white">Kecamatan: Alam Barajo</span>
+                         <span class="block lowercase font-medium text-white">Kota: Kota Jambi, 36129</span>
                     </div>
                 </div>
             </div>
             <div class="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between gap-8 items-center">
-                <span class="text-[10px] font-bold text-blue-200 uppercase tracking-[0.3em]">© 2026 LPM Politeknik Jambi. All Rights Reserved.</span>
+                <span class="text-[10px] font-bold text-blue-200 uppercase tracking-[0.3em]">© 2026 LPM Politeknik Jambi.</span>
                 <div class="flex gap-10 text-[9px] font-black uppercase tracking-widest text-blue-200">
-                    <a href="#" class="hover:text-yellow-400">Privacy Policy</a>
-                    <a href="#" class="hover:text-yellow-400">Terms of Service</a>
+                
                 </div>
             </div>
         </div>

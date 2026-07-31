@@ -21,8 +21,18 @@
                     <article class="group bg-white dark:bg-slate-800/40 backdrop-blur-md rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-blue-500/30 transition-all duration-500 shadow-sm">
                         <!-- Article Image -->
                         <div class="h-64 overflow-hidden bg-slate-200 dark:bg-slate-700">
-                            @if($item->gambar)
-                                <img src="{{ asset('storage/' . $item->gambar) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" 
+                            @php
+                                $articleImage = $item->gambar;
+                                if ($articleImage && !str_starts_with($articleImage, 'http://') && !str_starts_with($articleImage, 'https://')) {
+                                    if (!str_starts_with($articleImage, '/storage/')) {
+                                        $articleImage = asset('storage/' . ltrim($articleImage, '/'));
+                                    } else {
+                                        $articleImage = asset($articleImage);
+                                    }
+                                }
+                            @endphp
+                            @if(!empty($articleImage))
+                                <img src="{{ $articleImage }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}" 
                                      onerror="this.onerror=null; this.src='{{ asset('images/gedung-poljam.png') }}';">
                             @else
                                 <img src="{{ asset('images/gedung-poljam.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $item->judul }}">

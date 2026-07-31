@@ -6,13 +6,15 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/dashboard.js'],
-            refresh: true,
+            publicDirectory: 'public',
+            hotFile: 'public/hot',
+            refresh: ['resources/views/**/*.blade.php'],
         }),
         tailwindcss(),
     ],
     server: {
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            ignored: ['storage/framework/views/**'],
         },
     },
 });

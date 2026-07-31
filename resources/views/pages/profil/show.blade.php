@@ -95,20 +95,6 @@
                     @endif
                 </div>
 
-                <!-- ARTIKEL LAINNYA -->
-                <div>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Artikel Lainnya</h3>
-                    <div class="grid md:grid-cols-3 gap-6">
-                        <!-- Card 3 -->
-                        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition">
-                            <h4 class="text-slate-900 dark:text-white font-bold mb-4 line-clamp-2 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition">Moto Dan Janji Layanan</h4>
-                            <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
-                                Admin <span class="text-slate-300 dark:text-white/20 mx-1">•</span> 03 February 2023
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
             <!-- SIDEBAR (1/3) -->

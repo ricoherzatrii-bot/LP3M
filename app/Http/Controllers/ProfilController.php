@@ -67,13 +67,26 @@ class ProfilController extends Controller
             
             $articles->getCollection()->transform(function ($article) {
                 $dateObj = $article->updated_at ?? $article->created_at ?? now();
+                $imageUrl = null;
+
+                if ($article->gambar_fitur) {
+                    if (str_starts_with($article->gambar_fitur, 'http://') || str_starts_with($article->gambar_fitur, 'https://')) {
+                        $imageUrl = $article->gambar_fitur;
+                    } else {
+                        $storagePath = public_path('storage/' . ltrim($article->gambar_fitur, '/'));
+                        if (file_exists($storagePath)) {
+                            $imageUrl = asset('storage/' . ltrim($article->gambar_fitur, '/'));
+                        }
+                    }
+                }
+
                 return (object)[
                     'judul' => $article->judul,
                     'tanggal' => $dateObj->translatedFormat('d F Y'),
                     'hits' => 0,
                     'deskripsi' => Str::limit(strip_tags($article->isi_konten), 150),
                     'slug' => $article->slug,
-                    'gambar' => $article->gambar_fitur
+                    'gambar' => $imageUrl
                 ];
             });
             $items = $articles;

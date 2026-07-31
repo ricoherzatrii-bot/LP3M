@@ -1,1 +1,0 @@
-{"id":559,"tahun_akademik":"2022 Ganjil","kategori":"Mahasiswa","prodi":"D3 Elektronika","program":"Reliability","sangat_setuju":68.95,"setuju":29.22,"cukup_setuju":0,"tidak_setuju":1.45,"sangat_tidak_setuju":0.38,"keterangan":null,"urutan":0,"created_at":"2026-07-01T06:34:15.000000Z","updated_at":"2026-07-01T06:34:15.000000Z"}

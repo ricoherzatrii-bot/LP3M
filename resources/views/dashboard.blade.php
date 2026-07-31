@@ -30,6 +30,16 @@
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.4); }
 
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x;
+        }
+        @media (max-width: 768px) {
+            .table-responsive table {
+                min-width: 720px;
+            }
+        }
+
         /* Floating Content Area */
         .app-container {
             height: 100vh;
@@ -524,7 +534,7 @@
     </div>
 
     <!-- UNIVERSAL MODALS FOR CRUD -->
-    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-all opacity-0 pointer-events-none" style="transition: opacity 0.3s ease;">
+    <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] hidden flex items-center justify-center p-4 transition-all opacity-0 pointer-events-none" style="transition: opacity 0.3s ease;">
         
         <!-- EDIT MODAL -->
         <div id="modalEdit" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden transform scale-95 transition-transform duration-300 hidden flex-col">
@@ -1497,7 +1507,7 @@
 
                                 <!-- Table Area -->
                                 <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] overflow-hidden border border-white shadow-[0_15px_40px_rgba(0,0,0,0.03)]">
-                                    <div class="overflow-x-auto">
+                                    <div class="overflow-x-auto table-responsive">
                                         <table class="w-full text-left border-collapse">
                                             <thead class="bg-slate-50/50">
                                                 <tr>
@@ -1638,9 +1648,24 @@
                 } else if (isImageField(field)) {
                     // Show current image preview if exists
                     const isURL = val && (val.startsWith('http://') || val.startsWith('https://'));
+                    const isLogoField = field.toLowerCase() === 'logo_file';
                     let previewHtml = '';
+                    
                     if (val && !isURL) {
-                        previewHtml = `<div class="mb-3"><img src="/storage/${val}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">File/Gambar saat ini: ${val}</p></div>`;
+                        // Determine preview URL based on path format
+                        let previewSrc = '';
+                        if (val.startsWith('/')) {
+                            previewSrc = val.includes('storage/') ? val : '/storage/' + val;
+                        } else if (val.includes('storage/')) {
+                            previewSrc = '/' + val;
+                        } else if (val.includes('images/')) {
+                            previewSrc = '/' + val;
+                        } else {
+                            previewSrc = '/storage/' + val;
+                        }
+                        previewHtml = `<div class="mb-3"><img src="${previewSrc}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">File/Gambar saat ini: ${val}</p></div>`;
+                    } else if (val && isURL) {
+                        previewHtml = `<div class="mb-3"><img src="${val}" class="h-24 w-auto rounded-xl border border-slate-200 shadow-sm object-cover" onerror="this.style.display='none'"><p class="text-[10px] text-slate-400 mt-1 font-semibold">File/Gambar saat ini (URL)</p></div>`;
                     }
                     
                     const isDocField = field.toLowerCase().includes('file') || field.toLowerCase().includes('dokumen');
@@ -1648,7 +1673,7 @@
                     let acceptAttr = "image/*";
                     let formatText = "Format: JPG, PNG, WEBP. Max: 2MB";
                     
-                    if (isDocField) {
+                    if (isDocField && !isLogoField) {
                         acceptAttr = ".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,image/*";
                         formatText = "Format: PDF, DOC, DOCX, XLS, XLSX, ZIP, RAR, Gambar. Max: 10MB";
                         urlInputHtml = `
@@ -1659,10 +1684,13 @@
                         `;
                     }
                     
+                    const logoOnlyText = isLogoField ? `<p class="text-[10px] text-blue-600 font-semibold mt-2">💡 Unggah logo dengan format gambar (JPG, PNG, WEBP)</p>` : '';
+                    
                     inputHtml = `
                         ${previewHtml}
                         <input type="file" id="field-${containerId}-${field}" accept="${acceptAttr}" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:tracking-widest file:shadow-lg transition-all cursor-pointer">
                         <p class="text-[10px] text-slate-400 mt-2 font-medium">${formatText}</p>
+                        ${logoOnlyText}
                         ${urlInputHtml}
                     `;
                 } else if (isTextArea) {

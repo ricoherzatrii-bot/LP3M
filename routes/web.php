@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use App\Http\Controllers\ProfilController;
 
 /*
@@ -18,13 +19,33 @@ Route::get('/', function () {
     $sliderItems = collect();
     if ($sliders->count() > 0) {
         foreach($sliders as $s) {
-            $sliderItems->push((object)[
-                'judul' => $s->judul,
-                'subjudul' => $s->sub_judul,
-                'gambar' => $s->gambar,
-                'url' => $s->link_url ?? '#',
-                'is_external' => true
-            ]);
+            $sliderUrl = null;
+
+            if ($s->gambar) {
+                if (str_starts_with($s->gambar, 'http://') || str_starts_with($s->gambar, 'https://')) {
+                    $sliderUrl = $s->gambar;
+                } else {
+                    $storagePath = public_path('storage/' . ltrim($s->gambar, '/'));
+                    $imagePath = public_path('images/' . ltrim($s->gambar, '/'));
+
+                    if (file_exists($storagePath)) {
+                        $sliderUrl = asset('storage/' . ltrim($s->gambar, '/'));
+                    } elseif (file_exists($imagePath)) {
+                        $sliderUrl = asset('images/' . ltrim($s->gambar, '/'));
+                    }
+                }
+            }
+
+            if ($sliderUrl) {
+                $sliderItems->push((object)[
+                    'judul' => $s->judul,
+                    'subjudul' => $s->sub_judul,
+                    'gambar' => $s->gambar,
+                    'gambar_url' => $sliderUrl,
+                    'url' => $s->link_url ?? '#',
+                    'is_external' => true
+                ]);
+            }
         }
     } else {
         // Fallback ke Artikel
@@ -34,6 +55,7 @@ Route::get('/', function () {
                 'judul' => $a->judul,
                 'subjudul' => Str::limit(strip_tags($a->isi_konten), 100),
                 'gambar' => $a->gambar_fitur,
+                'gambar_url' => $a->gambar_fitur_url,
                 'url' => route('berita.show', $a->slug),
                 'is_external' => false,
                 'created_at' => $a->created_at

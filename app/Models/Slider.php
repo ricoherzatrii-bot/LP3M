@@ -18,13 +18,26 @@ class Slider extends Model
     ];
 
     /**
-     * URL publik untuk gambar slider
+     * Accessor untuk URL gambar slider - automatically convert path to asset URL
      */
-    public function getImageUrlAttribute(): ?string
+    public function getGambarUrlAttribute(): ?string
     {
-        if ($this->gambar) {
-            return asset('storage/' . $this->gambar);
+        if (!$this->gambar) {
+            return asset('images/gedung-poljam.png');
         }
-        return asset('images/gedung-poljam.png');
+        
+        $path = $this->gambar;
+        
+        // If it's already a full URL, return as-is
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+        
+        // If it's a relative path, prepend /storage/
+        if (!str_starts_with($path, '/storage/')) {
+            return asset('storage/' . $path);
+        }
+        
+        return asset($path);
     }
 }

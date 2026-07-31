@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
 
                 if (Schema::hasTable((new BrandAsset)->getTable())) {
                     $brandAssets = BrandAsset::select('key', 'logo_file')->get()->keyBy('key')->map(function ($item) {
-                        $path = trim($item->logo_file ?? '');
+                        $path = trim((string) ($item->logo_file ?? ''));
                         if (!$path) {
                             $item->logo_url = null;
                             return $item;
@@ -48,16 +48,25 @@ class AppServiceProvider extends ServiceProvider
 
                         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
                             $item->logo_url = $path;
-                        } elseif (str_starts_with($path, 'storage/')) {
+                        } elseif (str_starts_with($path, 'storage/') || str_starts_with($path, '/storage/')) {
                             $item->logo_url = asset($path);
-                        } elseif (str_starts_with($path, 'uploads/')) {
-                            $item->logo_url = asset('storage/' . $path);
+                        } elseif (str_starts_with($path, 'uploads/') || str_starts_with($path, '/uploads/')) {
+                            $item->logo_url = asset('storage/' . ltrim($path, '/'));
                         } else {
-                            $item->logo_url = asset($path);
+                            $normalizedPath = ltrim($path, '/');
+                            $publicPath = public_path($normalizedPath);
+                            $item->logo_url = file_exists($publicPath)
+                                ? asset($normalizedPath)
+                                : asset('storage/' . $normalizedPath);
                         }
 
                         return $item;
                     });
+
+                    // Compatibility alias for older database records using key 'logo'
+                    if (!$brandAssets->has('logo_poljam') && $brandAssets->has('logo')) {
+                        $brandAssets->put('logo_poljam', $brandAssets->get('logo'));
+                    }
                 }
 
                 $view->with('allProfil', $allProfil);

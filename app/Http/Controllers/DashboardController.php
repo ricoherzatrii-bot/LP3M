@@ -644,12 +644,15 @@ class DashboardController extends Controller
                         // Check if document or image based on key
                         $isDoc = str_contains(strtolower($key), 'dokumen')
                             || (str_contains(strtolower($key), 'file') && strtolower($key) !== 'logo_file');
-                        $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
+                        $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpeg,jpg,png,webp,gif|max:5120';
                         $request->validate([$key => $rules]);
                         
                         // Delete old file if exists
-                        if ($record->$key && \Storage::disk('public')->exists($record->$key) && !str_starts_with($record->$key, 'http://') && !str_starts_with($record->$key, 'https://')) {
-                            \Storage::disk('public')->delete($record->$key);
+                        if ($record->$key && !str_starts_with($record->$key, 'http://') && !str_starts_with($record->$key, 'https://')) {
+                            $oldPath = ltrim($record->$key, '/');
+                            if ($oldPath && \Storage::disk('public')->exists($oldPath)) {
+                                \Storage::disk('public')->delete($oldPath);
+                            }
                         }
                         $updateData[$key] = $request->file($key)->store('uploads', 'public');
                     } else {
@@ -678,10 +681,22 @@ class DashboardController extends Controller
                 // Tambahkan auto-slug jika ada judul dan tabel memiliki kolom slug
                 $hasSlugColumn = \Schema::hasColumn((new $modelClass)->getTable(), 'slug');
                 if ($hasSlugColumn) {
+                    $baseSlug = '';
                     if (isset($updateData['judul'])) {
-                        $updateData['slug'] = Str::slug($updateData['judul']);
+                        $baseSlug = Str::slug($updateData['judul']);
                     } elseif (isset($updateData['nama_album'])) {
-                        $updateData['slug'] = Str::slug($updateData['nama_album']);
+                        $baseSlug = Str::slug($updateData['nama_album']);
+                    }
+                    
+                    if ($baseSlug) {
+                        // Check if slug already exists for other records and make it unique if needed
+                        $slug = $baseSlug;
+                        $counter = 1;
+                        while ($modelClass::where('slug', $slug)->where('id', '!=', $record->id)->exists()) {
+                            $slug = $baseSlug . '-' . $counter;
+                            $counter++;
+                        }
+                        $updateData['slug'] = $slug;
                     }
                 }
 
@@ -760,7 +775,7 @@ class DashboardController extends Controller
                     // Check if document or image based on key
                     $isDoc = str_contains(strtolower($key), 'dokumen')
                         || (str_contains(strtolower($key), 'file') && strtolower($key) !== 'logo_file');
-                    $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpg,jpeg,png,webp|max:2048';
+                    $rules = $isDoc ? 'mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240' : 'image|mimes:jpeg,jpg,png,webp,gif|max:5120';
                     $request->validate([$key => $rules]);
                     $insertData[$key] = $request->file($key)->store('uploads', 'public');
                 } else {
@@ -791,14 +806,24 @@ class DashboardController extends Controller
             // Tambahkan auto-slug hanya jika tabel memiliki kolom slug
             $hasSlugColumn = \Schema::hasColumn((new $modelClass)->getTable(), 'slug');
             if ($hasSlugColumn) {
+                $baseSlug = '';
                 if (isset($finalData['judul'])) {
-                    $finalData['slug'] = Str::slug($finalData['judul']);
+                    $baseSlug = Str::slug($finalData['judul']);
                 } elseif (isset($finalData['nama_album'])) {
-                    $finalData['slug'] = Str::slug($finalData['nama_album']);
+                    $baseSlug = Str::slug($finalData['nama_album']);
                 } else {
                     // Fallback for missing title when generating slug
-                    $finalData['slug'] = 'post-' . time() . '-' . rand(100, 999);
+                    $baseSlug = 'post-' . time() . '-' . rand(100, 999);
                 }
+                
+                // Check if slug already exists and make it unique if needed
+                $slug = $baseSlug;
+                $counter = 1;
+                while ($modelClass::where('slug', $slug)->exists()) {
+                    $slug = $baseSlug . '-' . $counter;
+                    $counter++;
+                }
+                $finalData['slug'] = $slug;
             }
 
             $record = $modelClass::create($finalData);
