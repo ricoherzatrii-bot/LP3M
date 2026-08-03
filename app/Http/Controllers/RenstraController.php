@@ -266,43 +266,41 @@ class RenstraController extends Controller
     public function downloadTemplate()
     {
         $headers = [
-            'Program (Renstra)',
-            'Indikator Kinerja',
-            'PIC (Contoh: WD 1)',
-            'Target (%)',
-            'Realisasi (%)',
-            'Tahun (YYYY)'
+            'Tahun',
+            'I. Pengembangan Sistem Pengelolaan berbasis SMART Campus untuk Menuju kualitas Regional',
+            'II. Membangun Poltek Jambi branding melalui global networking for global partnership',
+            'III. Menjadi pusat penyelenggaraan kegiatan akademik yang unggul dan berlandaskan academic excellence berstandar nasional dan internasional',
+            'IV. Menjadi pusat penelitian yang unggul (research excellence) sesuai perkembangan IPTEKS yang berorientasi pada pemberdayaan masyarakat',
+            'V. Kualitas sumberdaya manusia melalui manajemen berbasis kinerja',
+            'VI. Kualitas manajemen aset yang integratif, efektif dan efisien melalui kebijakan resources sharing, berwawasan lingkungan dan berkelanjutan',
+            'VII. Kapasitas institusi dalam pengelolaan',
+            'IX. Kemandirian keuangan dengan pengelolaan yang akuntabel dan transparan, efektif, dan efisien sesuai standar yang berlaku'
         ];
 
-        $callback = function() use ($headers) {
+        $rows = [
+            ['2021', '51.00%', '45.93%', '34.14%', '40.67%', '27.27%', '66.67%', '29.88%', '60.00%'],
+            ['2022', '75.00%', '58.62%', '42.22%', '80.00%', '45.45%', '82.61%', '53.33%', '62.50%'],
+            ['2023', '61.11%', '62.50%', '64.86%', '33.33%', '54.55%', '82.61%', '80.00%', '100.00%'],
+            ['2024', '61.54%', '46.15%', '48.89%', '100.00%', '75.00%', '56.62%', '86.67%', '71.43%'],
+            ['2025', '97.56%', '34.00%', '57.35%', '93.02%', '28.57%', '60.98%', '66.67%', '55.56%'],
+            ['2026', '20.00%', '30.00%', '47.00%', '60.00%', '55.00%', '33.00%', '33.00%', '80.00%'],
+            ['Rata2 Capaian', '60.86%', '', '', '', '', '', '', '', '']
+        ];
+
+        $callback = function() use ($headers, $rows) {
             $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
             fputcsv($file, $headers);
-            
-            // Add a sample row for guidance
-            fputcsv($file, [
-                'R 1: Kesiapan Kerja Lulusan',
-                'Tingkat kepuasan pengguna lulusan',
-                'WD 3',
-                '80',
-                '75',
-                '2026'
-            ]);
-            
-            // Add another row to show program omission (grouping)
-            fputcsv($file, [
-                '',
-                'Jumlah Lulusan Bekerja Tingkat Nasional',
-                'WD 3',
-                '70',
-                '68',
-                '2026'
-            ]);
+
+            foreach ($rows as $row) {
+                fputcsv($file, $row);
+            }
 
             fclose($file);
         };
 
         return response()->streamDownload($callback, 'template_renstra_poljam.csv', [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 }

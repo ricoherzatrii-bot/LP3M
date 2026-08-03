@@ -1995,6 +1995,9 @@
                                 <i class="fas fa-trash-alt"></i> Kosongkan Data
                             </button>
                         </form>
+                        <a href="{{ route('admin.renstra.template') }}" class="inline-flex items-center justify-center gap-2 w-full mt-4 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest px-4 py-4 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+                            <i class="fas fa-download"></i> Download Template CSV
+                        </a>
                         <div class="mt-8 p-6 rounded-2xl bg-amber-50 border border-amber-100">
                             <h4 class="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-2"><i class="fas fa-info-circle mr-1"></i> Format Matriks (Column A-I)</h4>
                             <p class="text-[10px] text-amber-600 leading-relaxed font-semibold">
