@@ -233,8 +233,16 @@ class RenstraController extends Controller
 
     public function bulkUpdate(Request $request)
     {
+        $request->validate([
+            'data' => 'required|array',
+            'data.*.id' => 'required|integer',
+            'data.*.indikator' => 'nullable|string|max:255',
+            'data.*.pic' => 'nullable|string|max:255',
+            'data.*.target' => 'nullable|numeric',
+            'data.*.realisasi' => 'nullable|numeric',
+        ]);
+
         $rows = $request->input('data');
-        if (!is_array($rows)) return response()->json(['success' => false, 'message' => 'Invalid data format']);
 
         foreach ($rows as $row) {
             $renstra = CapaianRenstra::find($row['id']);

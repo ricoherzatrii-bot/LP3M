@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Profil;
+use App\Helpers\HtmlSanitizer;
 use App\Models\Spmi;
 use App\Models\Akreditasi;
 use App\Models\Capaian;
@@ -76,7 +78,7 @@ class DashboardController extends Controller
             // Merge prodi names from all sources: prodis table + akreditasi table
             $prodiNames = collect();
 
-            if (\Illuminate\Support\Facades\Schema::hasTable((new Prodi)->getTable())) {
+            if (Schema::hasTable((new Prodi)->getTable())) {
                 $prodiNames = $prodiNames->merge(Prodi::pluck('nama'));
             }
 
@@ -617,7 +619,7 @@ class DashboardController extends Controller
                     $record->$col = $val;
                 }
             }
-            $record->isi_konten = $request->input('isi_konten');
+            $record->isi_konten = HtmlSanitizer::sanitize($request->input('isi_konten'));
             $record->save();
 
             return response()->json(['success' => true, 'message' => 'Konten halaman ' . $title . ' berhasil diperbarui!']);
@@ -637,6 +639,22 @@ class DashboardController extends Controller
 
             $updateData = $request->except(['title', 'id', '_token']);
 
+            // Validasi input string untuk mencegah XSS & buffer overflow
+            $stringValidationRules = [];
+            foreach ($updateData as $key => $value) {
+                if ($key === 'isi_konten') {
+                    $stringValidationRules[$key] = 'nullable|string';
+                } elseif (!$this->isFileField($key) && !is_array($value)) {
+                    $stringValidationRules[$key] = 'nullable|string|max:255';
+                }
+            }
+            $request->validate($stringValidationRules);
+
+            // Sanitasi isi_konten dari CKEditor untuk mencegah XSS
+            if (isset($updateData['isi_konten'])) {
+                $updateData['isi_konten'] = HtmlSanitizer::sanitize($updateData['isi_konten']);
+            }
+
             // Handle file uploads for image fields
             foreach ($updateData as $key => $value) {
                 if ($this->isFileField($key)) {
@@ -650,8 +668,8 @@ class DashboardController extends Controller
                         // Delete old file if exists
                         if ($record->$key && !str_starts_with($record->$key, 'http://') && !str_starts_with($record->$key, 'https://')) {
                             $oldPath = ltrim($record->$key, '/');
-                            if ($oldPath && \Storage::disk('public')->exists($oldPath)) {
-                                \Storage::disk('public')->delete($oldPath);
+                            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                                Storage::disk('public')->delete($oldPath);
                             }
                         }
                         $updateData[$key] = $request->file($key)->store('uploads', 'public');
@@ -669,7 +687,7 @@ class DashboardController extends Controller
                 if (str_contains(strtolower($key), 'tanggal') || str_contains(strtolower($key), 'date')) {
                     if ($value) {
                         try {
-                            $updateData[$key] = \Carbon\Carbon::parse($value)->format('Y-m-d');
+                            $updateData[$key] = Carbon::parse($value)->format('Y-m-d');
                         } catch (\Exception $e) {
                             // Fallback to original value if parsing fails
                         }
@@ -679,7 +697,7 @@ class DashboardController extends Controller
             
             try {
                 // Tambahkan auto-slug jika ada judul dan tabel memiliki kolom slug
-                $hasSlugColumn = \Schema::hasColumn((new $modelClass)->getTable(), 'slug');
+                $hasSlugColumn = Schema::hasColumn((new $modelClass)->getTable(), 'slug');
                 if ($hasSlugColumn) {
                     $baseSlug = '';
                     if (isset($updateData['judul'])) {
@@ -706,21 +724,21 @@ class DashboardController extends Controller
                 if ($modelClass === \App\Models\Prodi::class && $oldProdiName && isset($updateData['nama']) && $oldProdiName !== $updateData['nama']) {
                     $newProdiName = $updateData['nama'];
                     
-                    if (\Illuminate\Support\Facades\Schema::hasColumn('kuesioner_dosen_karyawan', 'prodi')) {
-                        \DB::table('kuesioner_dosen_karyawan')
+                    if (Schema::hasColumn('kuesioner_dosen_karyawan', 'prodi')) {
+                        DB::table('kuesioner_dosen_karyawan')
                             ->where('prodi', $oldProdiName)
                             ->update(['prodi' => $newProdiName]);
                     }
-                    if (\Illuminate\Support\Facades\Schema::hasColumn('kuesioners', 'prodi') || \Illuminate\Support\Facades\Schema::hasTable('kuesioner')) {
-                        $kuesionerTable = \Illuminate\Support\Facades\Schema::hasTable('kuesioners') ? 'kuesioners' : 'kuesioner';
-                        if (\Illuminate\Support\Facades\Schema::hasColumn($kuesionerTable, 'prodi')) {
-                            \DB::table($kuesionerTable)
+                    if (Schema::hasColumn('kuesioners', 'prodi') || Schema::hasTable('kuesioner')) {
+                        $kuesionerTable = Schema::hasTable('kuesioners') ? 'kuesioners' : 'kuesioner';
+                        if (Schema::hasColumn($kuesionerTable, 'prodi')) {
+                            DB::table($kuesionerTable)
                                 ->where('prodi', $oldProdiName)
                                 ->update(['prodi' => $newProdiName]);
                         }
                     }
-                    if (\Illuminate\Support\Facades\Schema::hasColumn('akreditasi', 'judul')) {
-                        \DB::table('akreditasi')
+                    if (Schema::hasColumn('akreditasi', 'judul')) {
+                        DB::table('akreditasi')
                             ->where('kategori', 'Akreditasi')
                             ->where('judul', $oldProdiName)
                             ->update(['judul' => $newProdiName]);
@@ -768,6 +786,22 @@ class DashboardController extends Controller
         $modelClass = $mapping['model'];
         $insertData = $request->except(['title', '_token']);
 
+        // Validasi input string untuk mencegah XSS & buffer overflow
+        $stringValidationRules = [];
+        foreach ($insertData as $key => $value) {
+            if ($key === 'isi_konten') {
+                $stringValidationRules[$key] = 'nullable|string';
+            } elseif (!$this->isFileField($key) && !is_array($value)) {
+                $stringValidationRules[$key] = 'nullable|string|max:255';
+            }
+        }
+        $request->validate($stringValidationRules);
+
+        // Sanitasi isi_konten dari CKEditor untuk mencegah XSS
+        if (isset($insertData['isi_konten'])) {
+            $insertData['isi_konten'] = HtmlSanitizer::sanitize($insertData['isi_konten']);
+        }
+
         // Handle file uploads for image fields
         foreach ($insertData as $key => $value) {
             if ($this->isFileField($key)) {
@@ -791,7 +825,7 @@ class DashboardController extends Controller
             if (str_contains(strtolower($key), 'tanggal') || str_contains(strtolower($key), 'date')) {
                 if ($value) {
                     try {
-                        $insertData[$key] = \Carbon\Carbon::parse($value)->format('Y-m-d');
+                        $insertData[$key] = Carbon::parse($value)->format('Y-m-d');
                     } catch (\Exception $e) {
                         // Fallback to original value if parsing fails
                     }
@@ -804,7 +838,7 @@ class DashboardController extends Controller
             $finalData = array_merge($mapping['query'], $mapping['defaults'], $insertData);
 
             // Tambahkan auto-slug hanya jika tabel memiliki kolom slug
-            $hasSlugColumn = \Schema::hasColumn((new $modelClass)->getTable(), 'slug');
+            $hasSlugColumn = Schema::hasColumn((new $modelClass)->getTable(), 'slug');
             if ($hasSlugColumn) {
                 $baseSlug = '';
                 if (isset($finalData['judul'])) {

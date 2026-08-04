@@ -37,7 +37,7 @@
                                 </div>
                                 <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-[#0056b3] transition leading-tight">{{ $item->judul }}</h3>
                                 <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                                    {!! $item->search_excerpt ?? Str::limit(strip_tags($item->isi_konten ?? $item->isi ?? $item->deskripsi ?? $item->isi_artikel ?? ''), 180) !!}
+                                    {{ $item->search_excerpt ?? Str::limit(strip_tags($item->isi_konten ?? $item->isi ?? $item->deskripsi ?? $item->isi_artikel ?? ''), 180) }}
                                 </p>
                             </div>
                             <div class="flex-shrink-0 items-center justify-center hidden md:flex">
@@ -66,3 +66,4 @@
 </div>
 
 @endsection
+

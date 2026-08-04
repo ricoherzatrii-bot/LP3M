@@ -21,9 +21,9 @@ class KuesionerPertanyaanController extends Controller
     {
         $validated = $request->validate([
             'kuesioner_id' => 'required|exists:kuesioner,id',
-            'pertanyaan'   => 'required|string',
+            'pertanyaan'   => 'required|string|max:1000',
             'tipe_jawaban' => 'required|in:skala_likert,teks,pilihan_ganda',
-            'opsi_jawaban' => 'nullable|string',
+            'opsi_jawaban' => 'nullable|string|max:1000',
             'urutan'       => 'nullable|integer'
         ]);
 
@@ -41,9 +41,9 @@ class KuesionerPertanyaanController extends Controller
         $pertanyaan = KuesionerPertanyaan::findOrFail($id);
         
         $validated = $request->validate([
-            'pertanyaan'   => 'sometimes|required|string',
+            'pertanyaan'   => 'sometimes|required|string|max:1000',
             'tipe_jawaban' => 'sometimes|required|in:skala_likert,teks,pilihan_ganda',
-            'opsi_jawaban' => 'nullable|string',
+            'opsi_jawaban' => 'nullable|string|max:1000',
             'urutan'       => 'nullable|integer'
         ]);
 

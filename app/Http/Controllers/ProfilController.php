@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Profil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use App\Helpers\HtmlSanitizer;
 
 class ProfilController extends Controller
 {
@@ -14,10 +17,14 @@ class ProfilController extends Controller
      */
     public function search(Request $request)
     {
+        $request->validate([
+            'q' => 'required|string|max:255',
+        ]);
+
         $query = $request->input('q');
         
-        $results = Profil::where('judul', 'LIKE', "%{$query}%")
-            ->orWhere('isi_konten', 'LIKE', "%{$query}%")
+        $results = Profil::where('judul', 'LIKE', '%' . $query . '%')
+            ->orWhere('isi_konten', 'LIKE', '%' . $query . '%')
             ->get();
 
         $allProfil = Profil::all();
@@ -157,7 +164,7 @@ class ProfilController extends Controller
             // Jika tidak ada, cari di tabel Spmi (dengan penanganan jika tabel tidak ada)
             $spmi = null;
             try {
-                if (\Illuminate\Support\Facades\Schema::hasTable('spmis') || \Illuminate\Support\Facades\Schema::hasTable('spmi')) {
+                if (Schema::hasTable('spmis') || Schema::hasTable('spmi')) {
                     $spmi = \App\Models\Spmi::where('slug', $slug)->first();
                 }
             } catch (\Exception $e) {
@@ -295,7 +302,7 @@ class ProfilController extends Controller
         // Merge with canonical prodis table
         $prodiFromTable = collect();
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('prodis')) {
+            if (Schema::hasTable('prodis')) {
                 $prodiFromTable = \App\Models\Prodi::orderBy('nama')->pluck('nama');
             }
         } catch (\Exception $e) {}
@@ -303,7 +310,7 @@ class ProfilController extends Controller
         // Also include prodi from akreditasi table
         $prodiFromAkreditasi = collect();
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('akreditasi')) {
+            if (Schema::hasTable('akreditasi')) {
                 $prodiFromAkreditasi = \App\Models\Akreditasi::where('kategori', 'Akreditasi')->pluck('judul');
             }
         } catch (\Exception $e) {}
@@ -363,10 +370,10 @@ class ProfilController extends Controller
                 $chartDataQuery->select(
                     'prodi',
                     'program',
-                    \DB::raw('ROUND(AVG(sangat_setuju), 2) as sangat_setuju'),
-                    \DB::raw('ROUND(AVG(setuju), 2) as setuju'),
-                    \DB::raw('ROUND(AVG(tidak_setuju), 2) as tidak_setuju'),
-                    \DB::raw('ROUND(AVG(sangat_tidak_setuju), 2) as sangat_tidak_setuju')
+                    DB::raw('ROUND(AVG(sangat_setuju), 2) as sangat_setuju'),
+                    DB::raw('ROUND(AVG(setuju), 2) as setuju'),
+                    DB::raw('ROUND(AVG(tidak_setuju), 2) as tidak_setuju'),
+                    DB::raw('ROUND(AVG(sangat_tidak_setuju), 2) as sangat_tidak_setuju')
                 )->groupBy('prodi', 'program');
 
                 $chartDataRaw = $chartDataQuery->get();
@@ -393,7 +400,7 @@ class ProfilController extends Controller
         // Coba cari di tabel Capaian (dengan penanganan jika tabel tidak ada)
         $capaian = null;
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('capaians') || \Illuminate\Support\Facades\Schema::hasTable('capaian')) {
+            if (Schema::hasTable('capaians') || Schema::hasTable('capaian')) {
                 $capaian = \App\Models\Capaian::where('slug', $slug)->first();
             }
         } catch (\Exception $e) {
@@ -405,7 +412,7 @@ class ProfilController extends Controller
         // slug tersendiri, coba fallback ke entri pertama dengan kategori 'Renop'.
         if (!$capaian) {
             try {
-                if (strtolower($slug) === 'renop' && (\Illuminate\Support\Facades\Schema::hasTable('capaians') || \Illuminate\Support\Facades\Schema::hasTable('capaian'))) {
+                if (strtolower($slug) === 'renop' && (Schema::hasTable('capaians') || Schema::hasTable('capaian'))) {
                     $capaian = \App\Models\Capaian::where('kategori', 'Renop')->orderBy('id','asc')->first();
                 }
             } catch (\Exception $e) {
@@ -444,7 +451,7 @@ class ProfilController extends Controller
         $allProfil = Profil::all();
         $items = [];
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('capaians')) {
+            if (Schema::hasTable('capaians')) {
                 $items = \App\Models\Capaian::where('kategori', 'Renop')->orderBy('id','asc')->get();
             }
         } catch (\Exception $e) {
@@ -471,8 +478,8 @@ class ProfilController extends Controller
         // If storage local path (no http scheme) -> stream download
         if (!\Illuminate\Support\Str::startsWith($link, ['http://', 'https://'])) {
             $path = ltrim($link, '/');
-            if (\Storage::disk('public')->exists($path)) {
-                return \Storage::disk('public')->download($path);
+            if (Storage::disk('public')->exists($path)) {
+                return Storage::disk('public')->download($path);
             }
             return redirect()->away(asset('storage/' . $path));
         }
@@ -677,6 +684,8 @@ class ProfilController extends Controller
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['judul']);
         }
 
+        $validated['isi_konten'] = HtmlSanitizer::sanitize($validated['isi_konten']);
+
         Profil::create($validated);
 
         return redirect()->route('admin.profil.index')->with('success', 'Data profil berhasil ditambahkan!');
@@ -698,6 +707,7 @@ class ProfilController extends Controller
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['judul']);
         }
 
+        $validated['isi_konten'] = HtmlSanitizer::sanitize($validated['isi_konten']);
         $profil->update($validated);
 
         return redirect()->route('admin.profil.index')->with('success', 'Data profil berhasil diupdate!');
@@ -718,6 +728,8 @@ class ProfilController extends Controller
             'kategori' => 'required|string|max:100',
             'isi_konten' => 'required|string',
         ]);
+
+        $validated['isi_konten'] = HtmlSanitizer::sanitize($validated['isi_konten']);
 
         Profil::create($validated);
 

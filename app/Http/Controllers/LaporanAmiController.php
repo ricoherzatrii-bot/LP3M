@@ -18,8 +18,8 @@ class LaporanAmiController extends Controller
             $request->validate([
                 'judul'      => 'required|string|max:255',
                 'tahun'      => 'required|integer|min:2000|max:2099',
-                'deskripsi'  => 'nullable|string',
-                'kategori'   => 'nullable|string',
+                'deskripsi'  => 'nullable|string|max:1000',
+                'kategori'   => 'nullable|string|max:255',
                 'file'       => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
             ]);
 
@@ -85,8 +85,8 @@ class LaporanAmiController extends Controller
             $request->validate([
                 'judul'     => 'required|string|max:255',
                 'tahun'     => 'required|integer|min:2000|max:2099',
-                'deskripsi' => 'nullable|string',
-                'kategori'  => 'nullable|string',
+                'deskripsi' => 'nullable|string|max:1000',
+                'kategori'  => 'nullable|string|max:255',
                 'file'      => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
             ]);
 

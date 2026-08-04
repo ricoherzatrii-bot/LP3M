@@ -92,6 +92,17 @@ class KuesionerDosenKaryawanController extends Controller
     {
         $record = KuesionerDosenKaryawan::findOrFail($id);
 
+        $request->validate([
+            'tahun_akademik' => 'nullable|string|max:255',
+            'program' => 'nullable|string|max:255',
+            'prodi' => 'nullable|string|max:255',
+            'sangat_setuju' => 'nullable|numeric|min:0|max:100',
+            'setuju' => 'nullable|numeric|min:0|max:100',
+            'cukup_setuju' => 'nullable|numeric|min:0|max:100',
+            'tidak_setuju' => 'nullable|numeric|min:0|max:100',
+            'sangat_tidak_setuju' => 'nullable|numeric|min:0|max:100',
+        ]);
+
         $record->update($request->only([
             'tahun_akademik', 'program', 'prodi', 'sangat_setuju', 'setuju',
             'cukup_setuju', 'tidak_setuju', 'sangat_tidak_setuju'

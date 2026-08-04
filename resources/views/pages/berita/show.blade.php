@@ -122,7 +122,7 @@
                         @endphp
                         @if(!empty($beritaImage))
                         <div class="h-72 md:h-96 overflow-hidden">
-                            <img src="{{ $beritaImage }}" class="w-full h-full object-cover" alt="{{ $berita->judul }}" onerror="this.src='/images/gedung-poljam.png'">
+                            <img src="{{ $beritaImage }}" class="w-full h-full object-cover" alt="{{ $berita->judul }}">
                         </div>
                         @endif
 
@@ -166,7 +166,7 @@
                                             }
                                         @endphp
                                         @if(!empty($recentImage))
-                                            <img src="{{ $recentImage }}" class="w-full h-full object-cover" alt="" onerror="this.src='/images/gedung-poljam.png'">
+                                            <img src="{{ $recentImage }}" class="w-full h-full object-cover" alt="">
                                         @else
                                             <img src="/images/gedung-poljam.png" class="w-full h-full object-cover" alt="">
                                         @endif

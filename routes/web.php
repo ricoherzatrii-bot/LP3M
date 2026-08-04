@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use App\Http\Controllers\ProfilController;
-
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,72 +13,10 @@ use App\Http\Controllers\ProfilController;
 
 // --- HALAMAN UTAMA (FRONT-END) ---
 // Mengarah ke halaman depan dulu
-Route::get('/', function () {
-    $allProfil = \App\Models\Profil::all();
-    $sliders = \App\Models\Slider::orderBy('urutan', 'asc')->get();
-    
-    $sliderItems = collect();
-    if ($sliders->count() > 0) {
-        foreach($sliders as $s) {
-            $sliderUrl = null;
-
-            if ($s->gambar) {
-                if (str_starts_with($s->gambar, 'http://') || str_starts_with($s->gambar, 'https://')) {
-                    $sliderUrl = $s->gambar;
-                } else {
-                    $storagePath = public_path('storage/' . ltrim($s->gambar, '/'));
-                    $imagePath = public_path('images/' . ltrim($s->gambar, '/'));
-
-                    if (file_exists($storagePath)) {
-                        $sliderUrl = asset('storage/' . ltrim($s->gambar, '/'));
-                    } elseif (file_exists($imagePath)) {
-                        $sliderUrl = asset('images/' . ltrim($s->gambar, '/'));
-                    }
-                }
-            }
-
-            if ($sliderUrl) {
-                $sliderItems->push((object)[
-                    'judul' => $s->judul,
-                    'subjudul' => $s->sub_judul,
-                    'gambar' => $s->gambar,
-                    'gambar_url' => $sliderUrl,
-                    'url' => $s->link_url ?? '#',
-                    'is_external' => true
-                ]);
-            }
-        }
-    } else {
-        // Fallback ke Artikel
-        $articles = \App\Models\Artikel::latest()->take(5)->get();
-        foreach($articles as $a) {
-            $sliderItems->push((object)[
-                'judul' => $a->judul,
-                'subjudul' => Str::limit(strip_tags($a->isi_konten), 100),
-                'gambar' => $a->gambar_fitur,
-                'gambar_url' => $a->gambar_fitur_url,
-                'url' => route('berita.show', $a->slug),
-                'is_external' => false,
-                'created_at' => $a->created_at
-            ]);
-        }
-    }
-
-    $beritaList = \App\Models\Artikel::latest()->paginate(6);
-    $pengumumanAktif = \App\Models\Pengumuman::where('status', 'aktif')
-        ->orderBy('created_at', 'desc')
-        ->take(5)
-        ->get();
-    return view('welcome', compact('allProfil', 'sliderItems', 'beritaList', 'pengumumanAktif'));
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // --- HALAMAN DETAIL BERITA ---
-Route::get('/berita/{slug}', function ($slug) {
-    $allProfil = \App\Models\Profil::all();
-    $berita = \App\Models\Artikel::where('slug', $slug)->firstOrFail();
-    $recentBerita = \App\Models\Artikel::where('id', '!=', $berita->id)->latest()->take(5)->get();
-    return view('pages.berita.show', compact('allProfil', 'berita', 'recentBerita'));
-})->name('berita.show');
+Route::get('/berita/{slug}', [HomeController::class, 'beritaShow'])->name('berita.show');
 
 // --- HALAMAN ARTIKEL ---
 Route::get('/artikel', [ProfilController::class, 'artikelIndex'])->name('artikel.index');
@@ -90,7 +29,7 @@ Route::get('/search', [ProfilController::class, 'search'])->name('search');
 Route::get('/profil/{slug}', [ProfilController::class, 'show'])->name('profil.show');
 
 // --- RUTE SPMI ---
-Route::get('/spmi', function() { return view('pages.spmi.index'); })->name('spmi.index');
+Route::get('/spmi', [HomeController::class, 'spmiIndex'])->name('spmi.index');
 // Rute spesifik harus SEBELUM wildcard {slug}
 Route::get('/spmi/dokumen-spmi', [\App\Http\Controllers\ProfilController::class, 'dokumenSpmiPublic'])->name('spmi.dokumen');
 Route::get('/spmi/{slug}', [ProfilController::class, 'showSpmi'])->name('spmi.show');
@@ -112,7 +51,7 @@ Route::get('/capaian/download/{id}', [ProfilController::class, 'downloadCapaian'
 Route::get('/capaian/{slug}', [ProfilController::class, 'showCapaian'])->name('capaian.show');
 
 // --- RUTE KUESIONER ---
-Route::get('/kuesioner', function() { return view('pages.kuesioner.index'); })->name('kuesioner.index');
+Route::get('/kuesioner', [HomeController::class, 'kuesionerIndex'])->name('kuesioner.index');
 Route::get('/kuesioner/dosen', [ProfilController::class, 'kuesionerDosen'])->name('kuesioner.dosen');
 Route::get('/kuesioner/mahasiswa', [ProfilController::class, 'kuesionerMahasiswa'])->name('kuesioner.mahasiswa');
 
@@ -131,33 +70,14 @@ Route::get('/pengumuman/{slug}', [\App\Http\Controllers\PengumumanController::cl
 
 use App\Http\Controllers\UserController;
 
-// Jalur untuk membuka halaman Login
-Route::get('/login', function() { 
-    return view('auth.login'); 
-})->name('login');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
 
-// Jalur untuk memproses login
-Route::post('/login', function() {
-    $credentials = request()->only('username', 'password');
+// Logout hanya untuk pengguna yang sudah login
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    if (auth()->attempt($credentials)) {
-        request()->session()->regenerate();
-        return redirect()->intended(route('dashboard'));
-    }
-
-    return back()->withErrors(['username' => 'Username atau password salah.'])->withInput();
-})->name('login.post');
-
-Route::post('/logout', function() {
-    auth()->logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-
-    return redirect()->route('login');
-})->name('logout');
-
-// Jalur halaman utama Dashboard setelah login
-Route::middleware(['auth'])->group(function () {
+    // Jalur halaman utama Dashboard setelah login
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

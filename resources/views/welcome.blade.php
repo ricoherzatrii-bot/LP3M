@@ -153,7 +153,7 @@
                                     </div>
                                     @endif
                                     <p class="text-slate-200 text-sm mt-3 line-clamp-2 max-w-3xl opacity-80">
-                                        {!! $item->subjudul !!}
+                                        {{ $item->subjudul }}
                                     </p>
                                 </div>
                             </div>
@@ -216,7 +216,7 @@
                                         <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ $berita->created_at ? $berita->created_at->translatedFormat('d F Y, H:i') : '-' }}</span>
                                     </div>
                                     <h4 class="text-slate-800 dark:text-white font-bold text-xl mb-4 leading-tight group-hover:text-[#0056b3] transition">{{ $berita->judul }}</h4>
-                                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-4">{!! Str::limit(strip_tags($berita->isi_konten), 250) !!}</p>
+                                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-4">{{ Str::limit(strip_tags($berita->isi_konten), 250) }}</p>
                                     <span class="inline-flex items-center gap-2 mt-6 text-[#0056b3] text-xs font-bold group-hover:gap-3 transition-all">
                                         Selengkapnya <i class="fas fa-arrow-right text-[9px] group-hover:translate-x-1 transition-transform"></i>
                                     </span>
@@ -248,7 +248,7 @@
                                     <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ $berita->created_at ? $berita->created_at->translatedFormat('d F Y, H:i') : '-' }}</span>
                                 </div>
                                 <h4 class="text-slate-800 dark:text-white font-bold mb-2 leading-snug group-hover:text-[#0056b3] transition line-clamp-2">{{ $berita->judul }}</h4>
-                                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-2 hidden md:block">{!! Str::limit(strip_tags($berita->isi_konten), 150) !!}</p>
+                                <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-2 hidden md:block">{{ Str::limit(strip_tags($berita->isi_konten), 150) }}</p>
                                 <span class="inline-flex items-center gap-2 mt-3 text-[#0056b3] text-xs font-bold group-hover:gap-3 transition-all">
                                     Selengkapnya <i class="fas fa-arrow-right text-[9px] group-hover:translate-x-1 transition-transform"></i>
                                 </span>
@@ -530,3 +530,4 @@
     </script>
 </body>
 </html>
+

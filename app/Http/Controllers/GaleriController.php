@@ -21,7 +21,7 @@ class GaleriController extends Controller
     public function uploadAlbum(Request $request)
     {
         $request->validate([
-            'nama_album' => 'required|string',
+            'nama_album' => 'required|string|max:255',
             'sampul_foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'link_extern' => 'nullable|url|max:255',
         ]);
@@ -50,6 +50,12 @@ class GaleriController extends Controller
     {
         $album = GaleriAlbum::findOrFail($id);
         
+        $request->validate([
+            'nama_album' => 'required|string|max:255',
+            'sampul_foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'link_extern' => 'nullable|url|max:255',
+        ]);
+
         $album->nama_album = $request->nama_album;
         $album->slug = Str::slug($request->nama_album);
 
@@ -105,7 +111,7 @@ class GaleriController extends Controller
             'judul' => 'required|string|max:255',
             'video_file' => 'nullable|file|mimes:mp4,mov,avi,mkv,wmv|max:40960',
             'link_youtube' => 'nullable|string|max:65535',
-            'deskripsi' => 'nullable|string'
+            'deskripsi' => 'nullable|string|max:1000'
         ]);
 
         if (!$request->hasFile('video_file') && !$request->filled('link_youtube')) {
@@ -142,7 +148,7 @@ class GaleriController extends Controller
             'judul' => 'required|string|max:255',
             'video_file' => 'nullable|file|mimes:mp4,mov,avi,mkv,wmv|max:40960',
             'link_youtube' => 'nullable|string|max:65535',
-            'deskripsi' => 'nullable|string'
+            'deskripsi' => 'nullable|string|max:1000'
         ]);
 
         $video = GaleriVideo::findOrFail($id);
@@ -192,7 +198,7 @@ class GaleriController extends Controller
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
             'photo_links' => 'nullable|string',
             'judul' => 'nullable|string|max:255',
-            'deskripsi' => 'nullable|string',
+            'deskripsi' => 'nullable|string|max:1000',
         ]);
 
         $album = GaleriAlbum::findOrFail($album_id);
@@ -250,7 +256,7 @@ class GaleriController extends Controller
     {
         $request->validate([
             'judul' => 'nullable|string|max:255',
-            'deskripsi' => 'nullable|string',
+            'deskripsi' => 'nullable|string|max:1000',
             'photo_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 

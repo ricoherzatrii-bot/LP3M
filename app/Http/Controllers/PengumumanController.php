@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengumuman;
+use App\Helpers\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -79,6 +80,7 @@ class PengumumanController extends Controller
                 'status' => 'nullable|in:aktif,non-aktif',
             ]);
 
+            $validated['isi_konten'] = HtmlSanitizer::sanitize($validated['isi_konten']);
             $validated['slug'] = Str::slug($validated['judul']) . '-' . time();
             $validated['status'] = $validated['status'] ?? 'aktif';
             $validated['hits'] = 0;
@@ -110,6 +112,7 @@ class PengumumanController extends Controller
                 'status' => 'nullable|in:aktif,non-aktif',
             ]);
 
+            $validated['isi_konten'] = HtmlSanitizer::sanitize($validated['isi_konten']);
             $pengumuman->update($validated);
 
             return response()->json([
