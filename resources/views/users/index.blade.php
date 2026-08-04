@@ -152,7 +152,7 @@
                                                         </div>
                                                     </form>
                                                     @if (Auth::user()->id !== $user->id)
-                                                        <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?')" class="mt-3 flex justify-end">
+                                                        <form action="{{ route('users.destroy', $user) }}" method="POST" class="mt-3 flex justify-end delete-form">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="rounded-3xl bg-rose-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-rose-500">Hapus Pengguna</button>
@@ -212,7 +212,34 @@
         </div>
     </div>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Konfirmasi Hapus',
+                    text: 'Yakin ingin menghapus pengguna ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: '<i class="fas fa-trash mr-2"></i> Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl font-bold text-sm',
+                        cancelButton: 'rounded-xl font-bold text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
         document.getElementById('toggleCreateUser').addEventListener('click', function() {
             document.getElementById('createUserPanel').style.display = 'block';
             this.disabled = true;

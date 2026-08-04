@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -1450,16 +1450,16 @@
                                     
                                     res.fields.forEach(field => {
                                         let displayVal = item[field] || "";
-                                        // strip HTML tags just in case
-                                        if (typeof displayVal === 'string' && displayVal.includes('<')) {
-                                            const temp = document.createElement("div");
-                                            temp.innerHTML = displayVal;
-                                            displayVal = temp.textContent || temp.innerText || "";
+                                        // Safely strip HTML tags using regex to avoid parsing/executing embedded scripts
+                                        if (typeof displayVal === 'string') {
+                                            displayVal = displayVal.replace(/<[^>]*>/g, '');
                                         }
                                         // truncate if too long
                                         if (displayVal.length > 80) {
                                             displayVal = displayVal.slice(0, 80) + '...';
                                         }
+                                        // Escape HTML entities to prevent XSS when inserting into DOM
+                                        displayVal = String(displayVal).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
                                         cellsHtml += `<td class="px-10 py-8 leading-relaxed font-semibold text-slate-700 text-sm">${displayVal}</td>`;
                                     });
 
@@ -1628,12 +1628,23 @@
         const isImageField = (f) => f.toLowerCase().includes('gambar') || f.toLowerCase().includes('foto') || f.toLowerCase().includes('file');
         const isStatusField = (f) => f.toLowerCase() === 'status';
         
+        function escapeHtml(unsafe) {
+            if (!unsafe || typeof unsafe !== 'string') return unsafe;
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
         function generateFormFields(containerId, fields, values = {}) {
             const container = document.getElementById(containerId);
             container.innerHTML = "";
             fields.forEach(field => {
                 const labelText = field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                const val = values[field] || "";
+                const rawVal = values[field] || "";
+                const val = typeof rawVal === 'string' ? escapeHtml(rawVal) : rawVal;
                 const isTextArea = ['isi_konten', 'deskripsi', 'konten'].includes(field);
                 const isDateField = field.toLowerCase().includes('tanggal') || 
                                     field.toLowerCase().includes('date');
@@ -1893,36 +1904,70 @@
             });
         }
 
+        window.swalConfirm = function(msg) {
+            return Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: msg,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash mr-2"></i> Ya, Lanjutkan!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl font-bold text-sm',
+                    cancelButton: 'rounded-xl font-bold text-sm'
+                }
+            }).then(res => res.isConfirmed);
+        };
+
         function confirmDelete(id, btn) {
-            if (confirm("Tindakan destruktif: Anda yakin ingin menghapus record ini dari basis data secara permanen?")) {
-                fetch('/admin/delete-row', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        title: currentTitle,
-                        id: id
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: 'Data akan dihapus secara permanen dari basis data dan tidak dapat dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash mr-2"></i> Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl font-bold text-sm',
+                    cancelButton: 'rounded-xl font-bold text-sm'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/admin/delete-row', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            title: currentTitle,
+                            id: id
+                        })
                     })
-                })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.success) {
-                        showToast(res.message, 'success');
-                        const row = btn.closest('tr');
-                        row.style.opacity = 0;
-                        row.style.transform = 'translateX(20px)';
-                        row.style.transition = 'all 0.3s ease';
-                        setTimeout(() => row.remove(), 300);
-                    } else {
-                        showToast(res.message, 'warning');
-                    }
-                })
-                .catch(err => {
-                    showToast('Gagal menghapus data.', 'warning');
-                });
-            }
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.success) {
+                            showToast(res.message, 'success');
+                            const row = btn.closest('tr');
+                            row.style.opacity = 0;
+                            row.style.transform = 'translateX(20px)';
+                            row.style.transition = 'all 0.3s ease';
+                            setTimeout(() => row.remove(), 300);
+                        } else {
+                            showToast(res.message, 'warning');
+                        }
+                    })
+                    .catch(err => {
+                        showToast('Gagal menghapus data.', 'warning');
+                    });
+                }
+            });
         }
         // ================================================================
         // DOKUMEN SPMI — Fungsi Panel Upload
@@ -2221,8 +2266,8 @@
             });
         }
 
-        function deleteRenstra(id) {
-            if (!confirm('Hapus data Renstra ini?')) return;
+        async function deleteRenstra(id) {
+            if (!(await window.swalConfirm('Hapus data Renstra ini?'))) return;
             fetch(`/admin/renstra/delete/${id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
@@ -2238,8 +2283,8 @@
             });
         }
 
-        function truncateRenstra() {
-            if (!confirm('Peringatan: Semua data Renstra akan dihapus secara permanen. Lanjutkan?')) return;
+        async function truncateRenstra() {
+            if (!(await window.swalConfirm('Peringatan: Semua data Renstra akan dihapus secara permanen. Lanjutkan?'))) return;
             fetch('/admin/renstra/truncate', {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
@@ -2615,8 +2660,8 @@
                 .catch(() => showToast('Terjadi kesalahan.', 'warning'));
         }
 
-        function deleteDokumen(id, btn) {
-            if (!confirm('Hapus dokumen ini beserta file-nya secara permanen?')) return;
+        async function deleteDokumen(id, btn) {
+            if (!(await window.swalConfirm('Hapus dokumen ini beserta file-nya secara permanen?'))) return;
             fetch(`/admin/dokumen-spmi/${id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -2989,8 +3034,8 @@
                 .catch(() => showToast('Terjadi kesalahan.', 'warning'));
         }
 
-        function deletePdfDocument(apiBase, downloadBase, id, btn) {
-            if (!confirm('Hapus dokumen ini beserta file-nya secara permanen?')) return;
+        async function deletePdfDocument(apiBase, downloadBase, id, btn) {
+            if (!(await window.swalConfirm('Hapus dokumen ini beserta file-nya secara permanen?'))) return;
             fetch(`${apiBase}/${id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -3282,8 +3327,8 @@
                 });
         }
 
-        function deleteSlider(id) {
-            if (!confirm('Hapus slide ini?')) return;
+        async function deleteSlider(id) {
+            if (!(await window.swalConfirm('Hapus slide ini?'))) return;
             fetch(`/admin/slider/${id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -3694,7 +3739,7 @@
         }
 
         async function deleteKuesionerRow(id) {
-            if (!confirm('Yakin ingin menghapus data ini?')) return;
+            if (!(await window.swalConfirm('Yakin ingin menghapus data ini?'))) return;
             try {
                 const r = await fetch(`/admin/kuesioner-dosen/${id}`, {
                     method: 'DELETE',
@@ -3815,7 +3860,7 @@
             const msg = (tahun || semester)
                 ? `Hapus semua data kuesioner untuk${yearText}${semesterText}?`
                 : 'Hapus SEMUA data kuesioner dosen & karyawan?';
-            if (!confirm(msg)) return;
+            if (!(await window.swalConfirm(msg))) return;
 
             try {
                 const queryParams = new URLSearchParams({
@@ -4237,7 +4282,7 @@
         }
 
         async function deleteKMRow(id) {
-            if (!confirm('Hapus data ini?')) return;
+            if (!(await window.swalConfirm('Hapus data ini?'))) return;
             try {
                 const r = await fetch(`/admin/kuesioner-dosen/${id}`, {
                     method: 'DELETE',
@@ -4351,7 +4396,7 @@
             const tahunText = tahun ? `tahun akademik "${tahun}"` : 'SEMUA tahun akademik';
             const msgConfirm = `Apakah Anda yakin ingin menghapus data kuesioner Mahasiswa untuk ${prodiText} di ${tahunText}?`;
 
-            if (!confirm(msgConfirm)) return;
+            if (!(await window.swalConfirm(msgConfirm))) return;
 
             try {
                 const queryParams = new URLSearchParams({
@@ -4763,14 +4808,14 @@
             });
         }
 
-        function deleteAlbum(id) {
-            if(!confirm('Hapus album ini secara permanen?')) return;
+        async function deleteAlbum(id) {
+            if(!(await window.swalConfirm('Hapus album ini secara permanen?'))) return;
             fetch('/admin/galeri-album/' + id, {method: 'DELETE', body: new FormData(), headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}})
                 .then(r => r.json()).then(res => { if(res.success) { showToast(res.message, 'success'); fetchAlbums(); } });
         }
 
-        function deleteVideo(id) {
-            if(!confirm('Hapus video ini secara permanen?')) return;
+        async function deleteVideo(id) {
+            if(!(await window.swalConfirm('Hapus video ini secara permanen?'))) return;
             fetch('/admin/galeri-video/' + id, {method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}})
                 .then(r => r.json()).then(res => { if(res.success) { showToast(res.message, 'success'); fetchVideos(); } });
         }
@@ -5065,8 +5110,8 @@
             });
         }
 
-        function deletePhoto(id) {
-            if (!confirm('Hapus foto ini?')) return;
+        async function deletePhoto(id) {
+            if (!(await window.swalConfirm('Hapus foto ini?'))) return;
             fetch(`/admin/galeri-foto/${id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -5254,8 +5299,8 @@
             });
         }
 
-        function deleteQuestion(id) {
-            if (confirm("Hapus pertanyaan ini?")) {
+        async function deleteQuestion(id) {
+            if (await window.swalConfirm("Hapus pertanyaan ini?")) {
                 fetch(`/admin/kuesioner/pertanyaan/${id}`, {
                     method: 'DELETE',
                     headers: {

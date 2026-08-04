@@ -66,7 +66,7 @@
                                     <a href="{{ route('admin.profil.edit', $profil->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded inline-flex items-center mr-2 text-sm transition">
                                         <i class="fas fa-edit mr-1"></i> Edit
                                     </a>
-                                    <form action="{{ route('admin.profil.destroy', $profil->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus?');">
+                                    <form action="{{ route('admin.profil.destroy', $profil->id) }}" method="POST" class="inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm transition">
@@ -96,5 +96,31 @@
             </a>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Konfirmasi Hapus',
+                    text: 'Yakin ingin menghapus data ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: '<i class="fas fa-trash mr-2"></i> Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl font-bold text-sm',
+                        cancelButton: 'rounded-xl font-bold text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

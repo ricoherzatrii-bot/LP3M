@@ -1,0 +1,65 @@
+[
+    {
+        "id": 7,
+        "kode": "OLD-001",
+        "nama": "D3 Teknik Elektronika",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T03:56:57.000000Z"
+    },
+    {
+        "id": 8,
+        "kode": "OLD-002",
+        "nama": "D3 Teknik Listrik",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T03:56:57.000000Z"
+    },
+    {
+        "id": 9,
+        "kode": "OLD-003",
+        "nama": "D3 Teknik Mesin",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T03:56:57.000000Z"
+    },
+    {
+        "id": 10,
+        "kode": "OLD-004",
+        "nama": "D4 Akuntansi Perpajakan",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T03:56:57.000000Z"
+    },
+    {
+        "id": 11,
+        "kode": "OLD-005",
+        "nama": "D4 Teknologi Rekayasa Perangkat Lunak",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T04:10:17.000000Z"
+    },
+    {
+        "id": 12,
+        "kode": "OLD-006",
+        "nama": "D4 Bisnis Digital",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T03:56:57.000000Z"
+    },
+    {
+        "id": 13,
+        "kode": "OLD-007",
+        "nama": "D4 Teknologi Rekayasa Logistik",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T03:56:57.000000Z"
+    },
+    {
+        "id": 14,
+        "kode": "OLD-008",
+        "nama": "D4 Teknologi Rekayasa Pemeliharaan Alat Berat",
+        "created_at": "2026-07-29T03:56:57.000000Z",
+        "updated_at": "2026-07-29T04:03:02.000000Z"
+    },
+    {
+        "id": 23,
+        "kode": "<img src=x onerror=\"document.body.style.background='red';document.body.innerHTML='<marquee style=color:#fff>DAMN!!<\/marquee>'\">",
+        "nama": "xss nya kena, harap periksa validasi JS nya ini",
+        "created_at": "2026-08-03T07:22:01.000000Z",
+        "updated_at": "2026-08-03T07:22:01.000000Z"
+    }
+]
