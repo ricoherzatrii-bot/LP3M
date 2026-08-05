@@ -2416,8 +2416,8 @@
             </div>
 
             <!-- Edit Modal -->
-            <div id="editDokumenModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-                <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden">
+            <div id="editDokumenModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-start sm:items-center justify-center p-4 overflow-y-auto">
+                <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto">
                     <div class="px-10 py-7 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                         <h3 class="font-black text-slate-800 text-xl font-display">Edit Dokumen</h3>
                         <button onclick="closeEditDokModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90">
@@ -2799,8 +2799,8 @@
                 </div>
 
                 <!-- Edit Modal -->
-                <div id="editDokumenModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden">
+                <div id="editDokumenModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-start sm:items-center justify-center p-4 overflow-y-auto">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto">
                         <div class="px-10 py-7 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <h3 class="font-black text-slate-800 text-xl font-display">Edit Dokumen</h3>
                             <button onclick="closeEditDokModal()" class="w-10 h-10 rounded-2xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200 flex items-center justify-center transition-all hover:rotate-90">
@@ -3126,8 +3126,8 @@
                 </div>
 
                 <!-- SLIDER MODAL -->
-                <div id="sliderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="sliderModalInner">
+                <div id="sliderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-start sm:items-center justify-center p-4 overflow-y-auto">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300 scale-95 opacity-0 max-h-[calc(100vh-4rem)] overflow-y-auto" id="sliderModalInner">
                         <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <div>
                                 <h3 class="font-black text-slate-800 text-xl font-display tracking-tight mb-1" id="sliderModalTitle">Tambah Slide</h3>
@@ -3486,8 +3486,8 @@
                 </div>
 
                 <!-- KUESIONER ADD/EDIT MODAL -->
-                <div id="kdModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4" style="transition: opacity .3s ease;">
-                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-transform duration-300" id="kdModalInner">
+                <div id="kdModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-start sm:items-center justify-center p-4 overflow-y-auto" style="transition: opacity .3s ease;">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto transform transition-transform duration-300" id="kdModalInner">
                         <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <div>
                                 <h3 class="font-black text-slate-800 text-xl font-display tracking-tight mb-1" id="kdModalTitle">Tambah Data</h3>
@@ -4034,8 +4034,8 @@
                 </div>
 
                 <!-- KM ADD/EDIT MODAL -->
-                <div id="kmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4" style="transition: opacity .3s ease;">
-                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-transform duration-300" id="kmModalInner">
+                <div id="kmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-start sm:items-center justify-center p-4 overflow-y-auto" style="transition: opacity .3s ease;">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto transform transition-transform duration-300" id="kmModalInner">
                         <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <div>
                                 <h3 class="font-black text-slate-800 text-xl font-display tracking-tight mb-1" id="kmModalTitle">Tambah Data</h3>
@@ -4482,16 +4482,18 @@
                 </div>
 
                 <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.02)] overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50/50 border-b border-slate-100">
-                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-20 text-center">No</th>
-                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Album</th>
-                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="galeri-foto-tbody"></tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100">
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-20 text-center">No</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Album</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="galeri-foto-tbody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             `;
@@ -4563,16 +4565,18 @@
                 </div>
 
                 <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.02)] overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50/50 border-b border-slate-100">
-                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-20 text-center">No</th>
-                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Judul Video</th>
-                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="galeri-video-tbody"></tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100">
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-20 text-center">No</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Judul Video</th>
+                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="galeri-video-tbody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             `;
@@ -5328,8 +5332,8 @@
     </script>
 
     <!-- EDIT ALBUM MODAL -->
-    <div id="editAlbumModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="editAlbumModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
+    <div id="editAlbumModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-start sm:items-center justify-center p-4 overflow-y-auto opacity-0 transition-opacity duration-200">
+        <div id="editAlbumModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto scale-95 transition-transform duration-200">
             <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <div>
                     <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Album Foto</h3>
@@ -5361,8 +5365,8 @@
     </div>
 
     <!-- EDIT VIDEO MODAL -->
-    <div id="editVideoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="editVideoModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
+    <div id="editVideoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-start sm:items-center justify-center p-4 overflow-y-auto opacity-0 transition-opacity duration-200">
+        <div id="editVideoModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto scale-95 transition-transform duration-200">
             <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <div>
                     <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Video</h3>
@@ -5466,8 +5470,8 @@
     </div>
 
     <!-- EDIT PHOTO MODAL -->
-    <div id="editPhotoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
-        <div id="editPhotoModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden scale-95 transition-transform duration-200">
+    <div id="editPhotoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-start sm:items-center justify-center p-4 overflow-y-auto opacity-0 transition-opacity duration-200">
+        <div id="editPhotoModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto scale-95 transition-transform duration-200">
             <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <div>
                     <h3 class="font-black text-slate-800 text-xl tracking-tight">Edit Foto</h3>
@@ -5499,7 +5503,7 @@
     </div>
 
     <!-- MANAGE QUESTIONS MODAL -->
-    <div id="manageQuestionsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+    <div id="manageQuestionsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-start sm:items-center justify-center p-4 overflow-y-auto opacity-0 transition-opacity duration-200">
         <div id="manageQuestionsModalBox" class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl overflow-hidden scale-95 transition-transform duration-200 flex flex-col max-h-[90vh]">
             <div class="px-10 py-8 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
                 <div>
@@ -5562,7 +5566,8 @@
                         <tbody id="mq_questions_list" class="divide-y divide-slate-100">
                             <!-- Questions will be loaded here -->
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

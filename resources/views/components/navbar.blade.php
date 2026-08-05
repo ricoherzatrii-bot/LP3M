@@ -23,11 +23,15 @@
                 </div>
                 <div class="h-4 w-[1px] bg-white/20"></div>
                 <div class="flex items-center gap-6 text-[9px] font-black tracking-[0.2em] text-white">
-                    <a href="javascript:void(0);" onclick="changeLanguage('id')" class="flex items-center gap-2 hover:text-yellow-400 transition-all group">
-                        ID <img src="https://flagcdn.com/w20/id.png" class="w-4 h-auto rounded-sm shadow-sm group-hover:scale-110 transition-transform" alt="ID">
+                    <button type="button" class="theme-toggle-btn w-12 h-12 text-white hover:text-yellow-400 transition-all flex items-center justify-center active:scale-95 group" title="Toggle Mode">
+                        <i class="theme-toggle-dark-icon hidden fas fa-moon text-lg transition-transform group-hover:-rotate-12"></i>
+                        <i class="theme-toggle-light-icon hidden fas fa-sun text-lg transition-transform group-hover:rotate-45"></i>
+                    </button>
+                    <a href="javascript:void(0);" onclick="changeLanguage('ind')" class="flex items-center gap-2 hover:text-yellow-400 transition-all group">
+                        IND <img src="https://flagcdn.com/w20/id.png" class="w-4 h-auto rounded-sm shadow-sm group-hover:scale-110 transition-transform" alt="IND">
                     </a>
-                    <a href="javascript:void(0);" onclick="changeLanguage('en')" class="flex items-center gap-2 opacity-50 hover:opacity-100 hover:text-yellow-400 transition-all group">
-                        EN <img src="https://flagcdn.com/w16/us.png" class="w-3.5 h-auto rounded-sm group-hover:scale-110 transition-transform" alt="EN">
+                   <a href="javascript:void(0);" onclick="changeLanguage('en')" class="flex items-center gap-2 opacity-50 hover:opacity-100 hover:text-yellow-400 transition-all group">
+                        EN <img src="https://flagcdn.com/w20/us.png" class="w-3.5 h-auto rounded-sm group-hover:scale-110 transition-transform" alt="EN">
                     </a>
                 </div>
             </div>
@@ -36,13 +40,15 @@
     </div>
 
     <!-- MAIN NAVBAR -->
-    <nav class="bg-[#0056b3] shadow-md border-b border-[#004494]">
+    <nav class="sticky top-0 z-50 bg-[#0056b3] shadow-md border-b border-[#004494]">
         <div class="w-full px-4 sm:px-6 lg:px-16 py-3 lg:py-4 flex items-center justify-between gap-3 xl:hidden">
-            <a href="{{ url('/') }}" class="flex items-center gap-2.5 min-w-0">
-                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-10 w-auto">
-                <div class="min-w-0">
-                    <span class="block text-white font-extrabold text-sm leading-tight tracking-wide">Politeknik Jambi</span>
-                    <span class="block text-white/80 text-[9px] font-bold uppercase tracking-[0.2em]">LPM LP3M</span>
+            <a href="{{ url('/') }}" class="flex items-center gap-3.5 min-w-0 group">
+                <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-12 w-auto transition-transform duration-500 group-hover:scale-105">
+                <div class="flex flex-col justify-center text-left min-w-0">
+                    <span class="block text-white font-extrabold text-xl leading-tight tracking-wide select-none">Politeknik Jambi</span>
+                    <span class="block text-white/90 text-[10px] font-black uppercase tracking-[0.2em] leading-tight select-none">
+                        LEMBAGA PERENCANAAN PENGEMBANGAN<br>& PENJAMINAN MUTU
+                    </span>
                 </div>
             </a>
             <div class="flex items-center gap-2">
@@ -50,6 +56,10 @@
                 @endguest
                 <button type="button" id="mobile-search-toggle" class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white" aria-label="Cari">
                     <i id="mobile-search-icon" class="fas fa-search"></i>
+                </button>
+                <button type="button" class="theme-toggle-btn w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white" title="Toggle Mode">
+                    <i class="theme-toggle-dark-icon hidden fas fa-moon text-base transition-transform group-hover:-rotate-12"></i>
+                    <i class="theme-toggle-light-icon hidden fas fa-sun text-base transition-transform group-hover:rotate-45"></i>
                 </button>
                 <button type="button" id="mobile-menu-toggle" class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white" aria-label="Buka menu">
                     <i id="mobile-menu-icon" class="fas fa-bars"></i>
@@ -166,7 +176,7 @@
 
             <div class="hidden xl:flex items-center justify-end flex-1 gap-10 text-[11px] font-extrabold uppercase tracking-[0.15em] text-white">
                 
-                <a href="{{ url('/') }}" class="{{ Request::is('/') ? 'text-yellow-400' : '' }} hover:text-yellow-400 transition-all duration-300">HOME</a>
+                <a href="{{ url('/') }}" class="{{ Request::is('/') ? 'text-yellow-400' : '' }} hover:text-yellow-400 transition-all duration-300"><i class="fas fa-home"></i></a>
                 
                 <div class="relative group py-2">
                     <span class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer {{ Request::is('profil*') ? 'text-yellow-400' : '' }}">
@@ -260,7 +270,7 @@
                 </div>
 
                 <!-- VERTICAL SEPARATOR -->
-                <div class="h-6 w-[1.5px] bg-white/20 mx-1"></div>
+                
 
                 <div class="relative group py-2">
                     <span class="flex items-center gap-2 hover:text-yellow-400 transition cursor-pointer {{ Request::is('galeri*') ? 'text-yellow-400' : '' }}">
@@ -281,7 +291,7 @@
                 </div>
 
                 <!-- RIGHT ICONS -->
-                <div class="flex items-center gap-1 ml-4 border-l pl-6 border-white/20">
+                <div class="flex items-center ">
                     <form action="{{ route('search') }}" method="GET" id="search-form" class="flex items-center">
                         <div id="search-container" class="flex items-center overflow-hidden transition-all duration-500 w-0 opacity-0">
                             <input type="text" name="q" id="search-input" placeholder="Cari..." 
@@ -294,12 +304,7 @@
 
 
 
-                    <!-- THEME TOGGLE -->
-                    <button id="theme-toggle" class="w-12 h-12 text-white hover:text-yellow-400 transition-all flex items-center justify-center active:scale-95 group" title="Toggle Mode">
-                        <i id="theme-toggle-dark-icon" class="hidden fas fa-moon text-lg transition-transform group-hover:-rotate-12"></i>
-                        <i id="theme-toggle-light-icon" class="hidden fas fa-sun text-lg transition-transform group-hover:rotate-45"></i>
-                    </button>
-
+                
                     @guest
                         <!-- Login link removed as requested -->
                     @endguest
@@ -307,27 +312,30 @@
 
                 <script>
                     // Theme Toggle Logic
-                    const themeToggleBtn = document.getElementById('theme-toggle');
-                    const darkIcon = document.getElementById('theme-toggle-dark-icon');
-                    const lightIcon = document.getElementById('theme-toggle-light-icon');
+                    const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
+                    const darkIcons = document.querySelectorAll('.theme-toggle-dark-icon');
+                    const lightIcons = document.querySelectorAll('.theme-toggle-light-icon');
 
-                    if (document.documentElement.classList.contains('dark')) {
-                        lightIcon.classList.remove('hidden');
-                    } else {
-                        darkIcon.classList.remove('hidden');
-                    }
+                    const setThemeIcons = () => {
+                        const isDark = document.documentElement.classList.contains('dark');
+                        darkIcons.forEach(icon => icon.classList.toggle('hidden', isDark));
+                        lightIcons.forEach(icon => icon.classList.toggle('hidden', !isDark));
+                    };
 
-                    themeToggleBtn.addEventListener('click', function() {
-                        darkIcon.classList.toggle('hidden');
-                        lightIcon.classList.toggle('hidden');
+                    setThemeIcons();
 
-                        if (document.documentElement.classList.contains('dark')) {
-                            document.documentElement.classList.remove('dark');
-                            localStorage.setItem('theme', 'light');
-                        } else {
-                            document.documentElement.classList.add('dark');
-                            localStorage.setItem('theme', 'dark');
-                        }
+                    themeToggleBtns.forEach(button => {
+                        button.addEventListener('click', function() {
+                            const isDark = document.documentElement.classList.contains('dark');
+                            if (isDark) {
+                                document.documentElement.classList.remove('dark');
+                                localStorage.setItem('theme', 'light');
+                            } else {
+                                document.documentElement.classList.add('dark');
+                                localStorage.setItem('theme', 'dark');
+                            }
+                            setThemeIcons();
+                        });
                     });
 
                     document.addEventListener('DOMContentLoaded', function() {
