@@ -1,19 +1,25 @@
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
 function loadGaleriVideoPanel() {
 
             const content = document.getElementById('dynamic-content');
+            const panelTitle = escapeHtml('Galeri Video');
+            const panelDescription = escapeHtml('Upload file video atau pasang link YouTube.');
             content.innerHTML = `
-            <div class="max-w-7xl mx-auto pb-12">
-                <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto pb-12 overflow-x-auto">
+                <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-visible sticky top-4 z-20">
                     <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-video"></i></div>
                     <div class="relative z-10">
                         <div class="flex items-center gap-3 mb-3">
                             <span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.6)]"></span>
                             <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">Manajemen Video</p>
                         </div>
-                        <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">Galeri Video</h2>
-                        <p class="text-slate-500 text-sm mt-2">Upload file video atau pasang link YouTube.</p>
+                        <h2 class="text-4xl font-black text-slate-800 tracking-tighter font-display">${panelTitle}</h2>
+                        <p class="text-slate-500 text-sm mt-2">${panelDescription}</p>
                     </div>
-                    <button onclick="toggleUploadForm()" class="relative z-10 bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all hover:-translate-y-1">
+                    <button onclick="toggleUploadForm()" class="relative z-10 whitespace-nowrap bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest px-8 py-4 rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all hover:-translate-y-1">
                         <i class="fas fa-plus mr-2 text-[10px]"></i> Tambah Video
                     </button>
                 </div>
@@ -63,13 +69,13 @@ function loadGaleriVideoPanel() {
                     </form>
                 </div>
 
-                <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.02)] overflow-hidden">
-                    <table class="w-full text-left border-collapse">
+                <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_15px_40px_rgba(0,0,0,0.02)] overflow-x-auto">
+                    <table class="w-full min-w-[760px] text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50/50 border-b border-slate-100">
                                 <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-20 text-center">No</th>
                                 <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Judul Video</th>
-                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Aksi</th>
+                                <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right sticky right-0 z-10 bg-slate-50/50">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="galeri-video-tbody"></tbody>

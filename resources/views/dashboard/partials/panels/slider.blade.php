@@ -1,13 +1,22 @@
- function loadSliderPanel() {
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function loadSliderPanel() {
             currentTitle = 'Slider Homepage';
             const content = document.getElementById('dynamic-content');
             content.style.opacity = 0;
 
             setTimeout(() => {
                 content.innerHTML = `
-                <div class="max-w-7xl mx-auto pb-12">
+                <div class="max-w-7xl mx-auto pb-12 overflow-x-auto">
                     <!-- Header -->
-                    <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+                    <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-visible sticky top-4 z-20">
                         <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-images"></i></div>
                         <div class="relative z-10">
                             <div class="flex items-center gap-3 mb-3">
@@ -34,7 +43,7 @@
 
                 <!-- SLIDER MODAL -->
                 <div id="sliderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="sliderModalInner">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto overflow-x-hidden transform transition-all duration-300 scale-95 opacity-0" id="sliderModalInner">
                         <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <div>
                                 <h3 class="font-black text-slate-800 text-xl font-display tracking-tight mb-1" id="sliderModalTitle">Tambah Slide</h3>
@@ -107,22 +116,22 @@
                         grid.innerHTML = res.data.map(m => `
                             <div class="group relative bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_10px_30px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500">
                                 <div class="aspect-[16/9] w-full overflow-hidden relative">
-                                    <img src="/storage/${m.gambar}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='/images/gedung-poljam.png'">
+                                    <img src="/storage/${escapeHtml(m.gambar)}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='/images/gedung-poljam.png'">
                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60"></div>
                                     <div class="absolute top-4 right-4 flex gap-2">
                                         <button onclick='openSliderModal(${JSON.stringify(m).replace(/'/g, "&apos;")})' class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-blue-600 shadow-lg flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
                                         <button onclick="deleteSlider(${m.id})" class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-rose-600 shadow-lg flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
                                     </div>
                                     <div class="absolute top-4 left-4">
-                                        <span class="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg">Urutan: ${m.urutan}</span>
+                                        <span class="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg">Urutan: ${escapeHtml(m.urutan)}</span>
                                     </div>
                                 </div>
                                 <div class="p-8">
-                                    <h4 class="text-slate-800 font-black text-lg line-clamp-1 mb-2 font-display tracking-tight">${m.judul || 'Tanpa Judul'}</h4>
-                                    <p class="text-slate-500 text-xs line-clamp-2 font-medium leading-relaxed mb-4">${m.sub_judul || '-'}</p>
+                                    <h4 class="text-slate-800 font-black text-lg line-clamp-1 mb-2 font-display tracking-tight">${escapeHtml(m.judul || 'Tanpa Judul')}</h4>
+                                    <p class="text-slate-500 text-xs line-clamp-2 font-medium leading-relaxed mb-4">${escapeHtml(m.sub_judul || '-')}</p>
                                     <div class="flex items-center gap-2 text-[9px] font-black text-blue-500 uppercase tracking-widest">
                                         <i class="fas fa-link"></i>
-                                        <span class="truncate">${m.link_url || '#'}</span>
+                                        <span class="truncate">${escapeHtml(m.link_url || '#')}</span>
                                     </div>
                                 </div>
                             </div>

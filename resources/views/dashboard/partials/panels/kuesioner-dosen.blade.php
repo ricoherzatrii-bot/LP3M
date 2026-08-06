@@ -1,3 +1,12 @@
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function loadKuesionerDosenPanel() {
             currentTitle = 'Kuesioner Dosen & Karyawan';
             const content = document.getElementById('dynamic-content');
@@ -5,9 +14,9 @@ function loadKuesionerDosenPanel() {
 
             setTimeout(() => {
                 content.innerHTML = `
-                <div class="max-w-7xl mx-auto pb-12">
+                <div class="max-w-7xl mx-auto pb-12 overflow-x-auto">
                     <!-- Header Area -->
-                    <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col lg:flex-row justify-between items-center gap-8 relative overflow-hidden">
+                    <div class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white mb-8 flex flex-col lg:flex-row justify-between items-center gap-8 relative overflow-visible sticky top-4 z-20">
                         <div class="absolute -right-10 -top-10 text-[180px] text-slate-100 opacity-40 pointer-events-none -rotate-12"><i class="fas fa-chalkboard-teacher"></i></div>
                         <div class="relative z-10 w-full lg:w-auto text-center lg:text-left">
                             <div class="flex items-center justify-center lg:justify-start gap-3 mb-3">
@@ -18,7 +27,7 @@ function loadKuesionerDosenPanel() {
                             <p class="text-slate-500 text-sm mt-4 font-medium">Kelola data persentase kepuasan melalui excel, tambah/edit/hapus, dan pantau visualisasinya.</p>
                         </div>
                         
-                        <div class="flex flex-wrap justify-center gap-3 relative z-10">
+                        <div class="flex flex-wrap justify-center gap-3 relative z-10 w-full lg:w-auto">
                             <button onclick="toggleImportKuesioner()" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black uppercase tracking-widest px-6 py-4 rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.2)] transition-all hover:-translate-y-1 flex items-center gap-3">
                                 <i class="fas fa-file-excel"></i> Import Excel
                             </button>
@@ -126,7 +135,7 @@ function loadKuesionerDosenPanel() {
 
                 <!-- KUESIONER ADD/EDIT MODAL -->
                 <div id="kdModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4" style="transition: opacity .3s ease;">
-                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden transform transition-transform duration-300" id="kdModalInner">
+                    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto overflow-x-hidden transform transition-transform duration-300" id="kdModalInner">
                         <div class="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <div>
                                 <h3 class="font-black text-slate-800 text-xl font-display tracking-tight mb-1" id="kdModalTitle">Tambah Data</h3>
@@ -233,15 +242,15 @@ function loadKuesionerDosenPanel() {
                     <td class="px-6 py-5 text-center font-black text-slate-400 text-xs">${idx + 1}</td>
                     <td class="px-6 py-5 text-xs font-bold text-slate-600">
                         <span class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg border border-indigo-100">
-                            <i class="fas fa-calendar-alt text-[9px]"></i> ${item.tahun_akademik}
+                            <i class="fas fa-calendar-alt text-[9px]"></i> ${escapeHtml(item.tahun_akademik)}
                         </span>
                     </td>
-                    <td class="px-6 py-5 text-sm font-bold text-slate-800">${item.program}</td>
-                    <td class="px-6 py-5 text-center"><span class="inline-block bg-emerald-50 text-emerald-700 text-xs font-black px-2.5 py-1 rounded-lg border border-emerald-100">${item.sangat_setuju}%</span></td>
-                    <td class="px-6 py-5 text-center"><span class="inline-block bg-blue-50 text-blue-700 text-xs font-black px-2.5 py-1 rounded-lg border border-blue-100">${item.setuju}%</span></td>
-                    <td class="px-6 py-5 text-center"><span class="inline-block bg-yellow-50 text-yellow-700 text-xs font-black px-2.5 py-1 rounded-lg border border-yellow-100">${item.cukup_setuju}%</span></td>
-                    <td class="px-6 py-5 text-center"><span class="inline-block bg-orange-50 text-orange-700 text-xs font-black px-2.5 py-1 rounded-lg border border-orange-100">${item.tidak_setuju}%</span></td>
-                    <td class="px-6 py-5 text-center"><span class="inline-block bg-rose-50 text-rose-700 text-xs font-black px-2.5 py-1 rounded-lg border border-rose-100">${item.sangat_tidak_setuju}%</span></td>
+                    <td class="px-6 py-5 text-sm font-bold text-slate-800">${escapeHtml(item.program)}</td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-emerald-50 text-emerald-700 text-xs font-black px-2.5 py-1 rounded-lg border border-emerald-100">${escapeHtml(item.sangat_setuju)}%</span></td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-blue-50 text-blue-700 text-xs font-black px-2.5 py-1 rounded-lg border border-blue-100">${escapeHtml(item.setuju)}%</span></td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-yellow-50 text-yellow-700 text-xs font-black px-2.5 py-1 rounded-lg border border-yellow-100">${escapeHtml(item.cukup_setuju)}%</span></td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-orange-50 text-orange-700 text-xs font-black px-2.5 py-1 rounded-lg border border-orange-100">${escapeHtml(item.tidak_setuju)}%</span></td>
+                    <td class="px-6 py-5 text-center"><span class="inline-block bg-rose-50 text-rose-700 text-xs font-black px-2.5 py-1 rounded-lg border border-rose-100">${escapeHtml(item.sangat_tidak_setuju)}%</span></td>
                     <td class="px-6 py-5">
                         <div class="flex justify-end gap-2">
                             <button onclick="openKuesionerEditModal(${item.id})" class="text-slate-400 hover:text-blue-600 bg-white border border-slate-200 w-10 h-10 rounded-xl shadow-sm hover:shadow-md flex items-center justify-center transition-all hover:-translate-y-0.5" title="Edit"><i class="fas fa-pen text-xs"></i></button>
@@ -265,7 +274,7 @@ function loadKuesionerDosenPanel() {
             if (chartTitle) chartTitle.textContent = `Kepuasan Dosen & Karyawan — T.A ${activeTahun}`;
 
             const labels = data.map(i => {
-                let t = i.program;
+                let t = escapeHtml(i.program || '');
                 return t.length > 18 ? t.substring(0, 18) + '…' : t;
             });
 
@@ -293,7 +302,7 @@ function loadKuesionerDosenPanel() {
                             backgroundColor: 'rgba(15,23,42,0.9)', titleFont: { family: 'Inter', size: 12, weight: 'bold' }, bodyFont: { family: 'Inter', size: 11 },
                             padding: 14, cornerRadius: 12, displayColors: true, boxPadding: 4,
                             callbacks: {
-                                title: ctx => { const i = ctx[0].dataIndex; return data[i] ? data[i].program : ctx[0].label; },
+                                title: ctx => { const i = ctx[0].dataIndex; return data[i] ? escapeHtml(data[i].program) : escapeHtml(ctx[0].label); },
                                 label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y + '%'
                             }
                         }
@@ -461,7 +470,7 @@ function loadKuesionerDosenPanel() {
                         <label class="block text-left font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2">Pilih Tahun Akademik:</label>
                         <select id="swal-kd-tahun" class="w-full p-4 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-white transition-all">
                             <option value="">Semua Tahun</option>
-                            ${currentYears.map(y => `<option value="${y}">${y}</option>`).join('')}
+                            ${currentYears.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('')}
                         </select>
                     </div>
                     <div>

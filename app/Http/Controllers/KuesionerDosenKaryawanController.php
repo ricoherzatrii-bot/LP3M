@@ -62,10 +62,11 @@ class KuesionerDosenKaryawanController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'tahun_akademik' => 'required|string',
-            'program' => 'required|string',
-            'kategori' => 'nullable|string',
+        $validated = $request->validate([
+            'tahun_akademik' => 'required|string|max:255',
+            'program' => 'required|string|max:255',
+            'prodi' => 'nullable|string|max:255',
+            'kategori' => 'nullable|string|max:255',
             'sangat_setuju' => 'required|numeric|min:0|max:100',
             'setuju' => 'required|numeric|min:0|max:100',
             'cukup_setuju' => 'nullable|numeric|min:0|max:100',
@@ -73,14 +74,19 @@ class KuesionerDosenKaryawanController extends Controller
             'sangat_tidak_setuju' => 'required|numeric|min:0|max:100',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
-        }
+        $payload = [
+            'tahun_akademik' => $this->sanitizeText($validated['tahun_akademik'] ?? null),
+            'program' => $this->sanitizeText($validated['program'] ?? null),
+            'prodi' => $this->sanitizeText($validated['prodi'] ?? null),
+            'kategori' => $this->sanitizeText($validated['kategori'] ?? 'Dosen & Karyawan'),
+            'sangat_setuju' => (float) ($validated['sangat_setuju'] ?? 0),
+            'setuju' => (float) ($validated['setuju'] ?? 0),
+            'cukup_setuju' => (float) ($validated['cukup_setuju'] ?? 0),
+            'tidak_setuju' => (float) ($validated['tidak_setuju'] ?? 0),
+            'sangat_tidak_setuju' => (float) ($validated['sangat_tidak_setuju'] ?? 0),
+        ];
 
-        KuesionerDosenKaryawan::create($request->only([
-            'tahun_akademik', 'program', 'prodi', 'kategori', 'sangat_setuju', 'setuju',
-            'cukup_setuju', 'tidak_setuju', 'sangat_tidak_setuju'
-        ]));
+        KuesionerDosenKaryawan::create($payload);
 
         return response()->json(['success' => true, 'message' => 'Data berhasil ditambahkan.']);
     }
@@ -92,7 +98,7 @@ class KuesionerDosenKaryawanController extends Controller
     {
         $record = KuesionerDosenKaryawan::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'tahun_akademik' => 'nullable|string|max:255',
             'program' => 'nullable|string|max:255',
             'prodi' => 'nullable|string|max:255',
@@ -103,10 +109,18 @@ class KuesionerDosenKaryawanController extends Controller
             'sangat_tidak_setuju' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        $record->update($request->only([
-            'tahun_akademik', 'program', 'prodi', 'sangat_setuju', 'setuju',
-            'cukup_setuju', 'tidak_setuju', 'sangat_tidak_setuju'
-        ]));
+        $payload = [
+            'tahun_akademik' => isset($validated['tahun_akademik']) ? $this->sanitizeText($validated['tahun_akademik']) : $record->tahun_akademik,
+            'program' => isset($validated['program']) ? $this->sanitizeText($validated['program']) : $record->program,
+            'prodi' => isset($validated['prodi']) ? $this->sanitizeText($validated['prodi']) : $record->prodi,
+            'sangat_setuju' => isset($validated['sangat_setuju']) ? (float) $validated['sangat_setuju'] : $record->sangat_setuju,
+            'setuju' => isset($validated['setuju']) ? (float) $validated['setuju'] : $record->setuju,
+            'cukup_setuju' => isset($validated['cukup_setuju']) ? (float) $validated['cukup_setuju'] : $record->cukup_setuju,
+            'tidak_setuju' => isset($validated['tidak_setuju']) ? (float) $validated['tidak_setuju'] : $record->tidak_setuju,
+            'sangat_tidak_setuju' => isset($validated['sangat_tidak_setuju']) ? (float) $validated['sangat_tidak_setuju'] : $record->sangat_tidak_setuju,
+        ];
+
+        $record->update($payload);
 
         return response()->json(['success' => true, 'message' => 'Data berhasil diperbarui.']);
     }
@@ -126,14 +140,14 @@ class KuesionerDosenKaryawanController extends Controller
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
-            'tahun_akademik' => $request->input('kategori') === 'Mahasiswa' ? 'nullable|string' : 'required|string',
-            'kategori' => 'nullable|string',
-            'prodi' => 'nullable|string'
+            'tahun_akademik' => $request->input('kategori') === 'Mahasiswa' ? 'nullable|string|max:255' : 'required|string|max:255',
+            'kategori' => 'nullable|string|max:255',
+            'prodi' => 'nullable|string|max:255'
         ]);
 
-        $tahun = $request->tahun_akademik;
-        $kategori = $request->input('kategori', 'Dosen & Karyawan');
-        $prodi = trim($request->input('prodi', ''));
+        $tahun = $this->sanitizeText($request->tahun_akademik);
+        $kategori = $this->sanitizeText($request->input('kategori', 'Dosen & Karyawan')) ?: 'Dosen & Karyawan';
+        $prodi = $this->sanitizeText($request->input('prodi', ''));
 
         // Normalization Map to prevent duplicates
         $prodiMap = [
@@ -196,11 +210,11 @@ class KuesionerDosenKaryawanController extends Controller
 
                     foreach ($rows as $row) {
                         if (empty($row[0])) continue;
-                        $rowTahun = trim($row[0]);
-                        if (strtolower($rowTahun) === 'tahun akademik') continue;
+                        $rowTahun = $this->sanitizeText($row[0]);
+                        if ($rowTahun === null || strtolower($rowTahun) === 'tahun akademik') continue;
 
-                        $aspectName = isset($row[1]) ? trim($row[1]) : '';
-                        if (empty($aspectName)) continue;
+                        $aspectName = $this->sanitizeText($row[1] ?? '');
+                        if ($aspectName === '') continue;
                         
                         // Parse values from columns C, D, E, F (2, 3, 4, 5)
                         $sangat_baik   = $parsePercent($row[2] ?? 0);
@@ -227,26 +241,26 @@ class KuesionerDosenKaryawanController extends Controller
                     foreach ($rows as $row) {
                         $program = ''; $ss = 0; $s = 0; $cs = 0; $ts = 0; $sts = 0; $desc = ''; $order = 0;
                         if (count($row) >= 8) {
-                            $program = trim($row[2] ?? '');
+                            $program = $this->sanitizeText($row[2] ?? '');
                             $ss      = (double) str_replace(['%', ','], ['', '.'], $row[3] ?? 0);
                             $s       = (double) str_replace(['%', ','], ['', '.'], $row[4] ?? 0);
                             $cs      = (double) str_replace(['%', ','], ['', '.'], $row[5] ?? 0);
                             $ts      = (double) str_replace(['%', ','], ['', '.'], $row[6] ?? 0);
                             $sts     = (double) str_replace(['%', ','], ['', '.'], $row[7] ?? 0);
-                            $desc    = trim($row[8] ?? ''); // Optional: Column I
+                            $desc    = $this->sanitizeText($row[8] ?? ''); // Optional: Column I
                             $order   = (int) ($row[9] ?? 0); // Optional: Column J
                         } else {
-                            $program = trim($row[0] ?? '');
+                            $program = $this->sanitizeText($row[0] ?? '');
                             $ss      = (double) str_replace(['%', ','], ['', '.'], $row[1] ?? 0);
                             $s       = (double) str_replace(['%', ','], ['', '.'], $row[2] ?? 0);
                             $cs      = (double) str_replace(['%', ','], ['', '.'], $row[3] ?? 0);
                             $ts      = (double) str_replace(['%', ','], ['', '.'], $row[4] ?? 0);
                             $sts     = (double) str_replace(['%', ','], ['', '.'], $row[5] ?? 0);
-                            $desc    = trim($row[6] ?? ''); // Optional
+                            $desc    = $this->sanitizeText($row[6] ?? ''); // Optional
                             $order   = (int) ($row[7] ?? 0); // Optional
                         }
 
-                        if (empty($program)) continue;
+                        if ($program === '') continue;
 
                         // Use updateOrCreate to prevent unique constraint failures and allow updates
                         KuesionerDosenKaryawan::updateOrCreate(
@@ -360,8 +374,8 @@ class KuesionerDosenKaryawanController extends Controller
         ]);
 
         try {
-            $name = trim($request->input('prodi'));
-            if (empty($name)) {
+            $name = $this->sanitizeText($request->input('prodi'));
+            if ($name === '') {
                 return response()->json(['success' => false, 'message' => 'Nama prodi tidak boleh kosong.'], 422);
             }
 
@@ -372,6 +386,20 @@ class KuesionerDosenKaryawanController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal menambahkan prodi: ' . $e->getMessage()], 500);
         }
+    }
+
+    private function sanitizeText($value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        $stringValue = (string) $value;
+        $stringValue = strip_tags($stringValue);
+        $stringValue = trim($stringValue);
+        $stringValue = preg_replace('/[\x00-\x1F\x7F]/u', '', $stringValue);
+
+        return $stringValue ?? '';
     }
 
     /**

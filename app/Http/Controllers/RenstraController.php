@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\CapaianRenstra;
 use App\Shuchkin\SimpleXLSX;
 
@@ -27,22 +26,18 @@ class RenstraController extends Controller
 
         $selectedYears = $request->get('tahun', [$availableYears->first()]);
         
-        // Ensure selectedYears is an array (handle comma-separated string from URL if needed)
         if (!is_array($selectedYears)) {
             $selectedYears = array_filter(explode(',', $selectedYears));
         }
 
-        // Filter valid years
         $selectedYears = array_filter($selectedYears, function($y) use ($availableYears) {
             return $availableYears->contains($y);
         });
 
-        // Default to latest year if empty
         if (empty($selectedYears)) {
             $selectedYears = [$availableYears->first()];
         }
 
-        // Aggregate data across selected years (average target and realisasi per indicator)
         $data = CapaianRenstra::whereIn('tahun', $selectedYears)
             ->selectRaw('program, indikator, ROUND(AVG(target), 2) as target, ROUND(AVG(realisasi), 2) as realisasi')
             ->groupBy('program', 'indikator')
@@ -50,14 +45,12 @@ class RenstraController extends Controller
             ->get()
             ->groupBy('program');
 
-        // Yearly trend for line chart (Sync with selection)
         $yearlyStats = CapaianRenstra::whereIn('tahun', $selectedYears)
             ->selectRaw('tahun, ROUND(AVG(realisasi),1) as avg_realisasi, ROUND(AVG(target),1) as avg_target, COUNT(*) as total_indikator')
             ->groupBy('tahun')
             ->orderBy('tahun', 'asc')
             ->get();
 
-        // All-year program stats for horizontal multi-bar chart (Sync with selection)
         $allProgramStats = CapaianRenstra::whereIn('tahun', $selectedYears)
             ->selectRaw('program, tahun, ROUND(AVG(realisasi),2) as avg_realisasi')
             ->groupBy('program', 'tahun')
@@ -66,7 +59,6 @@ class RenstraController extends Controller
             ->get()
             ->groupBy('program');
 
-        // Unique indicators for the selector
         $indicators = CapaianRenstra::select('program', 'indikator')
             ->distinct()
             ->orderBy('program')
@@ -100,8 +92,8 @@ class RenstraController extends Controller
                     return response()->json(['success' => false, 'message' => 'File Excel kosong atau tidak valid.'], 400);
                 }
 
-                $headers = $rows[0]; // Row 0: Tahun, Pillar I, Pillar II, ...
-                unset($rows[0]); // Remove headers
+                $headers = $rows[0];
+                unset($rows[0]);
 
                 $yearOverride = $request->input('tahun_override');
                 $importedCount = 0;
@@ -110,36 +102,30 @@ class RenstraController extends Controller
                     $tahun = $yearOverride ?: trim($row[0] ?? '');
                     if (empty($tahun) || !is_numeric($tahun)) continue;
 
-                    // Iterate through pillars (Column B onwards)
                     for ($i = 1; $i < count($headers); $i++) {
-                        $program = trim($headers[$i] ?? '');
+                        $program = strip_tags(trim($headers[$i] ?? ''));
                         if (empty($program)) continue;
 
                         $realisasiRaw = $row[$i] ?? 0;
                         
-                        // Handle percentage string/decimal
                         if (is_string($realisasiRaw) && str_contains($realisasiRaw, '%')) {
                             $realisasi = (double) str_replace(['%', ','], ['', '.'], $realisasiRaw);
                         } else {
                             $realisasi = (double) $realisasiRaw;
-                            // If user input 0.75 thinking it's 75%, but the frontend expects 75.0, 
-                            // we should check. Usually SimpleXLSX handles numbers.
-                            // If it's less than 1 (except 0), it might be a ratio.
                             if ($realisasi > 0 && $realisasi <= 1) {
                                 $realisasi *= 100;
                             }
                         }
 
-                        // Update or Create
                         CapaianRenstra::updateOrCreate(
                             [
                                 'tahun'     => (int) $tahun,
                                 'program'   => $program,
-                                'indikator' => 'Rata-rata Capaian Strategy' // Default indicator for matrix
+                                'indikator' => 'Rata-rata Capaian Strategy'
                             ],
                             [
-                                'pic'       => 'LPM', // Default PIC for matrix import
-                                'target'    => 100,  // Target default 100%
+                                'pic'       => 'LPM',
+                                'target'    => 100,
                                 'realisasi' => round($realisasi, 2)
                             ]
                         );
@@ -169,9 +155,21 @@ class RenstraController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'program'   => 'nullable|string|max:255',
-            'indikator' => 'required|string',
-            'pic'       => 'nullable|string',
+            'program'   => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                if ($value && $value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
+            'indikator' => ['required', 'string', function ($attribute, $value, $fail) {
+                if ($value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
+            'pic'       => ['nullable', 'string', function ($attribute, $value, $fail) {
+                if ($value && $value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
             'target'    => 'required|numeric',
             'realisasi' => 'required|numeric',
             'tahun'     => 'required|integer'
@@ -188,9 +186,21 @@ class RenstraController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'program'   => 'nullable|string|max:255',
-            'indikator' => 'required|string',
-            'pic'       => 'nullable|string',
+            'program'   => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                if ($value && $value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
+            'indikator' => ['required', 'string', function ($attribute, $value, $fail) {
+                if ($value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
+            'pic'       => ['nullable', 'string', function ($attribute, $value, $fail) {
+                if ($value && $value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
             'target'    => 'required|numeric',
             'realisasi' => 'required|numeric',
             'tahun'     => 'required|integer'
@@ -236,8 +246,16 @@ class RenstraController extends Controller
         $request->validate([
             'data' => 'required|array',
             'data.*.id' => 'required|integer',
-            'data.*.indikator' => 'nullable|string|max:255',
-            'data.*.pic' => 'nullable|string|max:255',
+            'data.*.indikator' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                if ($value && $value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
+            'data.*.pic' => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                if ($value && $value !== strip_tags($value)) {
+                    $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                }
+            }],
             'data.*.target' => 'nullable|numeric',
             'data.*.realisasi' => 'nullable|numeric',
         ]);
@@ -248,8 +266,8 @@ class RenstraController extends Controller
             $renstra = CapaianRenstra::find($row['id']);
             if ($renstra) {
                 $renstra->update([
-                    'indikator' => $row['indikator'] ?? $renstra->indikator,
-                    'pic'       => $row['pic'] ?? $renstra->pic,
+                    'indikator' => isset($row['indikator']) ? strip_tags($row['indikator']) : $renstra->indikator,
+                    'pic'       => isset($row['pic']) ? strip_tags($row['pic']) : $renstra->pic,
                     'target'    => $row['target'] ?? $renstra->target,
                     'realisasi' => $row['realisasi'] ?? $renstra->realisasi,
                 ]);

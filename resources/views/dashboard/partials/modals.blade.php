@@ -429,11 +429,12 @@
             
             toast.classList.add(type === 'success' ? 'border-emerald-100' : 'border-rose-100');
 
+            const safeMessage = escapeHtml(message);
             toast.innerHTML = `
                 ${icon}
                 <div class="flex-1">
                     <h4 class="text-sm font-bold text-slate-800">${type === 'success' ? 'Berhasil' : 'Peringatan'}</h4>
-                    <p class="text-xs font-medium text-slate-500">${message}</p>
+                    <p class="text-xs font-medium text-slate-500">${safeMessage}</p>
                 </div>
                 <button onclick="this.parentElement.remove()" class="ml-2 w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-colors"><i class="fas fa-times"></i></button>
             `;
@@ -820,13 +821,21 @@
         const isStatusField = (f) => f.toLowerCase() === 'status';
         
         function escapeHtml(unsafe) {
-            if (!unsafe || typeof unsafe !== 'string') return unsafe;
-            return unsafe
+            if (unsafe === null || unsafe === undefined) return '';
+            return String(unsafe)
                  .replace(/&/g, "&amp;")
                  .replace(/</g, "&lt;")
                  .replace(/>/g, "&gt;")
                  .replace(/"/g, "&quot;")
                  .replace(/'/g, "&#039;");
+        }
+
+        function escapeJsString(unsafe) {
+            return String(unsafe ?? '')
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/\r/g, '\\r')
+                .replace(/\n/g, '\\n');
         }
 
         function generateFormFields(containerId, fields, values = {}) {
@@ -1595,27 +1604,32 @@
                     } else if (d.first_foto) {
                         coverUrl = '/storage/gallery/' + d.first_foto.file_path;
                     }
+
+                    const safeCoverUrl = escapeHtml(coverUrl);
+                    const safeAlbumName = escapeHtml(d.nama_album || '');
+                    const safeCreatedAt = escapeHtml(d.created_at ? d.created_at.substring(0,10) : '');
+                    const safeAlbumNameForJs = escapeJsString(d.nama_album || '');
                     
                     return `
                     <tr class="hover:bg-blue-50/10 border-b border-slate-50 transition-colors">
                         <td class="px-8 py-4 text-center text-[11px] font-black text-slate-400 uppercase">${String(i+1).padStart(2,'0')}</td>
                         <td class="px-8 py-4">
                             <div class="flex items-center gap-4">
-                                <img src="${coverUrl}" 
+                                <img src="${safeCoverUrl}" 
                                      class="w-12 h-8 rounded-lg object-cover shadow-sm bg-slate-100" onerror="this.src='/images/gedung-poljam.png'">
                                 <div>
-                                    <p class="text-sm font-bold text-slate-800">${d.nama_album}</p>
-                                    <p class="text-[10px] text-slate-400">${d.created_at ? d.created_at.substring(0,10) : ''}</p>
+                                    <p class="text-sm font-bold text-slate-800">${safeAlbumName}</p>
+                                    <p class="text-[10px] text-slate-400">${safeCreatedAt}</p>
                                 </div>
                             </div>
                         </td>
                         <td class="px-8 py-4">
                             <div class="flex justify-end gap-2">
-                                <button onclick="openManagePhotos(${d.id}, '${d.nama_album.replace(/'/g,"\\'")}')"
+                                <button onclick="openManagePhotos(${d.id}, '${safeAlbumNameForJs}')"
                                     class="text-emerald-500 hover:text-emerald-700 py-2 px-3 bg-emerald-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
                                     <i class="fas fa-images mr-1"></i> Foto
                                 </button>
-                                <button onclick="openEditAlbum(${d.id}, '${d.nama_album.replace(/'/g,"\\'")}')"
+                                <button onclick="openEditAlbum(${d.id}, '${safeAlbumNameForJs}')"
                                     class="text-blue-500 hover:text-blue-700 py-2 px-3 bg-blue-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
                                     <i class="fas fa-pen mr-1"></i>
                                 </button>
@@ -1647,31 +1661,37 @@
                             ? `<div class="w-full h-full flex items-center justify-center bg-slate-100"><i class="fas fa-film text-slate-400 text-lg"></i></div>`
                             : `<div class="w-full h-full flex items-center justify-center bg-slate-100"><i class="fas fa-video-slash text-slate-300 text-lg"></i></div>`;  
 
+                    const safeTitle = escapeHtml(d.judul || '');
+                    const safeLinkText = escapeHtml(d.link_youtube || '-');
+                    const safeTitleForJs = escapeJsString(d.judul || '');
+                    const safeLinkForJs = escapeJsString(d.link_youtube || '');
+                    const safeDescriptionForJs = escapeJsString(d.deskripsi || '');
+
                     return `
                     <tr class="hover:bg-blue-50/10 border-b border-slate-50 transition-colors">
                         <td class="px-8 py-4 text-center text-[11px] font-black text-slate-400 uppercase">${String(i+1).padStart(2,'0')}</td>
                         <td class="px-8 py-4">
                             <div class="flex items-center gap-4">
                                 <div class="relative w-12 h-8 rounded-lg overflow-hidden group/thumb cursor-pointer" 
-                                     onclick="playDashboardVideo('${d.link_youtube || ''}', '${d.judul.replace(/'/g,"\\'")}')">
+                                     onclick="playDashboardVideo('${safeLinkForJs}', '${safeTitleForJs}')">
                                     ${thumbHtml}
                                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center text-white opacity-0 group-hover/thumb:opacity-100 transition-opacity">
                                         <i class="fas fa-play text-[10px]"></i>
                                     </div>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-sm font-bold text-slate-800 truncate">${d.judul}</p>
-                                    <p class="text-[10px] text-slate-400 max-w-xs truncate">${d.link_youtube || '-'}</p>
+                                    <p class="text-sm font-bold text-slate-800 truncate">${safeTitle}</p>
+                                    <p class="text-[10px] text-slate-400 max-w-xs truncate">${safeLinkText}</p>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-8 py-4">
-                            <div class="flex justify-end gap-2">
-                                <button onclick="playDashboardVideo('${d.link_youtube || ''}', '${d.judul.replace(/'/g,"\\'")}')"
+                        <td class="px-8 py-4 sticky right-0 z-10 bg-white/95 backdrop-blur-sm border-l border-slate-100">
+                            <div class="flex justify-end gap-2 whitespace-nowrap">
+                                <button onclick="playDashboardVideo('${safeLinkForJs}', '${safeTitleForJs}')"
                                     class="text-rose-500 hover:text-rose-700 py-2 px-3 bg-rose-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
                                     <i class="fas fa-play"></i>
                                 </button>
-                                <button onclick="openEditVideo(${d.id}, '${d.judul.replace(/'/g,"\\'")}', '${(d.link_youtube||'').replace(/'/g,"\\'")}', '${(d.deskripsi||'').replace(/'/g,"\\'")}')"
+                                <button onclick="openEditVideo(${d.id}, '${safeTitleForJs}', '${safeLinkForJs}', '${safeDescriptionForJs}')"
                                     class="text-blue-500 hover:text-blue-700 py-2 px-3 bg-blue-50 rounded-lg text-[10px] font-black uppercase tracking-widest hover:-translate-y-0.5 transition-all">
                                     <i class="fas fa-pen mr-1"></i>
                                 </button>
@@ -1995,15 +2015,22 @@
                 .then(r => r.json())
                 .then(res => {
                     if (res.success) {
-                        container.innerHTML = res.data.map(p => `
+                        container.innerHTML = res.data.map(p => {
+                            const safeTitle = escapeHtml(p.judul || 'Foto');
+                            const safeDescription = escapeHtml(p.deskripsi || 'Tanpa deskripsi');
+                            const safeTitleForJs = escapeJsString(p.judul || '');
+                            const safeDescriptionForJs = escapeJsString(p.deskripsi || '');
+                            const safeFilePath = escapeHtml(p.file_path && p.file_path.startsWith('http') ? p.file_path : '/storage/gallery/' + (p.file_path || ''));
+
+                            return `
                             <div class="relative group rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 shadow-sm">
-                                <img src="${p.file_path && p.file_path.startsWith('http') ? p.file_path : '/storage/gallery/' + p.file_path}" class="w-full h-36 object-cover">
+                                <img src="${safeFilePath}" class="w-full h-36 object-cover">
                                 <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white">
-                                    <p class="text-[10px] font-black uppercase tracking-widest truncate">${p.judul || 'Foto'}</p>
-                                    <p class="text-[9px] opacity-80 truncate">${p.deskripsi || 'Tanpa deskripsi'}</p>
+                                    <p class="text-[10px] font-black uppercase tracking-widest truncate">${safeTitle}</p>
+                                    <p class="text-[9px] opacity-80 truncate">${safeDescription}</p>
                                 </div>
                                 <div class="absolute top-2 right-2 flex gap-2">
-                                    <button onclick="openEditPhoto(${p.id}, '${(p.judul || '').replace(/'/g, "\\'")}', '${(p.deskripsi || '').replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg bg-blue-500/90 text-white flex items-center justify-center hover:bg-blue-600 transition-colors">
+                                    <button onclick="openEditPhoto(${p.id}, '${safeTitleForJs}', '${safeDescriptionForJs}')" class="w-8 h-8 rounded-lg bg-blue-500/90 text-white flex items-center justify-center hover:bg-blue-600 transition-colors">
                                         <i class="fas fa-pen text-[10px]"></i>
                                     </button>
                                     <button onclick="deletePhoto(${p.id})" class="w-8 h-8 rounded-lg bg-rose-500/90 text-white flex items-center justify-center hover:bg-rose-600 transition-colors">
@@ -2011,7 +2038,8 @@
                                     </button>
                                 </div>
                             </div>
-                        `).join('') || '<div class="col-span-full py-10 text-center text-slate-300 font-semibold uppercase tracking-widest text-[10px]">Belum ada foto di album ini.</div>';
+                        `;
+                        }).join('') || '<div class="col-span-full py-10 text-center text-slate-300 font-semibold uppercase tracking-widest text-[10px]">Belum ada foto di album ini.</div>';
                     }
                 });
         }
@@ -2142,14 +2170,15 @@
                 }
             }
 
+            const safeTitle = escapeHtml(title || '');
             if (youtubeId) {
                 Swal.fire({
-                    title: `<span class="text-slate-800 font-bold text-lg">${title}</span>`,
+                    title: `<span class="text-slate-800 font-bold text-lg">${safeTitle}</span>`,
                     html: `
                         <div class="aspect-video rounded-2xl overflow-hidden shadow-2xl border border-slate-100 mt-4">
                             <iframe width="100%" height="100%" 
                                 src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1" 
-                                title="${title}" frameborder="0" 
+                                title="${safeTitle}" frameborder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                                 allowfullscreen></iframe>
                         </div>
@@ -2164,9 +2193,9 @@
                     }
                 });
             } else if (isLocal) {
-                const videoUrl = '/storage/gallery/videos/' + url;
+                const videoUrl = escapeHtml('/storage/gallery/videos/' + (url || ''));
                 Swal.fire({
-                    title: `<span class="text-slate-800 font-bold text-lg">${title}</span>`,
+                    title: `<span class="text-slate-800 font-bold text-lg">${safeTitle}</span>`,
                     html: `
                         <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-100 mt-4">
                             <video width="100%" height="auto" controls autoplay playsinline style="max-height: 70vh;">

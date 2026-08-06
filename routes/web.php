@@ -140,19 +140,19 @@ Route::middleware('auth')->group(function () {
     // ============================================
     // --- SISTEM MANAJEMEN GALERI (FOTO & VIDEO) ---
     // ============================================
-    Route::get('/admin/galeri-album', [\App\Http\Controllers\GaleriController::class, 'getAlbums'])->name('admin.galeri_album.index');
-    Route::post('/admin/galeri-album/upload', [\App\Http\Controllers\GaleriController::class, 'uploadAlbum'])->name('admin.galeri_album.store');
-    Route::post('/admin/galeri-album/{id}/update', [\App\Http\Controllers\GaleriController::class, 'updateAlbum'])->name('admin.galeri_album.update');
-    Route::delete('/admin/galeri-album/{id}', [\App\Http\Controllers\GaleriController::class, 'deleteAlbum'])->name('admin.galeri_album.destroy');
-    Route::get('/admin/galeri-album/{album_id}/photos', [\App\Http\Controllers\GaleriController::class, 'getPhotos']);
-    Route::post('/admin/galeri-album/{album_id}/photos/upload', [\App\Http\Controllers\GaleriController::class, 'uploadPhotos']);
-    Route::post('/admin/galeri-foto/{id}/update', [\App\Http\Controllers\GaleriController::class, 'updatePhoto']);
-    Route::delete('/admin/galeri-foto/{id}', [\App\Http\Controllers\GaleriController::class, 'deletePhoto']);
+    Route::get('/admin/galeri-album', [\App\Http\Controllers\GaleriAlbumController::class, 'index'])->name('admin.galeri_album.index');
+    Route::post('/admin/galeri-album/upload', [\App\Http\Controllers\GaleriAlbumController::class, 'uploadAlbum'])->name('admin.galeri_album.store');
+    Route::post('/admin/galeri-album/{id}/update', [\App\Http\Controllers\GaleriAlbumController::class, 'updateAlbum'])->name('admin.galeri_album.update');
+    Route::delete('/admin/galeri-album/{id}', [\App\Http\Controllers\GaleriAlbumController::class, 'deleteAlbum'])->name('admin.galeri_album.destroy');
+    Route::get('/admin/galeri-album/{album_id}/photos', [\App\Http\Controllers\GaleriFotoController::class, 'index'])->name('admin.galeri_foto.index');
+    Route::post('/admin/galeri-album/{album_id}/photos/upload', [\App\Http\Controllers\GaleriFotoController::class, 'uploadPhotos'])->name('admin.galeri_foto.upload');
+    Route::post('/admin/galeri-foto/{id}/update', [\App\Http\Controllers\GaleriFotoController::class, 'updatePhoto'])->name('admin.galeri_foto.update');
+    Route::delete('/admin/galeri-foto/{id}', [\App\Http\Controllers\GaleriFotoController::class, 'deletePhoto'])->name('admin.galeri_foto.destroy');
 
-    Route::get('/admin/galeri-video', [\App\Http\Controllers\GaleriController::class, 'getVideos'])->name('admin.galeri_video.index');
-    Route::post('/admin/galeri-video/upload', [\App\Http\Controllers\GaleriController::class, 'uploadVideo'])->name('admin.galeri_video.store');
-    Route::post('/admin/galeri-video/{id}/update', [\App\Http\Controllers\GaleriController::class, 'updateVideo'])->name('admin.galeri_video.update');
-    Route::delete('/admin/galeri-video/{id}', [\App\Http\Controllers\GaleriController::class, 'deleteVideo'])->name('admin.galeri_video.destroy');
+    Route::get('/admin/galeri-video', [\App\Http\Controllers\GaleriVideoController::class, 'index'])->name('admin.galeri_video.index');
+    Route::post('/admin/galeri-video/upload', [\App\Http\Controllers\GaleriVideoController::class, 'uploadVideo'])->name('admin.galeri_video.store');
+    Route::post('/admin/galeri-video/{id}/update', [\App\Http\Controllers\GaleriVideoController::class, 'updateVideo'])->name('admin.galeri_video.update');
+    Route::delete('/admin/galeri-video/{id}', [\App\Http\Controllers\GaleriVideoController::class, 'deleteVideo'])->name('admin.galeri_video.destroy');
 
     // ============================================
     // --- SISTEM MANAJEMEN CAPAIAN RENSTRA ---
@@ -179,12 +179,18 @@ Route::middleware('auth')->group(function () {
     // --- MANAJEMEN KUESIONER DOSEN & KARYAWAN ---
     // ============================================
     Route::get('/admin/kuesioner-dosen/data', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'index'])->name('admin.kuesioner_dosen.index');
+    Route::get('/admin/kuesioner-mahasiswa/data', [\App\Http\Controllers\KuesionerMahasiswaController::class, 'index'])->name('admin.kuesioner_mahasiswa.index');
     Route::post('/admin/kuesioner-dosen/store', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'store'])->name('admin.kuesioner_dosen.store');
+    Route::post('/admin/kuesioner-mahasiswa/store', [\App\Http\Controllers\KuesionerMahasiswaController::class, 'store'])->name('admin.kuesioner_mahasiswa.store');
     Route::post('/admin/kuesioner-dosen/add-prodi', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'addProdi'])->name('admin.kuesioner_dosen.add_prodi');
     Route::post('/admin/kuesioner-dosen/{id}/update', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'update'])->name('admin.kuesioner_dosen.update');
+    Route::post('/admin/kuesioner-mahasiswa/{id}/update', [\App\Http\Controllers\KuesionerMahasiswaController::class, 'update'])->name('admin.kuesioner_mahasiswa.update');
     Route::delete('/admin/kuesioner-dosen/truncate', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'truncate'])->name('admin.kuesioner_dosen.truncate');
+    Route::delete('/admin/kuesioner-mahasiswa/truncate', [\App\Http\Controllers\KuesionerMahasiswaController::class, 'truncate'])->name('admin.kuesioner_mahasiswa.truncate');
     Route::delete('/admin/kuesioner-dosen/{id}', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'destroy'])->name('admin.kuesioner_dosen.destroy');
+    Route::delete('/admin/kuesioner-mahasiswa/{id}', [\App\Http\Controllers\KuesionerMahasiswaController::class, 'destroy'])->name('admin.kuesioner_mahasiswa.destroy');
     Route::post('/admin/kuesioner-dosen/import', [\App\Http\Controllers\KuesionerDosenKaryawanController::class, 'import'])->name('admin.kuesioner_dosen.import');
+    Route::post('/admin/kuesioner-mahasiswa/import', [\App\Http\Controllers\KuesionerMahasiswaController::class, 'import'])->name('admin.kuesioner_mahasiswa.import');
 
     // ============================================
     // --- SISTEM MANAJEMEN PENGUMUMAN (API) ---

@@ -16,10 +16,22 @@ class DokumenSpmiController extends Controller
     {
         try {
             $request->validate([
-                'judul'      => 'required|string|max:255',
+                'judul'      => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
+                    if ($value !== strip_tags($value)) {
+                        $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                    }
+                }],
                 'tahun'      => 'required|integer|min:2000|max:2099',
-                'deskripsi'  => 'nullable|string|max:1000',
-                'kategori'   => 'nullable|string|max:255',
+                'deskripsi'  => ['nullable', 'string', 'max:1000', function ($attribute, $value, $fail) {
+                    if ($value && $value !== strip_tags($value)) {
+                        $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                    }
+                }],
+                'kategori'   => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                    if ($value && $value !== strip_tags($value)) {
+                        $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                    }
+                }],
                 'file'       => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
             ]);
 
@@ -60,9 +72,10 @@ class DokumenSpmiController extends Controller
                 ],
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = collect($e->errors())->flatten()->implode(', ');
             return response()->json([
                 'success' => false,
-                'message' => 'Validasi gagal: ' . implode(', ', array_flatten($e->errors())),
+                'message' => 'Validasi gagal: ' . $errors,
                 'errors'  => $e->errors()
             ], 422);
         } catch (\Exception $e) {
@@ -83,10 +96,22 @@ class DokumenSpmiController extends Controller
             $dokumen = DokumenSpmi::findOrFail($id);
 
             $request->validate([
-                'judul'     => 'required|string|max:255',
+                'judul'     => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
+                    if ($value !== strip_tags($value)) {
+                        $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                    }
+                }],
                 'tahun'     => 'required|integer|min:2000|max:2099',
-                'deskripsi' => 'nullable|string|max:1000',
-                'kategori'  => 'nullable|string|max:255',
+                'deskripsi' => ['nullable', 'string', 'max:1000', function ($attribute, $value, $fail) {
+                    if ($value && $value !== strip_tags($value)) {
+                        $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                    }
+                }],
+                'kategori'  => ['nullable', 'string', 'max:255', function ($attribute, $value, $fail) {
+                    if ($value && $value !== strip_tags($value)) {
+                        $fail('Field ' . $attribute . ' tidak boleh mengandung tag HTML atau skrip.');
+                    }
+                }],
                 'file'      => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar|max:20480',
             ]);
 
@@ -100,7 +125,6 @@ class DokumenSpmiController extends Controller
 
             // Jika ada file baru diupload
             if ($request->hasFile('file')) {
-                // Hapus file lama
                 if ($dokumen->path_file && Storage::disk('public')->exists($dokumen->path_file)) {
                     Storage::disk('public')->delete($dokumen->path_file);
                 }
@@ -138,9 +162,10 @@ class DokumenSpmiController extends Controller
                 ],
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = collect($e->errors())->flatten()->implode(', ');
             return response()->json([
                 'success' => false,
-                'message' => 'Validasi gagal: ' . implode(', ', array_flatten($e->errors())),
+                'message' => 'Validasi gagal: ' . $errors,
                 'errors'  => $e->errors()
             ], 422);
         } catch (\Exception $e) {
@@ -159,7 +184,6 @@ class DokumenSpmiController extends Controller
     {
         $dokumen = DokumenSpmi::findOrFail($id);
 
-        // Hapus file fisik dari storage
         if ($dokumen->path_file && Storage::disk('public')->exists($dokumen->path_file)) {
             Storage::disk('public')->delete($dokumen->path_file);
         }
@@ -184,7 +208,6 @@ class DokumenSpmiController extends Controller
             abort(404, 'File tidak ditemukan.');
         }
 
-        // Tambah counter download
         $dokumen->increment('downloads');
 
         $path = Storage::disk('public')->path($dokumen->path_file);

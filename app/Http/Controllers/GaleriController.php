@@ -2,291 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GaleriAlbum;
-use App\Models\GaleriVideo;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
-
-class GaleriController extends Controller
+class GaleriController extends GalleryControllerBase
 {
-    /**
-     * Album Foto CRUD
-     */
     public function getAlbums()
     {
-        return response()->json(['success' => true, 'data' => GaleriAlbum::with('firstFoto')->latest()->get()]);
+        return (new GaleriAlbumController())->index();
     }
 
-    public function uploadAlbum(Request $request)
+    public function uploadAlbum($request)
     {
-        $request->validate([
-            'nama_album' => 'required|string|max:255',
-            'sampul_foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'link_extern' => 'nullable|url|max:255',
-        ]);
-
-        \Log::info('Album Upload Attempt: ' . $request->nama_album);
-
-        $filename = null;
-        if ($request->hasFile('sampul_foto')) {
-            $file = $request->file('sampul_foto');
-            $filename = time() . '_' . Str::slug($request->nama_album) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('gallery', $filename, 'public');
-        } elseif ($request->link_extern) {
-            $filename = $request->link_extern;
-        }
-
-        $album = GaleriAlbum::create([
-            'nama_album' => $request->nama_album,
-            'slug' => Str::slug($request->nama_album),
-            'sampul_foto' => $filename
-        ]);
-
-        return response()->json(['success' => true, 'message' => 'Album berhasil ditambahkan!', 'data' => $album]);
+        return (new GaleriAlbumController())->uploadAlbum($request);
     }
 
-    public function updateAlbum(Request $request, $id)
+    public function updateAlbum($request, $id)
     {
-        $album = GaleriAlbum::findOrFail($id);
-        
-        $request->validate([
-            'nama_album' => 'required|string|max:255',
-            'sampul_foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'link_extern' => 'nullable|url|max:255',
-        ]);
-
-        $album->nama_album = $request->nama_album;
-        $album->slug = Str::slug($request->nama_album);
-
-        if ($request->hasFile('sampul_foto')) {
-            // Delete old file if exists locally
-            if ($album->sampul_foto && !filter_var($album->sampul_foto, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete('gallery/' . $album->sampul_foto);
-            }
-            $file = $request->file('sampul_foto');
-            $filename = time() . '_' . Str::slug($request->nama_album) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('gallery', $filename, 'public');
-            $album->sampul_foto = $filename;
-        } elseif ($request->link_extern) {
-            $album->sampul_foto = $request->link_extern;
-        }
-
-        $album->save();
-        return response()->json(['success' => true, 'message' => 'Album berhasil diperbarui!']);
+        return (new GaleriAlbumController())->updateAlbum($request, $id);
     }
 
     public function deleteAlbum($id)
     {
-        $album = GaleriAlbum::with('fotos')->findOrFail($id);
-        
-        // Delete album cover
-        if ($album->sampul_foto && !filter_var($album->sampul_foto, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete('gallery/' . $album->sampul_foto);
-        }
-
-        // Delete all associated photos and files
-        foreach ($album->fotos as $foto) {
-            if ($foto->file_path && !filter_var($foto->file_path, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete('gallery/' . $foto->file_path);
-            }
-            $foto->delete();
-        }
-
-        $album->delete();
-        return response()->json(['success' => true, 'message' => 'Album dan semua foto di dalamnya berhasil dihapus!']);
+        return (new GaleriAlbumController())->deleteAlbum($id);
     }
 
-    /**
-     * Video Galeri CRUD
-     */
     public function getVideos()
     {
-        return response()->json(['success' => true, 'data' => GaleriVideo::latest()->get()]);
+        return (new GaleriVideoController())->index();
     }
 
-    public function uploadVideo(Request $request)
+    public function uploadVideo($request)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'video_file' => 'nullable|file|mimes:mp4,mov,avi,mkv,wmv|max:40960',
-            'link_youtube' => 'nullable|string|max:65535',
-            'deskripsi' => 'nullable|string|max:1000'
-        ]);
-
-        if (!$request->hasFile('video_file') && !$request->filled('link_youtube')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Upload file video atau isi link video terlebih dahulu.',
-            ], 422);
-        }
-
-        \Log::info('Video Upload Attempt: ' . $request->judul);
-
-        $videoSource = null;
-        if ($request->hasFile('video_file')) {
-            $file = $request->file('video_file');
-            $videoSource = time() . '_' . Str::slug($request->judul) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('gallery/videos', $videoSource, 'public');
-        } elseif ($request->link_youtube) {
-            $videoSource = $request->link_youtube;
-        }
-
-        $video = GaleriVideo::create([
-            'judul' => $request->judul,
-            'slug' => Str::slug($request->judul),
-            'link_youtube' => $videoSource,
-            'deskripsi' => $request->deskripsi
-        ]);
-
-        return response()->json(['success' => true, 'message' => 'Video berhasil ditambahkan!', 'data' => $video]);
+        return (new GaleriVideoController())->uploadVideo($request);
     }
 
-    public function updateVideo(Request $request, $id)
+    public function updateVideo($request, $id)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'video_file' => 'nullable|file|mimes:mp4,mov,avi,mkv,wmv|max:40960',
-            'link_youtube' => 'nullable|string|max:65535',
-            'deskripsi' => 'nullable|string|max:1000'
-        ]);
-
-        $video = GaleriVideo::findOrFail($id);
-        $video->judul = $request->judul;
-        $video->slug = Str::slug($request->judul);
-        $video->deskripsi = $request->deskripsi;
-
-        if ($request->hasFile('video_file')) {
-            if ($video->link_youtube && !filter_var($video->link_youtube, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete('gallery/videos/' . $video->link_youtube);
-            }
-            $file = $request->file('video_file');
-            $videoSource = time() . '_' . Str::slug($request->judul) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('gallery/videos', $videoSource, 'public');
-            $video->link_youtube = $videoSource;
-        } elseif ($request->link_youtube) {
-            $video->link_youtube = $request->link_youtube;
-        }
-
-        $video->save();
-        return response()->json(['success' => true, 'message' => 'Video berhasil diperbarui!']);
+        return (new GaleriVideoController())->updateVideo($request, $id);
     }
 
     public function deleteVideo($id)
     {
-        $video = GaleriVideo::findOrFail($id);
-        if ($video->link_youtube && !filter_var($video->link_youtube, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete('gallery/videos/' . $video->link_youtube);
-        }
-        $video->delete();
-        return response()->json(['success' => true, 'message' => 'Video berhasil dihapus!']);
+        return (new GaleriVideoController())->deleteVideo($id);
     }
 
-    /**
-     * Individual Photo Management
-     */
     public function getPhotos($album_id)
     {
-        $photos = \App\Models\GaleriFoto::where('album_id', $album_id)->latest()->get();
-        return response()->json(['success' => true, 'data' => $photos]);
+        return (new GaleriFotoController())->index($album_id);
     }
 
-    public function uploadPhotos(Request $request, $album_id)
+    public function uploadPhotos($request, $album_id)
     {
-        $request->validate([
-            'photos' => 'nullable|array',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
-            'photo_links' => 'nullable|string',
-            'judul' => 'nullable|string|max:255',
-            'deskripsi' => 'nullable|string|max:1000',
-        ]);
-
-        $album = GaleriAlbum::findOrFail($album_id);
-        $uploaded = [];
-        $photoLinks = collect(preg_split('/\r\n|\r|\n/', (string) $request->input('photo_links', '')))
-            ->map(fn ($link) => trim($link))
-            ->filter();
-        $photoTitle = $request->input('judul');
-        $photoDescription = $request->input('deskripsi');
-
-        foreach ($photoLinks as $link) {
-            if (!filter_var($link, FILTER_VALIDATE_URL)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Link foto tidak valid: {$link}",
-                ], 422);
-            }
-        }
-
-        if (!$request->hasFile('photos') && $photoLinks->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pilih foto lokal atau isi minimal satu link foto.',
-            ], 422);
-        }
-
-        if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $file) {
-                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('gallery', $filename, 'public');
-
-                $photo = \App\Models\GaleriFoto::create([
-                    'album_id' => $album->id,
-                    'file_path' => $filename,
-                    'judul' => $photoTitle,
-                    'deskripsi' => $photoDescription,
-                ]);
-                $uploaded[] = $photo;
-            }
-        }
-
-        foreach ($photoLinks as $link) {
-            $uploaded[] = \App\Models\GaleriFoto::create([
-                'album_id' => $album->id,
-                'file_path' => $link,
-                'judul' => $photoTitle,
-                'deskripsi' => $photoDescription,
-            ]);
-        }
-
-        return response()->json(['success' => true, 'message' => count($uploaded) . ' Foto berhasil ditambahkan!', 'data' => $uploaded]);
+        return (new GaleriFotoController())->uploadPhotos($request, $album_id);
     }
 
-    public function updatePhoto(Request $request, $id)
+    public function updatePhoto($request, $id)
     {
-        $request->validate([
-            'judul' => 'nullable|string|max:255',
-            'deskripsi' => 'nullable|string|max:1000',
-            'photo_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-        ]);
-
-        $photo = \App\Models\GaleriFoto::findOrFail($id);
-        $photo->judul = $request->input('judul');
-        $photo->deskripsi = $request->input('deskripsi');
-
-        if ($request->hasFile('photo_file')) {
-            if ($photo->file_path && !filter_var($photo->file_path, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete('gallery/' . $photo->file_path);
-            }
-
-            $file = $request->file('photo_file');
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('gallery', $filename, 'public');
-            $photo->file_path = $filename;
-        }
-
-        $photo->save();
-
-        return response()->json(['success' => true, 'message' => 'Foto berhasil diperbarui!']);
+        return (new GaleriFotoController())->updatePhoto($request, $id);
     }
 
     public function deletePhoto($id)
     {
-        $photo = \App\Models\GaleriFoto::findOrFail($id);
-        if ($photo->file_path && !filter_var($photo->file_path, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete('gallery/' . $photo->file_path);
-        }
-        $photo->delete();
-        return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus!']);
+        return (new GaleriFotoController())->deletePhoto($id);
     }
 }
