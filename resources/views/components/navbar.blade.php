@@ -45,8 +45,8 @@
             <a href="{{ url('/') }}" class="flex items-center gap-3.5 min-w-0 group">
                 <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-12 w-auto transition-transform duration-500 group-hover:scale-105">
                 <div class="flex flex-col justify-center text-left min-w-0">
-                    <span class="block text-white font-extrabold text-xl leading-tight tracking-wide select-none">Politeknik Jambi</span>
-                    <span class="block text-white/90 text-[10px] font-black uppercase tracking-[0.2em] leading-tight select-none">
+                    <span class="block text-white font-extrabold text-xl leading-tight tracking-wide select-none not-italic">Politeknik Jambi</span>
+                    <span class="block text-white/90 text-[10px] font-black uppercase tracking-[0.2em] leading-tight select-none not-italic">
                         LEMBAGA PERENCANAAN PENGEMBANGAN<br>& PENJAMINAN MUTU
                     </span>
                 </div>
@@ -161,16 +161,16 @@
             <a href="{{ url('/') }}" class="flex items-center gap-3.5 group cursor-pointer">
                 <img src="{{ optional($brandAssets->get('logo_poljam'))->logo_url ?? asset('/images/logo-poljam.png') }}" alt="Logo" class="h-14 w-auto group-hover:scale-110 transition-transform duration-500">
                 <div class="flex flex-col justify-center text-left">
-                    <span class="text-white font-extrabold text-xl leading-[1.1] tracking-wide select-none group-hover:scale-105 transition-transform duration-500 origin-left">
-                        Politeknik Jambi
-                    </span>
-                    <div class="h-[1.5px] bg-white/40 my-0.5 w-full opacity-80"></div>
-                    <span class="text-white/90 text-[9.3px] font-bold italic leading-none uppercase tracking-wider select-none">
-                        Lembaga Perencanaan Pengembangan
-                    </span>
-                    <span class="text-white/90 text-[9.3px] font-bold italic leading-[1.3] uppercase tracking-wider select-none">
-                        & Penjaminan Mutu
-                    </span>
+                   <span class="text-white font-extrabold text-3xl leading-[1.1] tracking-wide select-none group-hover:scale-105 transition-transform duration-500 origin-left not-italic">
+                    Politeknik Jambi
+                 </span>
+                <div class="h-[1.5px] bg-white/40 my-0.5 w-full opacity-80"></div>
+                <span class="text-white/90 text-[9.3px] font-bold leading-none uppercase tracking-wider select-none not-italic">
+                    Lembaga Perencanaan Pengembangan
+                </span>
+                <span class="text-white/90 text-[9.3px] font-bold leading-[1.3] uppercase tracking-wider select-none not-italic">
+                    & Penjaminan Mutu
+                </span>
                 </div>
             </a>
 
