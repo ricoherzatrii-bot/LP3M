@@ -271,6 +271,8 @@ class DashboardController extends Controller
         $chartLabels = $months->map(function ($month) {
             return Carbon::createFromDate(null, $month, 1)->translatedFormat('M');
         })->toArray();
+        
+        $pilars = \App\Models\PilarRenstra::orderBy('urutan', 'asc')->get();
 
         return view('dashboard', compact(
             'totalMutuDocs',
@@ -289,7 +291,8 @@ class DashboardController extends Controller
             'recentDocuments',
             'recentActivities',
             'chartLabels',
-            'monthlyUploadCounts'
+            'monthlyUploadCounts',
+            'pilars'
         ));
     }
 

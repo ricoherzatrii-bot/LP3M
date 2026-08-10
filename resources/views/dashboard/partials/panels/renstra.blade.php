@@ -204,27 +204,29 @@ function openRenstraModal(item = null) {
     overlay.style.pointerEvents = 'auto';
     setTimeout(() => modal.classList.remove('scale-95'), 10);
 
+    const currentPilars = @json($pilars ?? []);
+    let optionsHtml = '<option value="">Pilih Program / Kelompok</option>';
+    currentPilars.forEach(pilar => {
+        const value = escapeHtml(pilar.kode) + '. ' + escapeHtml(pilar.judul);
+        const isSelected = item && item.program === value ? 'selected' : '';
+        optionsHtml += `<option value="${value}" ${isSelected}>${escapeHtml(pilar.kode)}. ${escapeHtml(pilar.judul)}</option>`;
+    });
+
     let fieldsHtml = `
         <input type="hidden" id="renstra_id" value="${item ? escapeHtml(item.id) : ''}">
+        <input type="hidden" id="renstra_indikator" value="${item ? escapeHtml(item.indikator) : '-'}">
+        <input type="hidden" id="renstra_pic" value="${item ? escapeHtml(item.pic || '') : '-'}">
         <div>
             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Program / Kelompok</label>
-            <input type="text" id="renstra_program" value="${item ? escapeHtml(item.program || '') : ''}" placeholder="Contoh: R 1: Kesiapan Kerja Lulusan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+            <select id="renstra_program" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                ${optionsHtml}
+            </select>
         </div>
-        <div>
-            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Indikator Kinerja</label>
-            <textarea id="renstra_indikator" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">${item ? escapeHtml(item.indikator) : ''}</textarea>
+        <div class="mt-4">
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tahun (YYYY)</label>
+            <input type="number" id="renstra_tahun" value="${item ? escapeHtml(item.tahun) : new Date().getFullYear()}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">PIC</label>
-                <input type="text" id="renstra_pic" value="${item ? escapeHtml(item.pic || '') : ''}" placeholder="WD 1" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
-            </div>
-            <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tahun (YYYY)</label>
-                <input type="number" id="renstra_tahun" value="${item ? escapeHtml(item.tahun) : new Date().getFullYear()}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
-            </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 mt-4">
             <div>
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Target (%)</label>
                 <input type="number" step="0.01" id="renstra_target" value="${item ? escapeHtml(item.target) : 0}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">

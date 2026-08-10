@@ -94,42 +94,30 @@
             <div class="w-full lg:w-2/3 space-y-8 animate-in slide-in-from-right duration-700">
                 <div class="bg-slate-800 dark:bg-slate-850 text-white py-2 px-10 rounded-[2rem] shadow-2xl border-b-8 border-slate-950 relative overflow-hidden group">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-transparent to-purple-600/10 pointer-events-none group-hover:opacity-50 transition-opacity"></div>
-                    <h3 class="text-2xl font-black tracking-[0.3em] uppercase text-center relative z-10 drop-shadow-lg">CAPAIAN 8 PILAR (TUJUAN) POLJAM</h3>
+                    <h3 class="text-2xl font-black tracking-[0.3em] uppercase text-center relative z-10 drop-shadow-lg">CAPAIAN {{ $pilars->count() }} PILAR (TUJUAN) POLJAM</h3>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @php
-                        $pillars = [
-                            ['id' => 'I', 'title' => 'Pengembangan Sistem Pengelolaan berbasis SMART Campus untuk Menuju kwalitas Regional', 'color' => '#1e3a8a', 'bg' => 'bg-gradient-to-br from-[#1e3a8a] to-blue-900', 'demo' => 85.5],
-                            ['id' => 'V', 'title' => 'Kualitas sumberdaya manusia melalui manajemen berbasis kinerja', 'color' => '#f1c40f', 'bg' => 'bg-gradient-to-br from-[#f1c40f] to-amber-600', 'demo' => 92.0],
-                            ['id' => 'II', 'title' => 'Membangun Poltek Jambi branding melalui global networking for global partnership', 'color' => '#16a085', 'bg' => 'bg-gradient-to-br from-[#16a085] to-emerald-800', 'demo' => 78.4],
-                            ['id' => 'VI', 'title' => 'Kualitas manajemen aset yang integratif, efektif dan efisien melalui kebijakan resources sharing, berwawasan lingkungandan berkelanjutan', 'color' => '#2ecc71', 'bg' => 'bg-gradient-to-br from-[#2ecc71] to-green-700', 'demo' => 88.9],
-                            ['id' => 'III', 'title' => 'Menjadi pusat penyelenggaraan kegiatan akademik yang unggul dan berlandaskan academic exellence berstandar nasional dan internasional', 'color' => '#e91e63', 'bg' => 'bg-gradient-to-br from-[#e91e63] to-pink-800', 'demo' => 95.2],
-                            ['id' => 'VII', 'title' => 'Kapasitas institusi dalam pengelolaan', 'color' => '#8e44ad', 'bg' => 'bg-gradient-to-br from-[#8e44ad] to-purple-900', 'demo' => 82.1],
-                            ['id' => 'IV', 'title' => 'Menjadi pusat penelitian yang unggul (research exellence) sesuai perkembangan IPTEKS yang berorientasi pada pemberdayaan masyarakat.', 'color' => '#e67e22', 'bg' => 'bg-gradient-to-br from-[#e67e22] to-orange-700', 'demo' => 74.6],
-                            ['id' => 'VIII', 'title' => 'Kemandirian keuangan dengan pengelolaan yang akuntabel dan transparan, efektif, dan efisien sesuai standar yang berlaku.', 'color' => '#3498db', 'bg' => 'bg-gradient-to-br from-[#3498db] to-blue-600', 'demo' => 100.0],
-                        ];
-                    @endphp
-
-                    @foreach($pillars as $pillar)
-                        <div class="{{ $pillar['bg'] }} text-white p-4 rounded-[2rem] shadow-2xl min-h-[150px] flex flex-col justify-between transform transition-all hover:scale-[1.03] hover:-translate-y-2 cursor-pointer border border-white/20 group relative overflow-hidden backdrop-filter">
+                    @foreach($pilars as $pilar)
+                        <div class="{{ $pilar->gradient_class }} text-white p-4 rounded-[2rem] shadow-2xl min-h-[150px] flex flex-col justify-between transform transition-all hover:scale-[1.03] hover:-translate-y-2 cursor-pointer border border-white/20 group relative overflow-hidden backdrop-filter">
                             <div class="absolute -right-8 -top-8 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/15 transition-all duration-700"></div>
                             <div class="relative z-10">
                                 <div class="flex items-start gap-3 mb-6">
-                                    <span class="bg-white/20 text-[10px] px-3 py-1.5 rounded-xl border border-white/20 font-black shrink-0 mt-0.5">{{ $pillar['id'] }}</span>
-                                    <h4 class="text-[12px] font-black uppercase leading-relaxed tracking-widest drop-shadow-sm">{{ $pillar['title'] }}</h4>
+                                    <span class="bg-white/20 text-[10px] px-3 py-1.5 rounded-xl border border-white/20 font-black shrink-0 mt-0.5">{{ $pilar->kode }}</span>
+                                    <h4 class="text-[12px] font-black uppercase leading-relaxed tracking-widest drop-shadow-sm">{{ $pilar->judul }}</h4>
                                 </div>
                             </div>
                             <div class="text-right relative z-10">
                                 @php
                                     $avgRealisasi = 0;
                                     if (!$isDemo) {
-                                        $programData = $data->filter(function($items, $program) use ($pillar) {
-                                            return str_starts_with($program, $pillar['id'] . '.');
+                                        $programData = $data->filter(function($items, $program) use ($pilar) {
+                                            return str_starts_with($program, $pilar->kode . '.');
                                         })->first();
                                         $avgRealisasi = $programData ? round($programData->avg('realisasi'), 2) : 0;
                                     } else {
-                                        $avgRealisasi = $pillar['demo'];
+                                        // Generate demo value based on position to emulate the previous static demo data
+                                        $avgRealisasi = 0;
                                     }
                                 @endphp
                                 <div class="flex items-baseline justify-end gap-2 group-hover:scale-110 transition-transform">
@@ -242,38 +230,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedYears = @json($selectedYears->sort()->values());
     const isDemo = @json($isDemo);
     
-    const pillarColors = {
-        'I': '#1e3a8a',
-        'V': '#f1c40f',
-        'II': '#16a085', 
-        'VI': '#2ecc71',
-        'III': '#e91e63',
-        'VII': '#8e44ad',
-        'IV': '#e67e22',
-        'VIII': '#3498db'
-    };
-
-    const pillarLabelsShort = {
-        'I': 'Pilar I',
-        'II': 'Pilar II',
-        'III': 'Pilar III',
-        'IV': 'Pilar IV',
-        'V': 'Pilar V',
-        'VI': 'Pilar VI',
-        'VII': 'Pilar VII',
-        'VIII': 'Pilar VIII'
-    };
-
-    const pillarFullTitles = {
-        'I': 'Pengembangan Sistem Pengelolaan berbasis SMART Campus untuk Menuju kwalitas Regional',
-        'II': 'Membangun Poltek Jambi branding melalui global networking for global partnership',
-        'III': 'Menjadi pusat penyelenggaraan kegiatan akademik yang unggul dan berlandaskan academic exellence berstandar nasional dan internasional',
-        'IV': 'Menjadi pusat penelitian yang unggul (research exellence) sesuai perkembangan IPTEKS yang berorientasi pada pemberdayaan masyarakat.',
-        'V': 'Kualitas sumberdaya manusia melalui manajemen berbasis kinerja',
-        'VI': 'Kualitas manajemen aset yang integratif, efektif dan efisien melalui kebijakan resources sharing, berwawasan lingkungandan berkelanjutan',
-        'VII': 'Kapasitas institusi dalam pengelolaan',
-        'VIII': 'Kemandirian keuangan dengan pengelolaan yang akuntabel dan transparan, efektif, dan efisien sesuai standar yang berlaku.'
-    };
+    const dbPilars = @json($pilars);
+    const pillarColors = {};
+    const pillarLabelsShort = {};
+    const pillarFullTitles = {};
+    
+    dbPilars.forEach(p => {
+        pillarColors[p.kode] = p.warna || '#3498db';
+        pillarLabelsShort[p.kode] = 'Pilar ' + p.kode;
+        pillarFullTitles[p.kode] = p.judul;
+    });
 
     const datasets = Object.keys(pillarColors).map(key => {
         return {
@@ -282,9 +248,8 @@ document.addEventListener('DOMContentLoaded', function () {
             borderRadius: 6,
             data: selectedYears.map(year => {
                 if (isDemo) {
-                    // Random-ish but stable demo data
-                    const base = { 'I':80, 'II':70, 'III':90, 'IV':65, 'V':85, 'VI':75, 'VII':80, 'VIII':95 }[key];
-                    return base + (year - 2021) * 3;
+                    // No data, show 0%
+                    return 0;
                 }
                 const progKey = Object.keys(allProgramStats).find(p => p.startsWith(key + '.'));
                 if (progKey) {

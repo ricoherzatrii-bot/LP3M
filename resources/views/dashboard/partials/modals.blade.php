@@ -161,38 +161,16 @@
 
             if (mainChart) mainChart.destroy();
             
-            const pillarColors = {
-                'I': '#1e3a8a',
-                'V': '#f1c40f',
-                'II': '#16a085', 
-                'VI': '#2ecc71',
-                'III': '#e91e63',
-                'VII': '#8e44ad',
-                'IV': '#e67e22',
-                'VIII': '#3498db'
-            };
-
-            const pillarLabelsShort = {
-                'I': 'Pilar I',
-                'II': 'Pilar II',
-                'III': 'Pilar III',
-                'IV': 'Pilar IV',
-                'V': 'Pilar V',
-                'VI': 'Pilar VI',
-                'VII': 'Pilar VII',
-                'VIII': 'Pilar VIII'
-            };
-
-            const pillarFullTitles = {
-                'I': 'Pengembangan Sistem Pengelolaan berbasis SMART Campus untuk Menuju kwalitas Regional',
-                'II': 'Membangun Poltek Jambi branding melalui global networking for global partnership',
-                'III': 'Menjadi pusat penyelenggaraan kegiatan akademik yang unggul dan berlandaskan academic exellence berstandar nasional dan internasional',
-                'IV': 'Menjadi pusat penelitian yang unggul (research exellence) sesuai perkembangan IPTEKS yang berorientasi pada pemberdayaan masyarakat.',
-                'V': 'Kualitas sumberdaya manusia melalui manajemen berbasis kinerja',
-                'VI': 'Kualitas manajemen aset yang integratif, efektif dan efisien melalui kebijakan resources sharing, berwawasan lingkungandan berkelanjutan',
-                'VII': 'Kapasitas institusi dalam pengelolaan',
-                'VIII': 'Kemandirian keuangan dengan pengelolaan yang akuntabel dan transparan, efektif, dan efisien sesuai standar yang berlaku.'
-            };
+            const dbPilars = @json($pilars ?? []);
+            const pillarColors = {};
+            const pillarLabelsShort = {};
+            const pillarFullTitles = {};
+            
+            dbPilars.forEach(p => {
+                pillarColors[p.kode] = p.warna || '#4f46e5';
+                pillarLabelsShort[p.kode] = 'Pilar ' + p.kode;
+                pillarFullTitles[p.kode] = p.judul;
+            });
 
             const datasets = Object.keys(pillarColors).map(key => {
                 return {
@@ -935,6 +913,11 @@
                 submitRenstra(true);
                 return;
             }
+            // Check if we are in Pilar Renstra context
+            if (document.getElementById('pilar_id')) {
+                submitPilar(true);
+                return;
+            }
 
             const fd = new FormData();
             fd.append('title', currentTitle);
@@ -989,6 +972,11 @@
             // Check if we are in Renstra context
             if (document.getElementById('renstra_id')) {
                 submitRenstra(false);
+                return;
+            }
+            // Check if we are in Pilar Renstra context
+            if (document.getElementById('pilar_id')) {
+                submitPilar(false);
                 return;
             }
 
@@ -1191,6 +1179,7 @@
         }
 
       @include('dashboard.partials.panels.renstra')
+      @include('dashboard.partials.panels.pilar-renstra')
 
        @include('dashboard.partials.panels.dokumen-spmi')
 

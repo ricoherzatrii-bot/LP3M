@@ -66,7 +66,10 @@ class RenstraController extends Controller
             ->get()
             ->groupBy('program');
 
-        return view('pages.renstra', compact('data', 'availableYears', 'selectedYears', 'yearlyStats', 'allProgramStats', 'indicators'));
+        // Fetch Pilar from Database
+        $pilars = \App\Models\PilarRenstra::orderBy('urutan', 'asc')->get();
+
+        return view('pages.renstra', compact('data', 'availableYears', 'selectedYears', 'yearlyStats', 'allProgramStats', 'indicators', 'pilars'));
     }
 
     public function import(Request $request)

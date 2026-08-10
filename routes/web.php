@@ -168,6 +168,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/renstra/bulk-update', [\App\Http\Controllers\RenstraController::class, 'bulkUpdate'])->name('renstra.bulk_update');
 
     // ============================================
+    // --- SISTEM MANAJEMEN PILAR RENSTRA ---
+    // ============================================
+    Route::get('/admin/pilar-renstra', [\App\Http\Controllers\PilarRenstraController::class, 'index'])->name('admin.pilar_renstra.index');
+    Route::post('/admin/pilar-renstra/store', [\App\Http\Controllers\PilarRenstraController::class, 'store'])->name('admin.pilar_renstra.store');
+    Route::post('/admin/pilar-renstra/{id}/update', [\App\Http\Controllers\PilarRenstraController::class, 'update'])->name('admin.pilar_renstra.update');
+    Route::delete('/admin/pilar-renstra/delete/{id}', [\App\Http\Controllers\PilarRenstraController::class, 'destroy'])->name('admin.pilar_renstra.destroy');
+
+    // ============================================
     // --- SISTEM MANAJEMEN PERTANYAAN KUESIONER ---
     // ============================================
     Route::get('/admin/kuesioner/{id}/pertanyaan', [\App\Http\Controllers\KuesionerPertanyaanController::class, 'index'])->name('admin.kuesioner.pertanyaan.index');

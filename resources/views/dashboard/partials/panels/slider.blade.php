@@ -96,50 +96,49 @@ function loadSliderPanel() {
                 fetchSliderList();
             }, 300);
         }
+function fetchSliderList() {
+    const grid = document.getElementById('slider-grid');
+    if (!grid) return;
 
-        function fetchSliderList() {
-            const grid = document.getElementById('slider-grid');
-            if(!grid) return;
+    fetch('/admin/slider')
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                if (res.data.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full py-20 text-center bg-white/40 rounded-[2rem] border border-dashed border-slate-200">
+                        <i class="fas fa-images text-4xl text-slate-200 mb-4 block"></i>
+                        <p class="text-slate-400 font-bold uppercase tracking-widest text-[11px]">Belum ada slide. Klik "Tambah Slide" di atas.</p>
+                    </div>`;
+                    return;
+                }
 
-            fetch('/admin/slider')
-                .then(r => r.json())
-                .then(res => {
-                    if (res.success) {
-                        if (res.data.length === 0) {
-                            grid.innerHTML = `<div class="col-span-full py-20 text-center bg-white/40 rounded-[2rem] border border-dashed border-slate-200">
-                                <i class="fas fa-images text-4xl text-slate-200 mb-4 block"></i>
-                                <p class="text-slate-400 font-bold uppercase tracking-widest text-[11px]">Belum ada slide. Klik "Tambah Slide" di atas.</p>
-                            </div>`;
-                            return;
-                        }
-
-                        grid.innerHTML = res.data.map(m => `
-                            <div class="group relative bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_10px_30px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500">
-                                <div class="aspect-[16/9] w-full overflow-hidden relative">
-                                    <img src="/storage/${escapeHtml(m.gambar)}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='/images/gedung-poljam.png'">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60"></div>
-                                    <div class="absolute top-4 right-4 flex gap-2">
-                                        <button onclick='openSliderModal(${JSON.stringify(m).replace(/'/g, "&apos;")})' class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-blue-600 shadow-lg flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
-                                        <button onclick="deleteSlider(${m.id})" class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-rose-600 shadow-lg flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
-                                    </div>
-                                    <div class="absolute top-4 left-4">
-                                        <span class="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg">Urutan: ${escapeHtml(m.urutan)}</span>
-                                    </div>
-                                </div>
-                                <div class="p-8">
-                                    <h4 class="text-slate-800 font-black text-lg line-clamp-1 mb-2 font-display tracking-tight">${escapeHtml(m.judul || 'Tanpa Judul')}</h4>
-                                    <p class="text-slate-500 text-xs line-clamp-2 font-medium leading-relaxed mb-4">${escapeHtml(m.sub_judul || '-')}</p>
-                                    <div class="flex items-center gap-2 text-[9px] font-black text-blue-500 uppercase tracking-widest">
-                                        <i class="fas fa-link"></i>
-                                        <span class="truncate">${escapeHtml(m.link_url || '#')}</span>
-                                    </div>
-                                </div>
+                grid.innerHTML = res.data.map(m => `
+                    <div class="group relative bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-[0_10px_30px_rgba(0,0,0,0.02)] overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500">
+                        <div class="aspect-[16/9] w-full overflow-hidden relative">
+                            <img src="/storage/${escapeHtml(m.gambar)}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='/images/gedung-poljam.png'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60"></div>
+                            <div class="absolute top-4 right-4 flex gap-2">
+                                <button onclick='openSliderModal(${JSON.stringify(m).replace(/\x27/g, "&apos;")})' class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-blue-600 shadow-lg flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i class="fas fa-pen text-[10px]"></i></button>
+                                <button onclick="deleteSlider(${m.id})" class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur-md text-rose-600 shadow-lg flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
                             </div>
-                        `).join('');
-                    }
-                })
-                .catch(() => showToast('Gagal memuat slider.', 'warning'));
-        }
+                            <div class="absolute top-4 left-4">
+                                <span class="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg">Urutan: ${escapeHtml(m.urutan)}</span>
+                            </div>
+                        </div>
+                        <div class="p-8">
+                            <h4 class="text-slate-800 font-black text-lg line-clamp-1 mb-2 font-display tracking-tight">${escapeHtml(m.judul || 'Tanpa Judul')}</h4>
+                            <p class="text-slate-500 text-xs line-clamp-2 font-medium leading-relaxed mb-4">${escapeHtml(m.sub_judul || '-')}</p>
+                            <div class="flex items-center gap-2 text-[9px] font-black text-blue-500 uppercase tracking-widest">
+                                <i class="fas fa-link"></i>
+                                <span class="truncate">${escapeHtml(m.link_url || '#')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        })
+        .catch(() => showToast('Gagal memuat slider.', 'warning'));
+}
 
         function openSliderModal(data = null) {
             const modal = document.getElementById('sliderModal');
