@@ -306,10 +306,11 @@
                 </div>
 
                 <!-- SIDEBAR (RIGHT) -->
-                <div class="lg:w-1/3 space-y-8">
-                    <!-- Sering Dibaca Section -->
-                    <div class="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 shadow-sm hover:shadow-xl transition-all duration-500 sticky top-24">
-                        <h4 class="text-slate-900 dark:text-white font-bold text-xl mb-8 relative inline-block">
+                <div class="lg:w-1/3">
+                    <div class="space-y-8 sticky top-24">
+                        <!-- Sering Dibaca Section -->
+                        <div class="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 shadow-sm hover:shadow-xl transition-all duration-500">
+                            <h4 class="text-slate-900 dark:text-white font-bold text-xl mb-8 relative inline-block">
                             Sering Dibaca
                             <span class="absolute -bottom-2 left-0 w-12 h-1 bg-yellow-400 rounded-full"></span>
                         </h4>
@@ -371,6 +372,7 @@
                     </div>
                     @endif
 
+                    </div>
                 </div>
             </div>
 

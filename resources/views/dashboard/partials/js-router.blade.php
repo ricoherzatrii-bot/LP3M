@@ -170,6 +170,7 @@ function loadPage(title) {
                             // Bangun headers
                             let headersHtml = `<th class="px-10 py-6 border-b border-slate-100 w-24 text-center text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">UID</th>`;
                             res.fields.forEach(field => {
+                                if (field === 'gambar_fitur' || field === 'gambar_fitur_url') return; // Skip in table view
                                 const label = field.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                                 headersHtml += `<th class="px-10 py-6 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-[0.2em]">${label}</th>`;
                             });
@@ -178,13 +179,16 @@ function loadPage(title) {
                             // Bangun rows
                             let rowsHtml = "";
                             if (res.data.length === 0) {
-                                rowsHtml = `<tr><td colspan="${res.fields.length + 2}" class="px-10 py-12 text-center font-bold text-slate-400">Belum ada data entri di database untuk modul ini.</td></tr>`;
+                                // Adjusted colspan (minus the skipped fields)
+                                const visibleFields = res.fields.filter(f => f !== 'gambar_fitur' && f !== 'gambar_fitur_url').length;
+                                rowsHtml = `<tr><td colspan="${visibleFields + 2}" class="px-10 py-12 text-center font-bold text-slate-400">Belum ada data entri di database untuk modul ini.</td></tr>`;
                             } else {
                                 res.data.forEach((item, index) => {
                                     const paddedIndex = String(index + 1).padStart(3, '0');
                                     let cellsHtml = `<td class="px-10 py-8 font-black text-slate-400 text-center font-display">${paddedIndex}</td>`;
                                     
                                     res.fields.forEach(field => {
+                                        if (field === 'gambar_fitur' || field === 'gambar_fitur_url') return; // Skip in table view
                                         let displayVal = item[field] || "";
                                         // Safely strip HTML tags using regex to avoid parsing/executing embedded scripts
                                         if (typeof displayVal === 'string') {

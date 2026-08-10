@@ -437,13 +437,12 @@ class DashboardController extends Controller
         }
 
 
-        // 7. Artikel Ilmiah
         if ($title === 'Artikel Ilmiah' || $title === 'Artikel') {
             return [
                 'type' => 'table',
                 'model' => Artikel::class,
                 'query' => [],
-                'fields' => ['judul', 'kategori', 'isi_konten', 'gambar_fitur', 'penulis'],
+                'fields' => ['judul', 'kategori', 'isi_konten', 'gambar_fitur'],
                 'defaults' => ['kategori' => 'Umum', 'judul' => 'Artikel Baru'],
             ];
         }

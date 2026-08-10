@@ -797,6 +797,7 @@
 
         const isImageField = (f) => f.toLowerCase().includes('gambar') || f.toLowerCase().includes('foto') || f.toLowerCase().includes('file');
         const isStatusField = (f) => f.toLowerCase() === 'status';
+        const isKategoriField = (f) => f.toLowerCase() === 'kategori';
         
         function escapeHtml(unsafe) {
             if (unsafe === null || unsafe === undefined) return '';
@@ -828,7 +829,13 @@
                                     field.toLowerCase().includes('date');
                 
                 let inputHtml = "";
-                if (isStatusField(field)) {
+                if (isKategoriField(field)) {
+                    // Kategori field as dropdown select (Berita / Kegiatan)
+                    inputHtml = `<select id="field-${containerId}-${field}" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner">
+                        <option value="Berita" ${val === 'Berita' ? 'selected' : ''}>Berita</option>
+                        <option value="Kegiatan" ${val === 'Kegiatan' ? 'selected' : ''}>Kegiatan</option>
+                    </select>`;
+                } else if (isStatusField(field)) {
                     // Status field as dropdown select
                     inputHtml = `<select id="field-${containerId}-${field}" class="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-white focus:bg-white transition-all shadow-inner">
                         <option value="aktif" ${val === 'aktif' ? 'selected' : ''}>Aktif</option>
