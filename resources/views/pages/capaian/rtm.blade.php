@@ -161,14 +161,12 @@
                                 <thead>
                                     <tr class="bg-slate-50/50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 transition-colors duration-500">
                                         <th class="px-6 py-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] transition-colors">Dokumen</th>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] w-32 transition-colors">Format</th>
-                                        <th class="px-6 py-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] w-32 text-center transition-colors">Hits</th>
                                         <th class="px-6 py-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] w-40 text-right transition-colors">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-white/5 transition-colors duration-500">
                                     @foreach($docs as $dok)
-                                    <tr class="group hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                                    <tr class="group hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors {{ $loop->iteration > 3 ? 'hidden extra-row-'.Str::slug($tahun) : '' }}">
                                         <td class="px-6 py-5">
                                             <div class="flex items-center gap-4">
                                                 <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-white/10 flex items-center justify-center group-hover:border-blue-500/30 transition-all">
@@ -196,15 +194,7 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-5">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider transition-colors">{{ $dok->tipe_file ?? 'FILE' }}</span>
-                                                <span class="text-[10px] text-slate-500 dark:text-slate-400 transition-colors">{{ $dok->ukuran_file ?? '-' }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-5 text-center">
-                                            <span class="text-xs font-medium text-slate-600 dark:text-slate-400 transition-colors">{{ number_format($dok->downloads) }} <i class="fas fa-download text-[10px] ml-1 opacity-50"></i></span>
-                                        </td>
+
                                         <td class="px-6 py-5 text-right">
                                             @if($dok->path_file)
                                             <a href="{{ route('rtm.download', $dok->id) }}"
@@ -220,6 +210,22 @@
                                 </tbody>
                             </table>
                         </div>
+                        @if($docs->count() > 3)
+                        <div class="p-4 border-t border-slate-100 dark:border-white/5 text-center transition-colors">
+                            <button type="button" onclick="
+                                let rows = document.querySelectorAll('.extra-row-{{ Str::slug($tahun) }}');
+                                let isHidden = rows[0].classList.contains('hidden');
+                                rows.forEach(el => el.classList.toggle('hidden'));
+                                if (isHidden) {
+                                    this.innerHTML = 'Tutup Lainnya <i class=\'fas fa-chevron-up ml-1\'></i>';
+                                } else {
+                                    this.innerHTML = 'Tampilkan Lainnya ({{ $docs->count() - 3 }}) <i class=\'fas fa-chevron-down ml-1\'></i>';
+                                }
+                            " class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors uppercase tracking-widest px-6 py-2 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30">
+                                Tampilkan Lainnya ({{ $docs->count() - 3 }}) <i class="fas fa-chevron-down ml-1"></i>
+                            </button>
+                        </div>
+                        @endif
                     </div>
                 </div>
                 @endforeach
