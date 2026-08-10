@@ -1,6 +1,6 @@
   <style>
         body { 
-            font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; 
+            font-family: 'Roboto', sans-serif; 
             /* Ultra-Premium Light Mesh Background */
             background-color: #f8fafc;
             background-image: 
@@ -11,7 +11,7 @@
             background-attachment: fixed;
         }
 
-        .font-display { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
+        .font-display { font-family: 'Roboto', sans-serif; }
         
         /* Hidden Scrollbar but functional */
         ::-webkit-scrollbar { width: 6px; height: 6px; }

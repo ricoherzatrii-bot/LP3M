@@ -6,13 +6,16 @@
     <title>LPM Politeknik Jambi</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        'serif-luxury': ['Arial', 'Helvetica Neue', 'Helvetica', 'sans-serif'],
+                        sans: ['Roboto', 'sans-serif'],
+                        'serif-luxury': ['Roboto', 'sans-serif'],
+                        display: ['Roboto', 'sans-serif']
                     }
                 }
             }
@@ -30,8 +33,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        body { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
-        .font-playfair { font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif; }
+        body { font-family: 'Roboto', sans-serif; }
+        .font-playfair { font-family: 'Roboto', sans-serif; }
         .glass-nav { 
             background: rgba(255, 255, 255, 0.8); 
             backdrop-filter: blur(10px); 

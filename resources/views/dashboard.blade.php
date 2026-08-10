@@ -9,7 +9,19 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/super-build/ckeditor.js"></script>
-  
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                        display: ['Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
     @include('dashboard.partials.styles')
 </head>
 <body class="text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
