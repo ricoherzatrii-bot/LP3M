@@ -65,6 +65,11 @@
             transition: all 0.3s ease-in-out;
         }
 
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
@@ -72,6 +77,15 @@
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+
+    <!-- NEWS TICKER -->
+    <div class="bg-[#004494] py-2 overflow-hidden border-b border-[#003377]">
+        <div class="container mx-auto px-8 flex items-center">
+            <div class="text-[10px] text-yellow-400 font-bold uppercase tracking-[0.2em] whitespace-nowrap animate-[marquee_30s_linear_infinite]">
+                Akreditasi Institusi "BAIK SEKALI" • Pendaftaran Audit Mutu Internal Semester Genap 2026 Telah Dibuka • Standar Mutu ISO 9001:2015 Terintegrasi
+            </div>
+        </div>
+    </div>
 
     {{-- Kita kirim variabel $allProfil ke navbar agar bisa dibaca --}}
     @include('components.navbar', ['allProfil' => $allProfil ?? []])
